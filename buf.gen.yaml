@@ -1,0 +1,15 @@
+version: v2
+plugins:
+  # Generate Go code.
+  - local: protoc-gen-go
+    out: gen/go
+    opt: paths=source_relative
+  - local: protoc-gen-connect-go
+    out: gen/go
+    opt: paths=source_relative
+  # Generate gRPC-Gateway code.
+  - local: protoc-gen-grpc-gateway
+    out: gen/go
+    opt: paths=source_relative
+inputs:
+  - directory: proto

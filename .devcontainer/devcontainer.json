@@ -9,7 +9,10 @@
 				"ms-azuretools.vscode-docker",
 				"formulahendry.docker-explorer",
 				"golang.Go",
-				"ms-vscode.anycode-go"
+				"ms-vscode.anycode-go",
+				"tamasfe.even-better-toml",
+				"plex.vscode-protolint",
+				"zxh404.vscode-proto3"
 			]
 		}
 	},

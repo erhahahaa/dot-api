@@ -4,6 +4,7 @@ use (
     "./auth"
     "./common"
     "./gateway"
+    "./gen/go"
     "./program"
     "./tactical"
 )

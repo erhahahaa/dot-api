@@ -1,0 +1,20 @@
+{
+	"name": "Dot Coaching Dev Container",
+	"dockerComposeFile": "../docker-compose.yml",
+	"service": "gateway",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"formulahendry.docker-explorer",
+				"golang.Go",
+				"ms-vscode.anycode-go"
+			]
+		}
+	},
+	"forwardPorts": [
+		8080, // Gateway
+		5432 // PostgreSQL
+	]
+}

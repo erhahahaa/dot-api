@@ -1,0 +1,9 @@
+{
+    "go.useLanguageServer": true,
+    "[go]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "golang.go",
+        "editor.tabSize": 2,
+    },
+    "formatting.gofumpt": true
+}

@@ -1,0 +1,37 @@
+package main
+
+import (
+	"context"
+
+	pb "github.com/dot-coaching/gen/go/user"
+	"google.golang.org/grpc"
+)
+
+type UserServer struct {
+	pb.UnimplementedUserServiceServer
+
+	service UserService
+}
+
+func NewUserServer(server *grpc.Server, service UserService) {
+
+	handler := &UserServer{service: service}
+
+	pb.RegisterUserServiceServer(server, handler)
+}
+
+func (s *UserServer) CreateUser(ctx context.Context, body *pb.CreateUserRequest) (*pb.User, error) {
+	return s.service.CreateUser(ctx, body)
+}
+
+func (s *UserServer) GetUser(ctx context.Context, body *pb.GetUserRequest) (*pb.User, error) {
+	return s.service.GetUser(ctx, body)
+}
+
+func (s *UserServer) UpdateUser(ctx context.Context, body *pb.UpdateUserRequest) (*pb.User, error) {
+	return s.service.UpdateUser(ctx, body)
+}
+
+func (s *UserServer) DeleteUser(ctx context.Context, body *pb.DeleteUserRequest) (*pb.User, error) {
+	return s.service.DeleteUser(ctx, body)
+}

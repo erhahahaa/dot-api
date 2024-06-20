@@ -1,32 +1,32 @@
-package auth
+package main
 
 import (
-	"context"
+	"fmt"
 	"log"
+	"net"
 
-	"connectrpc.com/connect"
-	user "github.com/dot-coaching/gen/go/user"
+	"google.golang.org/grpc"
 )
 
-type AuthServer struct{}
+func main() {
+	fmt.Println("Staring auth service... 🚀")
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	fmt.Println("Listening on port 50051")
+	defer lis.Close()
 
-func (s *AuthServer) Register(
-	ctx context.Context, req *connect.Request[user.CreateUserRequest],
-) (
-	*connect.Response[user.CreateUserResponse], error,
-) {
-	log.Println("== Request Header ===", req.Header())
+	server := grpc.NewServer()
 
-	dummyUser := user.User{
-		Id:    "1",
-		Name:  "John",
-		Email: "jonn@test.dev",
-		Phone: "+6285732030",
+	store := NewUserStore()
+	service := NewUserService(*store)
+
+	NewUserServer(server, *service)
+
+	if err := server.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
 
-	res := connect.NewResponse(&user.CreateUserResponse{
-		User: &dummyUser,
-	})
-
-	return res, nil
+	fmt.Println("Shutting down auth service... 🛑")
 }

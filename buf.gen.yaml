@@ -1,15 +1,16 @@
 version: v2
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/dot-coaching/gen/go
 plugins:
-  # Generate Go code.
-  - local: protoc-gen-go
+  - remote: buf.build/protocolbuffers/go
     out: gen/go
     opt: paths=source_relative
-  - local: protoc-gen-connect-go
+  - remote: buf.build/grpc/go
     out: gen/go
     opt: paths=source_relative
-  # Generate gRPC-Gateway code.
-  - local: protoc-gen-grpc-gateway
-    out: gen/go
-    opt: paths=source_relative
+
 inputs:
   - directory: proto

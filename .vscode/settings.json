@@ -5,5 +5,10 @@
         "editor.defaultFormatter": "golang.go",
         "editor.tabSize": 2,
     },
+    "[rust]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "rust-lang.rust-analyzer",
+        "editor.tabSize": 2
+    },
     "formatting.gofumpt": true
 }

@@ -1,7 +1,10 @@
-.PHONY: gen
-gen-user:
-	@protoc --go_out=gen/go --go_opt=paths=source_relative \
-    --go-grpc_out=gen/go --go-grpc_opt=paths=source_relative \
-	proto/user.proto 
+.PHONY: gen gen-go-user gen-rust-user all
 
-all: gen-user
+gen-go-user:
+	buf generate
+
+
+gen-rust-user: 
+	ntex-grpc proto/user/user.proto user.rs --out-dir ./gen/rust/src --include-dir ./proto/
+
+all: gen-go-user gen-rust-user

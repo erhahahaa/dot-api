@@ -1,0 +1,11 @@
+[package]
+name = "gen_rust"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "gen_rust"
+path = "import.rs"
+
+[dependencies]
+ntex-grpc = "0.7.0"

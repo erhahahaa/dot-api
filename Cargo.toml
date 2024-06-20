@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+    "gateway",
+    "gen/rust"
+]
+
+resolver = "2"

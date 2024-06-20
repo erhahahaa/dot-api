@@ -10,8 +10,7 @@ import (
 
 type UserModel struct {
 	gorm.Model
-
-	Id       string `gorm:"primaryKey"`
+ 
 	Name     string
 	Email    string
 	Phone    string
@@ -45,7 +44,6 @@ func (s *UserStore) CreateUser(ctx context.Context, body *pb.CreateUserRequest) 
 	}
 
 	return &pb.User{
-		Id:    param.Id,
 		Name:  param.Name,
 		Email: param.Email,
 		Phone: param.Phone,
@@ -60,7 +58,6 @@ func (s *UserStore) GetUser(ctx context.Context, body *pb.GetUserRequest) (*pb.U
 	}
 
 	return &pb.User{
-		Id:    user.Id,
 		Name:  user.Name,
 		Email: user.Email,
 		Phone: user.Phone,
@@ -69,7 +66,6 @@ func (s *UserStore) GetUser(ctx context.Context, body *pb.GetUserRequest) (*pb.U
 
 func (s *UserStore) UpdateUser(ctx context.Context, body *pb.UpdateUserRequest) (*pb.User, error) {
 	param := &UserModel{
-		Id:       body.Id,
 		Name:     body.Name,
 		Email:    body.Email,
 		Phone:    body.Phone,
@@ -82,7 +78,6 @@ func (s *UserStore) UpdateUser(ctx context.Context, body *pb.UpdateUserRequest) 
 	}
 
 	return &pb.User{
-		Id:    param.Id,
 		Name:  param.Name,
 		Email: param.Email,
 		Phone: param.Phone,
@@ -102,7 +97,6 @@ func (s *UserStore) DeleteUser(ctx context.Context, body *pb.DeleteUserRequest) 
 	}
 
 	return &pb.User{
-		Id:    user.Id,
 		Name:  user.Name,
 		Email: user.Email,
 		Phone: user.Phone,

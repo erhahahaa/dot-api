@@ -1,0 +1,15 @@
+[package]
+name = "gateway"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies] 
+env_logger = "0.11.3"
+ntex = { version = "2.0.1", features = ["openssl", "tokio"] }
+ntex-grpc = "0.7.0"
+ntex-h2 = "1.0.0"
+openssl = { version = "0.10.64", features = ["v111", "vendored"] }
+uuid = { version = "1.8.0", features = ["v4"] }
+
+gen_rust = { path = "../gen/rust" }
+serde = {version ="1.0.203",features = ["derive"] }

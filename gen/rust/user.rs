@@ -12,11 +12,13 @@
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct User {
-    pub id: ::ntex_grpc::ByteString,
+    pub id: u32,
     pub name: ::ntex_grpc::ByteString,
     pub email: ::ntex_grpc::ByteString,
     pub phone: ::ntex_grpc::ByteString,
     pub password: ::ntex_grpc::ByteString,
+    pub role: UserRole,
+    pub expertise: ::ntex_grpc::ByteString,
     pub created_at: ::ntex_grpc::google_types::Timestamp,
     pub updated_at: ::ntex_grpc::google_types::Timestamp,
 }
@@ -27,11 +29,13 @@ pub struct CreateUserRequest {
     pub email: ::ntex_grpc::ByteString,
     pub phone: ::ntex_grpc::ByteString,
     pub password: ::ntex_grpc::ByteString,
+    pub role: UserRole,
+    pub expertise: ::ntex_grpc::ByteString,
 }
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct GetUserRequest {
-    pub id: ::ntex_grpc::ByteString,
+    pub id: u32,
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -41,11 +45,53 @@ pub struct UpdateUserRequest {
     pub email: ::ntex_grpc::ByteString,
     pub phone: ::ntex_grpc::ByteString,
     pub password: ::ntex_grpc::ByteString,
+    pub role: UserRole,
+    pub expertise: ::ntex_grpc::ByteString,
 }
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct DeleteUserRequest {
-    pub id: ::ntex_grpc::ByteString,
+    pub id: u32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[repr(i32)]
+pub enum UserRole {
+    Superadmin = 0,
+    Admin = 1,
+    User = 2,
+}
+
+impl UserRole {
+    /// String value of the enum field names used in the ProtoBuf definition with stripped prefix.
+    pub fn to_str_name(self) -> &'static str {
+        match self {
+            UserRole::Superadmin => "SUPERADMIN",
+            UserRole::Admin => "ADMIN",
+            UserRole::User => "USER",
+        }
+    }
+
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn to_origin_name(self) -> &'static str {
+        match self {
+            UserRole::Superadmin => "SUPERADMIN",
+            UserRole::Admin => "ADMIN",
+            UserRole::User => "USER",
+        }
+    }
+
+    pub fn from_i32(value: i32) -> ::std::option::Option<Self> {
+        match value {
+            0 => Some(UserRole::Superadmin),
+            1 => Some(UserRole::Admin),
+            2 => Some(UserRole::User),
+            _ => ::std::option::Option::None,
+        }
+    }
 }
 
 /// `UserService` service definition
@@ -144,14 +190,26 @@ mod _priv_impl {
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.created_at,
+                &self.role,
                 6,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.updated_at,
+                &self.expertise,
                 7,
+                ::ntex_grpc::types::DefaultValue::Default,
+                dst,
+            );
+            ::ntex_grpc::NativeType::serialize(
+                &self.created_at,
+                8,
+                ::ntex_grpc::types::DefaultValue::Default,
+                dst,
+            );
+            ::ntex_grpc::NativeType::serialize(
+                &self.updated_at,
+                9,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
@@ -178,14 +236,23 @@ mod _priv_impl {
                         ::ntex_grpc::NativeType::deserialize(&mut msg.password, tag, wire_type, src)
                             .map_err(|err| err.push(STRUCT_NAME, "password"))?
                     }
-                    6 => ::ntex_grpc::NativeType::deserialize(
+                    6 => ::ntex_grpc::NativeType::deserialize(&mut msg.role, tag, wire_type, src)
+                        .map_err(|err| err.push(STRUCT_NAME, "role"))?,
+                    7 => ::ntex_grpc::NativeType::deserialize(
+                        &mut msg.expertise,
+                        tag,
+                        wire_type,
+                        src,
+                    )
+                    .map_err(|err| err.push(STRUCT_NAME, "expertise"))?,
+                    8 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.created_at,
                         tag,
                         wire_type,
                         src,
                     )
                     .map_err(|err| err.push(STRUCT_NAME, "created_at"))?,
-                    7 => ::ntex_grpc::NativeType::deserialize(
+                    9 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.updated_at,
                         tag,
                         wire_type,
@@ -221,12 +288,20 @@ mod _priv_impl {
                 5,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.created_at,
+                &self.role,
                 6,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.updated_at,
+                &self.expertise,
                 7,
+                ::ntex_grpc::types::DefaultValue::Default,
+            ) + ::ntex_grpc::NativeType::serialized_len(
+                &self.created_at,
+                8,
+                ::ntex_grpc::types::DefaultValue::Default,
+            ) + ::ntex_grpc::NativeType::serialized_len(
+                &self.updated_at,
+                9,
                 ::ntex_grpc::types::DefaultValue::Default,
             )
         }
@@ -241,6 +316,8 @@ mod _priv_impl {
                 email: ::core::default::Default::default(),
                 phone: ::core::default::Default::default(),
                 password: ::core::default::Default::default(),
+                role: ::core::default::Default::default(),
+                expertise: ::core::default::Default::default(),
                 created_at: ::core::default::Default::default(),
                 updated_at: ::core::default::Default::default(),
             }
@@ -274,6 +351,18 @@ mod _priv_impl {
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
+            ::ntex_grpc::NativeType::serialize(
+                &self.role,
+                5,
+                ::ntex_grpc::types::DefaultValue::Default,
+                dst,
+            );
+            ::ntex_grpc::NativeType::serialize(
+                &self.expertise,
+                6,
+                ::ntex_grpc::types::DefaultValue::Default,
+                dst,
+            );
         }
 
         #[inline]
@@ -295,6 +384,15 @@ mod _priv_impl {
                         ::ntex_grpc::NativeType::deserialize(&mut msg.password, tag, wire_type, src)
                             .map_err(|err| err.push(STRUCT_NAME, "password"))?
                     }
+                    5 => ::ntex_grpc::NativeType::deserialize(&mut msg.role, tag, wire_type, src)
+                        .map_err(|err| err.push(STRUCT_NAME, "role"))?,
+                    6 => ::ntex_grpc::NativeType::deserialize(
+                        &mut msg.expertise,
+                        tag,
+                        wire_type,
+                        src,
+                    )
+                    .map_err(|err| err.push(STRUCT_NAME, "expertise"))?,
                     _ => ::ntex_grpc::encoding::skip_field(wire_type, tag, src)?,
                 }
             }
@@ -319,6 +417,14 @@ mod _priv_impl {
                 &self.password,
                 4,
                 ::ntex_grpc::types::DefaultValue::Default,
+            ) + ::ntex_grpc::NativeType::serialized_len(
+                &self.role,
+                5,
+                ::ntex_grpc::types::DefaultValue::Default,
+            ) + ::ntex_grpc::NativeType::serialized_len(
+                &self.expertise,
+                6,
+                ::ntex_grpc::types::DefaultValue::Default,
             )
         }
     }
@@ -331,6 +437,8 @@ mod _priv_impl {
                 email: ::core::default::Default::default(),
                 phone: ::core::default::Default::default(),
                 password: ::core::default::Default::default(),
+                role: ::core::default::Default::default(),
+                expertise: ::core::default::Default::default(),
             }
         }
     }
@@ -415,6 +523,18 @@ mod _priv_impl {
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
+            ::ntex_grpc::NativeType::serialize(
+                &self.role,
+                6,
+                ::ntex_grpc::types::DefaultValue::Default,
+                dst,
+            );
+            ::ntex_grpc::NativeType::serialize(
+                &self.expertise,
+                7,
+                ::ntex_grpc::types::DefaultValue::Default,
+                dst,
+            );
         }
 
         #[inline]
@@ -438,6 +558,15 @@ mod _priv_impl {
                         ::ntex_grpc::NativeType::deserialize(&mut msg.password, tag, wire_type, src)
                             .map_err(|err| err.push(STRUCT_NAME, "password"))?
                     }
+                    6 => ::ntex_grpc::NativeType::deserialize(&mut msg.role, tag, wire_type, src)
+                        .map_err(|err| err.push(STRUCT_NAME, "role"))?,
+                    7 => ::ntex_grpc::NativeType::deserialize(
+                        &mut msg.expertise,
+                        tag,
+                        wire_type,
+                        src,
+                    )
+                    .map_err(|err| err.push(STRUCT_NAME, "expertise"))?,
                     _ => ::ntex_grpc::encoding::skip_field(wire_type, tag, src)?,
                 }
             }
@@ -466,6 +595,14 @@ mod _priv_impl {
                 &self.password,
                 5,
                 ::ntex_grpc::types::DefaultValue::Default,
+            ) + ::ntex_grpc::NativeType::serialized_len(
+                &self.role,
+                6,
+                ::ntex_grpc::types::DefaultValue::Default,
+            ) + ::ntex_grpc::NativeType::serialized_len(
+                &self.expertise,
+                7,
+                ::ntex_grpc::types::DefaultValue::Default,
             )
         }
     }
@@ -479,6 +616,8 @@ mod _priv_impl {
                 email: ::core::default::Default::default(),
                 phone: ::core::default::Default::default(),
                 password: ::core::default::Default::default(),
+                role: ::core::default::Default::default(),
+                expertise: ::core::default::Default::default(),
             }
         }
     }
@@ -527,6 +666,48 @@ mod _priv_impl {
             Self {
                 id: ::core::default::Default::default(),
             }
+        }
+    }
+
+    impl ::ntex_grpc::NativeType for UserRole {
+        const TYPE: ::ntex_grpc::WireType = ::ntex_grpc::WireType::Varint;
+
+        #[inline]
+        fn merge(
+            &mut self,
+            src: &mut ::ntex_grpc::Bytes,
+        ) -> ::std::result::Result<(), ::ntex_grpc::DecodeError> {
+            *self = ::ntex_grpc::encoding::decode_varint(src)
+                .map(|val| Self::from_i32(val as i32).unwrap_or_default())?;
+            Ok(())
+        }
+
+        #[inline]
+        fn encode_value(&self, dst: &mut ::ntex_grpc::BytesMut) {
+            ::ntex_grpc::encoding::encode_varint(*self as i32 as u64, dst);
+        }
+
+        #[inline]
+        fn encoded_len(&self, tag: u32) -> usize {
+            ::ntex_grpc::encoding::key_len(tag)
+                + ::ntex_grpc::encoding::encoded_len_varint(*self as i32 as u64)
+        }
+
+        #[inline]
+        fn value_len(&self) -> usize {
+            ::ntex_grpc::encoding::encoded_len_varint(*self as i32 as u64)
+        }
+
+        #[inline]
+        fn is_default(&self) -> bool {
+            self == &UserRole::Superadmin
+        }
+    }
+
+    impl ::std::default::Default for UserRole {
+        #[inline]
+        fn default() -> Self {
+            UserRole::Superadmin
         }
     }
 

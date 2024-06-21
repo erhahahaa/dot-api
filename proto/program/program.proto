@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package program;
+
+option go_package = "github.com/dot-coaching/gen/go/program";
+
+import "google/protobuf/timestamp.proto";
+
+message Pricing{
+    string currency = 1;
+    double amount = 2;
+    string type = 3; 
+}
+
+message Coach{
+    uint32 user_id = 1;
+    string role = 2; 
+}
+
+message Program {
+    uint32 id = 1;
+    string name = 2;
+    string description = 3;
+    google.protobuf.Timestamp start_date = 4;
+    google.protobuf.Timestamp end_date = 5;
+    string status = 6; 
+    string created_by = 7;
+    repeated string participants = 8;
+    repeated string coaches = 9;
+    repeated string tags = 10;
+    repeated Pricing pricing = 11;
+
+}
+
+message CreateProgramRequest{
+    string name = 1;
+    string description = 2;
+    google.protobuf.Timestamp start_date = 3;
+    google.protobuf.Timestamp end_date = 4;
+    string status = 5;
+    string created_by = 6;
+    repeated string participants = 7;
+    repeated string coaches = 8;
+    repeated string tags = 9;
+    repeated Pricing pricing = 10;
+}
+
+message GetProgramRequest{
+    uint32 id = 1;
+}
+
+message UpdateProgramRequest {
+    uint32 id = 1;
+    optional string name = 2;
+    optional string description = 3;
+    google.protobuf.Timestamp start_date = 4;
+    google.protobuf.Timestamp end_date = 5;
+    string status = 6; 
+    string created_by = 7;
+    repeated string participants = 8;
+    repeated string coaches = 9;
+    repeated string tags = 10;
+    repeated Pricing pricing = 11;
+}
+
+message DeleteProgramRequest {
+    uint32 id = 1;
+}
+
+message ListProgramRequest {
+    uint32 page = 1;
+    uint32 limit = 2;
+}
+
+message ListProgramResponse {
+    repeated Program programs = 1;
+    uint32 total = 2;
+}
+
+service ProgramService {
+    rpc CreateProgram(CreateProgramRequest) returns (Program) {}
+    rpc GetProgram(GetProgramRequest) returns (Program) {}
+    rpc UpdateProgram(UpdateProgramRequest) returns (Program) {}
+    rpc DeleteProgram(DeleteProgramRequest) returns (Program) {}
+    rpc ListProgram(ListProgramRequest) returns (ListProgramResponse) {}
+}
+

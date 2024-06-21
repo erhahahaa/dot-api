@@ -5,5 +5,4 @@ use (
     ./common 
     ./gen/go
     ./program
-    ./tactical
 )

@@ -3,7 +3,7 @@ use ntex::{
     web::{self, App, Error, HttpResponse, HttpServer, Responder},
 };
 mod grpc;
-use gen_rust::user::CreateUserRequest;
+use gen_rust::user::{CreateUserRequest, UserRole};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
@@ -21,6 +21,8 @@ async fn create_user() -> Result<impl Responder, Error> {
         email: "tokio@serde.dev".into(),
         phone: "66666666".into(),
         password: "password".into(),
+        role: UserRole::Admin,
+        expertise: "volley".into(),
     };
     let client = grpc::user::user_client("127.0.0.1:50051");
 

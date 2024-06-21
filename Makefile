@@ -1,10 +1,12 @@
-.PHONY: gen gen-go-user gen-rust-user all
+.PHONY: gen gen-go gen-rust-user all
 
-gen-go-user:
+gen-go:
 	buf generate
 
-
 gen-rust-user: 
-	ntex-grpc proto/user/user.proto user.rs --out-dir ./gen/rust/src --include-dir ./proto/
+	ntex-grpc proto/user/user.proto user.rs --out-dir ./gen/rust --include-dir ./proto/
 
-all: gen-go-user gen-rust-user
+gen-rust-program:
+	ntex-grpc proto/program/program.proto program.rs --out-dir ./gen/rust --include-dir ./proto/
+
+all: gen-go gen-rust-user gen-rust-program

@@ -6,6 +6,11 @@ option go_package = "github.com/dot-coaching/gen/go/user";
 
 import "google/protobuf/timestamp.proto";
 
+enum UserRole {
+    SUPERADMIN = 0;
+    ADMIN = 1;
+    USER = 2;
+}
 
 message User {
     uint32 id = 1;
@@ -13,8 +18,10 @@ message User {
     string email = 3;
     string phone = 4;
     string password = 5;
-    google.protobuf.Timestamp createdAt = 6;
-    google.protobuf.Timestamp updatedAt = 7;
+    UserRole role = 6;
+    string expertise = 7; 
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
 }
 
 message CreateUserRequest {
@@ -22,9 +29,12 @@ message CreateUserRequest {
     string email = 2;
     string phone = 3;
     string password = 4;
+    UserRole role = 5;
+    string expertise = 6;
 } 
+
 message GetUserRequest {
-    string id = 1;
+    uint32 id = 1;
 } 
 
 message UpdateUserRequest {
@@ -33,10 +43,12 @@ message UpdateUserRequest {
     string email = 3;
     string phone = 4;
     string password = 5;
+    UserRole role = 6;
+    string expertise = 7;
 } 
 
 message DeleteUserRequest {
-    string id = 1;
+    uint32 id = 1;
 }
 
 service UserService {

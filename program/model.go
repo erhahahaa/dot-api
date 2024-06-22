@@ -14,6 +14,13 @@ type PricingModel struct {
 	Type     string
 }
 
+type ProgramStatus string
+
+const (
+	Active   ProgramStatus = "active"
+	Inactive ProgramStatus = "inactive"
+)
+
 type ProgramModel struct {
 	gorm.Model
 
@@ -21,7 +28,7 @@ type ProgramModel struct {
 	Description  string
 	StartDate    string
 	EndDate      string
-	Status       string `gorm:"type:enum('active', 'inactive')"`
+	Status       ProgramStatus
 	CreatedBy    uint32
 	Participants []string
 	Coaches      []string
@@ -29,11 +36,20 @@ type ProgramModel struct {
 	Pricings     []PricingModel
 }
 
+type QuestionType string
+
+const (
+	MultipleChoice QuestionType = "multiple_choice"
+	TrueFalse      QuestionType = "true_false"
+	ShortAnswer    QuestionType = "short_answer"
+	Essat          QuestionType = "essay"
+)
+
 type QuestionModel struct {
 	gorm.Model
 
 	Text          string
-	Type          string `gorm:"type:enum('multiple_choice', 'true_false', 'short_answer', 'essay')"`
+	Type          QuestionType
 	CorrectAnswer sql.NullString
 	Explanation   sql.NullString
 	Choices       []string

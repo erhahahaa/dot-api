@@ -5,7 +5,10 @@ package exam;
 option go_package = "github.com/dot-coaching/gen/go/exam";
 
 import "google/protobuf/timestamp.proto";
-import "common/common.proto";
+
+message GetByIdRequest {
+  uint32 id = 1;
+}
 
 enum QuestionType {
   MULTIPLE_CHOICE = 0;
@@ -51,7 +54,7 @@ message UpdateQuestionRequest {
 
 service QuestionService {
   rpc CreateQuestion(CreateQuestionRequest) returns (Question) {}
-  rpc GetQuestion(common.GetByIdRequest) returns (Question) {}
+  rpc GetQuestion(GetByIdRequest) returns (Question) {}
   rpc UpdateQuestion(UpdateQuestionRequest) returns (Question) {}
-  rpc DeleteQuestion(common.GetByIdRequest) returns (Question) {}
+  rpc DeleteQuestion(GetByIdRequest) returns (Question) {}
 }

@@ -8,7 +8,6 @@ package exam
 
 import (
 	context "context"
-	common "github.com/dot-coaching/gen/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -31,9 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QuestionServiceClient interface {
 	CreateQuestion(ctx context.Context, in *CreateQuestionRequest, opts ...grpc.CallOption) (*Question, error)
-	GetQuestion(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Question, error)
+	GetQuestion(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Question, error)
 	UpdateQuestion(ctx context.Context, in *UpdateQuestionRequest, opts ...grpc.CallOption) (*Question, error)
-	DeleteQuestion(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Question, error)
+	DeleteQuestion(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Question, error)
 }
 
 type questionServiceClient struct {
@@ -54,7 +53,7 @@ func (c *questionServiceClient) CreateQuestion(ctx context.Context, in *CreateQu
 	return out, nil
 }
 
-func (c *questionServiceClient) GetQuestion(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Question, error) {
+func (c *questionServiceClient) GetQuestion(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Question, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Question)
 	err := c.cc.Invoke(ctx, QuestionService_GetQuestion_FullMethodName, in, out, cOpts...)
@@ -74,7 +73,7 @@ func (c *questionServiceClient) UpdateQuestion(ctx context.Context, in *UpdateQu
 	return out, nil
 }
 
-func (c *questionServiceClient) DeleteQuestion(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Question, error) {
+func (c *questionServiceClient) DeleteQuestion(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Question, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Question)
 	err := c.cc.Invoke(ctx, QuestionService_DeleteQuestion_FullMethodName, in, out, cOpts...)
@@ -89,9 +88,9 @@ func (c *questionServiceClient) DeleteQuestion(ctx context.Context, in *common.G
 // for forward compatibility
 type QuestionServiceServer interface {
 	CreateQuestion(context.Context, *CreateQuestionRequest) (*Question, error)
-	GetQuestion(context.Context, *common.GetByIdRequest) (*Question, error)
+	GetQuestion(context.Context, *GetByIdRequest) (*Question, error)
 	UpdateQuestion(context.Context, *UpdateQuestionRequest) (*Question, error)
-	DeleteQuestion(context.Context, *common.GetByIdRequest) (*Question, error)
+	DeleteQuestion(context.Context, *GetByIdRequest) (*Question, error)
 	mustEmbedUnimplementedQuestionServiceServer()
 }
 
@@ -102,13 +101,13 @@ type UnimplementedQuestionServiceServer struct {
 func (UnimplementedQuestionServiceServer) CreateQuestion(context.Context, *CreateQuestionRequest) (*Question, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateQuestion not implemented")
 }
-func (UnimplementedQuestionServiceServer) GetQuestion(context.Context, *common.GetByIdRequest) (*Question, error) {
+func (UnimplementedQuestionServiceServer) GetQuestion(context.Context, *GetByIdRequest) (*Question, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetQuestion not implemented")
 }
 func (UnimplementedQuestionServiceServer) UpdateQuestion(context.Context, *UpdateQuestionRequest) (*Question, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateQuestion not implemented")
 }
-func (UnimplementedQuestionServiceServer) DeleteQuestion(context.Context, *common.GetByIdRequest) (*Question, error) {
+func (UnimplementedQuestionServiceServer) DeleteQuestion(context.Context, *GetByIdRequest) (*Question, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteQuestion not implemented")
 }
 func (UnimplementedQuestionServiceServer) mustEmbedUnimplementedQuestionServiceServer() {}
@@ -143,7 +142,7 @@ func _QuestionService_CreateQuestion_Handler(srv interface{}, ctx context.Contex
 }
 
 func _QuestionService_GetQuestion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common.GetByIdRequest)
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -155,7 +154,7 @@ func _QuestionService_GetQuestion_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: QuestionService_GetQuestion_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QuestionServiceServer).GetQuestion(ctx, req.(*common.GetByIdRequest))
+		return srv.(QuestionServiceServer).GetQuestion(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -179,7 +178,7 @@ func _QuestionService_UpdateQuestion_Handler(srv interface{}, ctx context.Contex
 }
 
 func _QuestionService_DeleteQuestion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common.GetByIdRequest)
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -191,7 +190,7 @@ func _QuestionService_DeleteQuestion_Handler(srv interface{}, ctx context.Contex
 		FullMethod: QuestionService_DeleteQuestion_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QuestionServiceServer).DeleteQuestion(ctx, req.(*common.GetByIdRequest))
+		return srv.(QuestionServiceServer).DeleteQuestion(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -8,7 +8,6 @@ package program
 
 import (
 	context "context"
-	common "github.com/dot-coaching/gen/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -32,9 +31,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProgramServiceClient interface {
 	CreateProgram(ctx context.Context, in *CreateProgramRequest, opts ...grpc.CallOption) (*Program, error)
-	GetProgram(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Program, error)
+	GetProgram(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Program, error)
 	UpdateProgram(ctx context.Context, in *UpdateProgramRequest, opts ...grpc.CallOption) (*Program, error)
-	DeleteProgram(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Program, error)
+	DeleteProgram(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Program, error)
 	ListProgram(ctx context.Context, in *ListProgramRequest, opts ...grpc.CallOption) (*ListProgramResponse, error)
 }
 
@@ -56,7 +55,7 @@ func (c *programServiceClient) CreateProgram(ctx context.Context, in *CreateProg
 	return out, nil
 }
 
-func (c *programServiceClient) GetProgram(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Program, error) {
+func (c *programServiceClient) GetProgram(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Program, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Program)
 	err := c.cc.Invoke(ctx, ProgramService_GetProgram_FullMethodName, in, out, cOpts...)
@@ -76,7 +75,7 @@ func (c *programServiceClient) UpdateProgram(ctx context.Context, in *UpdateProg
 	return out, nil
 }
 
-func (c *programServiceClient) DeleteProgram(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Program, error) {
+func (c *programServiceClient) DeleteProgram(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Program, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Program)
 	err := c.cc.Invoke(ctx, ProgramService_DeleteProgram_FullMethodName, in, out, cOpts...)
@@ -101,9 +100,9 @@ func (c *programServiceClient) ListProgram(ctx context.Context, in *ListProgramR
 // for forward compatibility
 type ProgramServiceServer interface {
 	CreateProgram(context.Context, *CreateProgramRequest) (*Program, error)
-	GetProgram(context.Context, *common.GetByIdRequest) (*Program, error)
+	GetProgram(context.Context, *GetByIdRequest) (*Program, error)
 	UpdateProgram(context.Context, *UpdateProgramRequest) (*Program, error)
-	DeleteProgram(context.Context, *common.GetByIdRequest) (*Program, error)
+	DeleteProgram(context.Context, *GetByIdRequest) (*Program, error)
 	ListProgram(context.Context, *ListProgramRequest) (*ListProgramResponse, error)
 	mustEmbedUnimplementedProgramServiceServer()
 }
@@ -115,13 +114,13 @@ type UnimplementedProgramServiceServer struct {
 func (UnimplementedProgramServiceServer) CreateProgram(context.Context, *CreateProgramRequest) (*Program, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProgram not implemented")
 }
-func (UnimplementedProgramServiceServer) GetProgram(context.Context, *common.GetByIdRequest) (*Program, error) {
+func (UnimplementedProgramServiceServer) GetProgram(context.Context, *GetByIdRequest) (*Program, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProgram not implemented")
 }
 func (UnimplementedProgramServiceServer) UpdateProgram(context.Context, *UpdateProgramRequest) (*Program, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProgram not implemented")
 }
-func (UnimplementedProgramServiceServer) DeleteProgram(context.Context, *common.GetByIdRequest) (*Program, error) {
+func (UnimplementedProgramServiceServer) DeleteProgram(context.Context, *GetByIdRequest) (*Program, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteProgram not implemented")
 }
 func (UnimplementedProgramServiceServer) ListProgram(context.Context, *ListProgramRequest) (*ListProgramResponse, error) {
@@ -159,7 +158,7 @@ func _ProgramService_CreateProgram_Handler(srv interface{}, ctx context.Context,
 }
 
 func _ProgramService_GetProgram_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common.GetByIdRequest)
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -171,7 +170,7 @@ func _ProgramService_GetProgram_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: ProgramService_GetProgram_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProgramServiceServer).GetProgram(ctx, req.(*common.GetByIdRequest))
+		return srv.(ProgramServiceServer).GetProgram(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -195,7 +194,7 @@ func _ProgramService_UpdateProgram_Handler(srv interface{}, ctx context.Context,
 }
 
 func _ProgramService_DeleteProgram_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common.GetByIdRequest)
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -207,7 +206,7 @@ func _ProgramService_DeleteProgram_Handler(srv interface{}, ctx context.Context,
 		FullMethod: ProgramService_DeleteProgram_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProgramServiceServer).DeleteProgram(ctx, req.(*common.GetByIdRequest))
+		return srv.(ProgramServiceServer).DeleteProgram(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

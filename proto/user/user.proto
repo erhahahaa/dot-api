@@ -5,8 +5,10 @@ package user;
 option go_package = "github.com/dot-coaching/gen/go/user";
 
 import "google/protobuf/timestamp.proto";
-import "common/common.proto";
 
+message GetByIdRequest {
+  uint32 id = 1;
+}
 enum UserRole {
   SUPERADMIN = 0;
   ADMIN      = 1;
@@ -18,20 +20,26 @@ message User {
   string name                         = 2;
   string email                        = 3;
   string phone                        = 4;
-  string password                     = 5;
+  optional string password            = 5;
   UserRole role                       = 6;
   string expertise                    = 7;
   google.protobuf.Timestamp createdAt = 8;
   google.protobuf.Timestamp updatedAt = 9;
+  optional string token               = 10;
 }
 
-message CreateUserRequest {
+message RegisterRequest {
   string name      = 1;
   string email     = 2;
   string phone     = 3;
   string password  = 4;
   UserRole role    = 5;
   string expertise = 6;
+}
+
+message LoginRequest {
+  string email    = 1;
+  string password = 2;
 }
 
 message UpdateUserRequest {
@@ -45,8 +53,9 @@ message UpdateUserRequest {
 }
 
 service UserService {
-  rpc CreateUser(CreateUserRequest) returns (User);
-  rpc GetUser(common.GetByIdRequest) returns (User);
+  rpc Register(RegisterRequest) returns (User);
+  rpc Login(LoginRequest) returns (User);
+  rpc GetUser(GetByIdRequest) returns (User);
   rpc UpdateUser(UpdateUserRequest) returns (User);
-  rpc DeleteUser(common.GetByIdRequest) returns (User);
+  rpc DeleteUser(GetByIdRequest) returns (User);
 }

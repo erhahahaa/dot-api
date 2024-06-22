@@ -8,7 +8,6 @@ package exam
 
 import (
 	context "context"
-	common "github.com/dot-coaching/gen/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -31,9 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ExamServiceClient interface {
 	CreateExam(ctx context.Context, in *CreateExamRequest, opts ...grpc.CallOption) (*Exam, error)
-	GetExam(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Exam, error)
+	GetExam(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Exam, error)
 	UpdateExam(ctx context.Context, in *UpdateExamRequest, opts ...grpc.CallOption) (*Exam, error)
-	DeleteExam(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Exam, error)
+	DeleteExam(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Exam, error)
 }
 
 type examServiceClient struct {
@@ -54,7 +53,7 @@ func (c *examServiceClient) CreateExam(ctx context.Context, in *CreateExamReques
 	return out, nil
 }
 
-func (c *examServiceClient) GetExam(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Exam, error) {
+func (c *examServiceClient) GetExam(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Exam, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Exam)
 	err := c.cc.Invoke(ctx, ExamService_GetExam_FullMethodName, in, out, cOpts...)
@@ -74,7 +73,7 @@ func (c *examServiceClient) UpdateExam(ctx context.Context, in *UpdateExamReques
 	return out, nil
 }
 
-func (c *examServiceClient) DeleteExam(ctx context.Context, in *common.GetByIdRequest, opts ...grpc.CallOption) (*Exam, error) {
+func (c *examServiceClient) DeleteExam(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*Exam, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Exam)
 	err := c.cc.Invoke(ctx, ExamService_DeleteExam_FullMethodName, in, out, cOpts...)
@@ -89,9 +88,9 @@ func (c *examServiceClient) DeleteExam(ctx context.Context, in *common.GetByIdRe
 // for forward compatibility
 type ExamServiceServer interface {
 	CreateExam(context.Context, *CreateExamRequest) (*Exam, error)
-	GetExam(context.Context, *common.GetByIdRequest) (*Exam, error)
+	GetExam(context.Context, *GetByIdRequest) (*Exam, error)
 	UpdateExam(context.Context, *UpdateExamRequest) (*Exam, error)
-	DeleteExam(context.Context, *common.GetByIdRequest) (*Exam, error)
+	DeleteExam(context.Context, *GetByIdRequest) (*Exam, error)
 	mustEmbedUnimplementedExamServiceServer()
 }
 
@@ -102,13 +101,13 @@ type UnimplementedExamServiceServer struct {
 func (UnimplementedExamServiceServer) CreateExam(context.Context, *CreateExamRequest) (*Exam, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateExam not implemented")
 }
-func (UnimplementedExamServiceServer) GetExam(context.Context, *common.GetByIdRequest) (*Exam, error) {
+func (UnimplementedExamServiceServer) GetExam(context.Context, *GetByIdRequest) (*Exam, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetExam not implemented")
 }
 func (UnimplementedExamServiceServer) UpdateExam(context.Context, *UpdateExamRequest) (*Exam, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateExam not implemented")
 }
-func (UnimplementedExamServiceServer) DeleteExam(context.Context, *common.GetByIdRequest) (*Exam, error) {
+func (UnimplementedExamServiceServer) DeleteExam(context.Context, *GetByIdRequest) (*Exam, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteExam not implemented")
 }
 func (UnimplementedExamServiceServer) mustEmbedUnimplementedExamServiceServer() {}
@@ -143,7 +142,7 @@ func _ExamService_CreateExam_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _ExamService_GetExam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common.GetByIdRequest)
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -155,7 +154,7 @@ func _ExamService_GetExam_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: ExamService_GetExam_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExamServiceServer).GetExam(ctx, req.(*common.GetByIdRequest))
+		return srv.(ExamServiceServer).GetExam(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -179,7 +178,7 @@ func _ExamService_UpdateExam_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _ExamService_DeleteExam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common.GetByIdRequest)
+	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -191,7 +190,7 @@ func _ExamService_DeleteExam_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: ExamService_DeleteExam_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExamServiceServer).DeleteExam(ctx, req.(*common.GetByIdRequest))
+		return srv.(ExamServiceServer).DeleteExam(ctx, req.(*GetByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

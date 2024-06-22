@@ -4,8 +4,11 @@ package program;
 
 option go_package = "github.com/dot-coaching/gen/go/program";
 
-import "common/common.proto";
 import "google/protobuf/timestamp.proto";
+
+message GetByIdRequest {
+  uint32 id = 1;
+}
 
 message Pricing {
   uint32 id       = 1;
@@ -74,8 +77,8 @@ message ListProgramResponse {
 
 service ProgramService {
   rpc CreateProgram(CreateProgramRequest) returns (Program) {}
-  rpc GetProgram(common.GetByIdRequest) returns (Program) {}
+  rpc GetProgram(GetByIdRequest) returns (Program) {}
   rpc UpdateProgram(UpdateProgramRequest) returns (Program) {}
-  rpc DeleteProgram(common.GetByIdRequest) returns (Program) {}
+  rpc DeleteProgram(GetByIdRequest) returns (Program) {}
   rpc ListProgram(ListProgramRequest) returns (ListProgramResponse) {}
 }

@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package common;
-
-option go_package = "github.com/dot-coaching/gen/go/common";
-
-message GetByIdRequest {
-  uint32 id = 1;
-}

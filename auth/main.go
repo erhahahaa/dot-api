@@ -19,9 +19,9 @@ func main() {
 	server := grpc.NewServer()
 
 	store := NewUserStore()
-	service := NewUserService(*store)
+	// service := NewUserService(*store)
 
-	NewUserServer(server, *service)
+	NewUserServer(server, *store)
 
 	if err := server.Serve(lis); err != nil {
 		log.Fatalf("[AUTH SERVICE] server error: %v", err)

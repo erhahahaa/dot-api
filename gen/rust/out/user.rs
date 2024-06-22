@@ -34,11 +34,6 @@ pub struct CreateUserRequest {
 }
 
 #[derive(Clone, PartialEq, Debug)]
-pub struct GetUserRequest {
-    pub id: u32,
-}
-
-#[derive(Clone, PartialEq, Debug)]
 pub struct UpdateUserRequest {
     pub id: ::ntex_grpc::ByteString,
     pub name: ::ntex_grpc::ByteString,
@@ -47,11 +42,6 @@ pub struct UpdateUserRequest {
     pub password: ::ntex_grpc::ByteString,
     pub role: UserRole,
     pub expertise: ::ntex_grpc::ByteString,
-}
-
-#[derive(Clone, PartialEq, Debug)]
-pub struct DeleteUserRequest {
-    pub id: u32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -127,7 +117,7 @@ impl ::ntex_grpc::MethodDef for UserServiceGetUserMethod {
     const NAME: &'static str = "GetUser";
     const PATH: ::ntex_grpc::ByteString =
         ::ntex_grpc::ByteString::from_static("/user.UserService/GetUser");
-    type Input = GetUserRequest;
+    type Input = super::common::GetByIdRequest;
     type Output = User;
 }
 
@@ -149,7 +139,7 @@ impl ::ntex_grpc::MethodDef for UserServiceDeleteUserMethod {
     const NAME: &'static str = "DeleteUser";
     const PATH: ::ntex_grpc::ByteString =
         ::ntex_grpc::ByteString::from_static("/user.UserService/DeleteUser");
-    type Input = DeleteUserRequest;
+    type Input = super::common::GetByIdRequest;
     type Output = User;
 }
 
@@ -443,53 +433,6 @@ mod _priv_impl {
         }
     }
 
-    impl ::ntex_grpc::Message for GetUserRequest {
-        #[inline]
-        fn write(&self, dst: &mut ::ntex_grpc::BytesMut) {
-            ::ntex_grpc::NativeType::serialize(
-                &self.id,
-                1,
-                ::ntex_grpc::types::DefaultValue::Default,
-                dst,
-            );
-        }
-
-        #[inline]
-        fn read(
-            src: &mut ::ntex_grpc::Bytes,
-        ) -> ::std::result::Result<Self, ::ntex_grpc::DecodeError> {
-            const STRUCT_NAME: &str = "GetUserRequest";
-            let mut msg = Self::default();
-            while !src.is_empty() {
-                let (tag, wire_type) = ::ntex_grpc::encoding::decode_key(src)?;
-                match tag {
-                    1 => ::ntex_grpc::NativeType::deserialize(&mut msg.id, tag, wire_type, src)
-                        .map_err(|err| err.push(STRUCT_NAME, "id"))?,
-                    _ => ::ntex_grpc::encoding::skip_field(wire_type, tag, src)?,
-                }
-            }
-            Ok(msg)
-        }
-
-        #[inline]
-        fn encoded_len(&self) -> usize {
-            0 + ::ntex_grpc::NativeType::serialized_len(
-                &self.id,
-                1,
-                ::ntex_grpc::types::DefaultValue::Default,
-            )
-        }
-    }
-
-    impl ::std::default::Default for GetUserRequest {
-        #[inline]
-        fn default() -> Self {
-            Self {
-                id: ::core::default::Default::default(),
-            }
-        }
-    }
-
     impl ::ntex_grpc::Message for UpdateUserRequest {
         #[inline]
         fn write(&self, dst: &mut ::ntex_grpc::BytesMut) {
@@ -622,53 +565,6 @@ mod _priv_impl {
         }
     }
 
-    impl ::ntex_grpc::Message for DeleteUserRequest {
-        #[inline]
-        fn write(&self, dst: &mut ::ntex_grpc::BytesMut) {
-            ::ntex_grpc::NativeType::serialize(
-                &self.id,
-                1,
-                ::ntex_grpc::types::DefaultValue::Default,
-                dst,
-            );
-        }
-
-        #[inline]
-        fn read(
-            src: &mut ::ntex_grpc::Bytes,
-        ) -> ::std::result::Result<Self, ::ntex_grpc::DecodeError> {
-            const STRUCT_NAME: &str = "DeleteUserRequest";
-            let mut msg = Self::default();
-            while !src.is_empty() {
-                let (tag, wire_type) = ::ntex_grpc::encoding::decode_key(src)?;
-                match tag {
-                    1 => ::ntex_grpc::NativeType::deserialize(&mut msg.id, tag, wire_type, src)
-                        .map_err(|err| err.push(STRUCT_NAME, "id"))?,
-                    _ => ::ntex_grpc::encoding::skip_field(wire_type, tag, src)?,
-                }
-            }
-            Ok(msg)
-        }
-
-        #[inline]
-        fn encoded_len(&self) -> usize {
-            0 + ::ntex_grpc::NativeType::serialized_len(
-                &self.id,
-                1,
-                ::ntex_grpc::types::DefaultValue::Default,
-            )
-        }
-    }
-
-    impl ::std::default::Default for DeleteUserRequest {
-        #[inline]
-        fn default() -> Self {
-            Self {
-                id: ::core::default::Default::default(),
-            }
-        }
-    }
-
     impl ::ntex_grpc::NativeType for UserRole {
         const TYPE: ::ntex_grpc::WireType = ::ntex_grpc::WireType::Varint;
 
@@ -782,7 +678,7 @@ mod _priv_impl {
     impl<T: ::ntex_grpc::client::Transport<UserServiceGetUserMethod>> UserServiceClient<T> {
         pub fn get_user<'a>(
             &'a self,
-            req: &'a super::GetUserRequest,
+            req: &'a super::super::common::GetByIdRequest,
         ) -> ::ntex_grpc::client::Request<'a, T, UserServiceGetUserMethod> {
             ::ntex_grpc::client::Request::new(&self.0, req)
         }
@@ -800,7 +696,7 @@ mod _priv_impl {
     impl<T: ::ntex_grpc::client::Transport<UserServiceDeleteUserMethod>> UserServiceClient<T> {
         pub fn delete_user<'a>(
             &'a self,
-            req: &'a super::DeleteUserRequest,
+            req: &'a super::super::common::GetByIdRequest,
         ) -> ::ntex_grpc::client::Request<'a, T, UserServiceDeleteUserMethod> {
             ::ntex_grpc::client::Request::new(&self.0, req)
         }

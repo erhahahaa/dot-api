@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package exam;
+
+option go_package = "github.com/dot-coaching/gen/go/exam";
+
+import "google/protobuf/timestamp.proto";
+import "common/common.proto";
+import "exam/question.proto";
+
+message Exam {
+  uint32 id                           = 1;
+  string name                         = 2;
+  uint32 duration                     = 3;  // duration in minutes
+  repeated exam.Question questions    = 4;
+  uint32 programId                    = 5;
+  google.protobuf.Timestamp createdAt = 6;
+  google.protobuf.Timestamp updatedAt = 7;
+}
+message CreateExamRequest {
+  string name                                   = 1;
+  uint32 duration                               = 2;
+  repeated exam.CreateQuestionRequest questions = 3;
+  uint32 programId                              = 4;
+}
+
+message UpdateExamRequest {
+  uint32 id                                     = 1;
+  string name                                   = 2;
+  uint32 duration                               = 3;
+  repeated exam.UpdateQuestionRequest questions = 4;
+  uint32 programId                              = 5;
+}
+
+message ListQuestionsRequest {
+  uint32 examId    = 1;
+  uint32 programId = 2;
+}
+
+service ExamService {
+  rpc CreateExam(CreateExamRequest) returns (Exam);
+  rpc GetExam(common.GetByIdRequest) returns (Exam);
+  rpc UpdateExam(UpdateExamRequest) returns (Exam);
+  rpc DeleteExam(common.GetByIdRequest) returns (Exam);
+}

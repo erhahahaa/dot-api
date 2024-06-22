@@ -3,19 +3,11 @@ package main
 import (
 	"context"
 
+	common "github.com/dot-coaching/gen/go/common"
 	pb "github.com/dot-coaching/gen/go/user"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
-
-type UserModel struct {
-	gorm.Model
- 
-	Name     string
-	Email    string
-	Phone    string
-	Password string
-}
 
 type UserStore struct {
 	db *gorm.DB
@@ -50,7 +42,7 @@ func (s *UserStore) CreateUser(ctx context.Context, body *pb.CreateUserRequest) 
 	}, nil
 }
 
-func (s *UserStore) GetUser(ctx context.Context, body *pb.GetUserRequest) (*pb.User, error) {
+func (s *UserStore) GetUser(ctx context.Context, body *common.GetByIdRequest) (*pb.User, error) {
 	var user UserModel
 	err := s.db.First(&user, "id = ?", body.Id).Error
 	if err != nil {
@@ -84,7 +76,7 @@ func (s *UserStore) UpdateUser(ctx context.Context, body *pb.UpdateUserRequest) 
 	}, nil
 }
 
-func (s *UserStore) DeleteUser(ctx context.Context, body *pb.DeleteUserRequest) (*pb.User, error) {
+func (s *UserStore) DeleteUser(ctx context.Context, body *common.GetByIdRequest) (*pb.User, error) {
 	var user UserModel
 	err := s.db.First(&user, "id = ?", body.Id).Error
 	if err != nil {

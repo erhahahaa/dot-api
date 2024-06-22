@@ -18,6 +18,12 @@ pub struct Pricing {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+pub struct Coach {
+    pub user_id: u32,
+    pub role: ::ntex_grpc::ByteString,
+}
+
+#[derive(Clone, PartialEq, Debug)]
 pub struct Program {
     pub id: u32,
     pub name: ::ntex_grpc::ByteString,
@@ -25,7 +31,6 @@ pub struct Program {
     pub start_date: ::ntex_grpc::google_types::Timestamp,
     pub end_date: ::ntex_grpc::google_types::Timestamp,
     pub status: ::ntex_grpc::ByteString,
-    pub owner_id: ::ntex_grpc::ByteString,
     pub created_by: ::ntex_grpc::ByteString,
     pub participants: Vec<::ntex_grpc::ByteString>,
     pub coaches: Vec<::ntex_grpc::ByteString>,
@@ -42,7 +47,6 @@ pub struct CreateProgramRequest {
     pub start_date: ::ntex_grpc::google_types::Timestamp,
     pub end_date: ::ntex_grpc::google_types::Timestamp,
     pub status: ::ntex_grpc::ByteString,
-    pub owner_id: ::ntex_grpc::ByteString,
     pub created_by: ::ntex_grpc::ByteString,
     pub participants: Vec<::ntex_grpc::ByteString>,
     pub coaches: Vec<::ntex_grpc::ByteString>,
@@ -63,7 +67,6 @@ pub struct UpdateProgramRequest {
     pub start_date: ::ntex_grpc::google_types::Timestamp,
     pub end_date: ::ntex_grpc::google_types::Timestamp,
     pub status: ::ntex_grpc::ByteString,
-    pub owner_id: ::ntex_grpc::ByteString,
     pub created_by: ::ntex_grpc::ByteString,
     pub participants: Vec<::ntex_grpc::ByteString>,
     pub coaches: Vec<::ntex_grpc::ByteString>,
@@ -78,7 +81,7 @@ pub struct DeleteProgramRequest {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct ListProgramRequest {
-    pub page: u32,
+    pub cursor: u32,
     pub limit: u32,
 }
 
@@ -86,6 +89,7 @@ pub struct ListProgramRequest {
 pub struct ListProgramResponse {
     pub programs: Vec<Program>,
     pub total: u32,
+    pub cursor: u32,
 }
 
 /// `ProgramService` service definition
@@ -237,6 +241,68 @@ mod _priv_impl {
         }
     }
 
+    impl ::ntex_grpc::Message for Coach {
+        #[inline]
+        fn write(&self, dst: &mut ::ntex_grpc::BytesMut) {
+            ::ntex_grpc::NativeType::serialize(
+                &self.user_id,
+                1,
+                ::ntex_grpc::types::DefaultValue::Default,
+                dst,
+            );
+            ::ntex_grpc::NativeType::serialize(
+                &self.role,
+                2,
+                ::ntex_grpc::types::DefaultValue::Default,
+                dst,
+            );
+        }
+
+        #[inline]
+        fn read(
+            src: &mut ::ntex_grpc::Bytes,
+        ) -> ::std::result::Result<Self, ::ntex_grpc::DecodeError> {
+            const STRUCT_NAME: &str = "Coach";
+            let mut msg = Self::default();
+            while !src.is_empty() {
+                let (tag, wire_type) = ::ntex_grpc::encoding::decode_key(src)?;
+                match tag {
+                    1 => {
+                        ::ntex_grpc::NativeType::deserialize(&mut msg.user_id, tag, wire_type, src)
+                            .map_err(|err| err.push(STRUCT_NAME, "user_id"))?
+                    }
+                    2 => ::ntex_grpc::NativeType::deserialize(&mut msg.role, tag, wire_type, src)
+                        .map_err(|err| err.push(STRUCT_NAME, "role"))?,
+                    _ => ::ntex_grpc::encoding::skip_field(wire_type, tag, src)?,
+                }
+            }
+            Ok(msg)
+        }
+
+        #[inline]
+        fn encoded_len(&self) -> usize {
+            0 + ::ntex_grpc::NativeType::serialized_len(
+                &self.user_id,
+                1,
+                ::ntex_grpc::types::DefaultValue::Default,
+            ) + ::ntex_grpc::NativeType::serialized_len(
+                &self.role,
+                2,
+                ::ntex_grpc::types::DefaultValue::Default,
+            )
+        }
+    }
+
+    impl ::std::default::Default for Coach {
+        #[inline]
+        fn default() -> Self {
+            Self {
+                user_id: ::core::default::Default::default(),
+                role: ::core::default::Default::default(),
+            }
+        }
+    }
+
     impl ::ntex_grpc::Message for Program {
         #[inline]
         fn write(&self, dst: &mut ::ntex_grpc::BytesMut) {
@@ -277,50 +343,44 @@ mod _priv_impl {
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.owner_id,
+                &self.created_by,
                 7,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.created_by,
+                &self.participants,
                 8,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.participants,
+                &self.coaches,
                 9,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.coaches,
+                &self.tags,
                 10,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.tags,
+                &self.pricing,
                 11,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.pricing,
+                &self.created_at,
                 12,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.created_at,
-                13,
-                ::ntex_grpc::types::DefaultValue::Default,
-                dst,
-            );
-            ::ntex_grpc::NativeType::serialize(
                 &self.updated_at,
-                14,
+                13,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
@@ -359,42 +419,38 @@ mod _priv_impl {
                     }
                     6 => ::ntex_grpc::NativeType::deserialize(&mut msg.status, tag, wire_type, src)
                         .map_err(|err| err.push(STRUCT_NAME, "status"))?,
-                    7 => {
-                        ::ntex_grpc::NativeType::deserialize(&mut msg.owner_id, tag, wire_type, src)
-                            .map_err(|err| err.push(STRUCT_NAME, "owner_id"))?
-                    }
-                    8 => ::ntex_grpc::NativeType::deserialize(
+                    7 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.created_by,
                         tag,
                         wire_type,
                         src,
                     )
                     .map_err(|err| err.push(STRUCT_NAME, "created_by"))?,
-                    9 => ::ntex_grpc::NativeType::deserialize(
+                    8 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.participants,
                         tag,
                         wire_type,
                         src,
                     )
                     .map_err(|err| err.push(STRUCT_NAME, "participants"))?,
-                    10 => {
+                    9 => {
                         ::ntex_grpc::NativeType::deserialize(&mut msg.coaches, tag, wire_type, src)
                             .map_err(|err| err.push(STRUCT_NAME, "coaches"))?
                     }
-                    11 => ::ntex_grpc::NativeType::deserialize(&mut msg.tags, tag, wire_type, src)
+                    10 => ::ntex_grpc::NativeType::deserialize(&mut msg.tags, tag, wire_type, src)
                         .map_err(|err| err.push(STRUCT_NAME, "tags"))?,
-                    12 => {
+                    11 => {
                         ::ntex_grpc::NativeType::deserialize(&mut msg.pricing, tag, wire_type, src)
                             .map_err(|err| err.push(STRUCT_NAME, "pricing"))?
                     }
-                    13 => ::ntex_grpc::NativeType::deserialize(
+                    12 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.created_at,
                         tag,
                         wire_type,
                         src,
                     )
                     .map_err(|err| err.push(STRUCT_NAME, "created_at"))?,
-                    14 => ::ntex_grpc::NativeType::deserialize(
+                    13 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.updated_at,
                         tag,
                         wire_type,
@@ -434,36 +490,32 @@ mod _priv_impl {
                 6,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.owner_id,
+                &self.created_by,
                 7,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.created_by,
+                &self.participants,
                 8,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.participants,
+                &self.coaches,
                 9,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.coaches,
+                &self.tags,
                 10,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.tags,
+                &self.pricing,
                 11,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.pricing,
+                &self.created_at,
                 12,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.created_at,
-                13,
-                ::ntex_grpc::types::DefaultValue::Default,
-            ) + ::ntex_grpc::NativeType::serialized_len(
                 &self.updated_at,
-                14,
+                13,
                 ::ntex_grpc::types::DefaultValue::Default,
             )
         }
@@ -479,7 +531,6 @@ mod _priv_impl {
                 start_date: ::core::default::Default::default(),
                 end_date: ::core::default::Default::default(),
                 status: ::core::default::Default::default(),
-                owner_id: ::core::default::Default::default(),
                 created_by: ::core::default::Default::default(),
                 participants: ::core::default::Default::default(),
                 coaches: ::core::default::Default::default(),
@@ -525,38 +576,32 @@ mod _priv_impl {
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.owner_id,
+                &self.created_by,
                 6,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.created_by,
+                &self.participants,
                 7,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.participants,
+                &self.coaches,
                 8,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.coaches,
+                &self.tags,
                 9,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.tags,
-                10,
-                ::ntex_grpc::types::DefaultValue::Default,
-                dst,
-            );
-            ::ntex_grpc::NativeType::serialize(
                 &self.pricing,
-                11,
+                10,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
@@ -593,31 +638,27 @@ mod _priv_impl {
                     }
                     5 => ::ntex_grpc::NativeType::deserialize(&mut msg.status, tag, wire_type, src)
                         .map_err(|err| err.push(STRUCT_NAME, "status"))?,
-                    6 => {
-                        ::ntex_grpc::NativeType::deserialize(&mut msg.owner_id, tag, wire_type, src)
-                            .map_err(|err| err.push(STRUCT_NAME, "owner_id"))?
-                    }
-                    7 => ::ntex_grpc::NativeType::deserialize(
+                    6 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.created_by,
                         tag,
                         wire_type,
                         src,
                     )
                     .map_err(|err| err.push(STRUCT_NAME, "created_by"))?,
-                    8 => ::ntex_grpc::NativeType::deserialize(
+                    7 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.participants,
                         tag,
                         wire_type,
                         src,
                     )
                     .map_err(|err| err.push(STRUCT_NAME, "participants"))?,
-                    9 => {
+                    8 => {
                         ::ntex_grpc::NativeType::deserialize(&mut msg.coaches, tag, wire_type, src)
                             .map_err(|err| err.push(STRUCT_NAME, "coaches"))?
                     }
-                    10 => ::ntex_grpc::NativeType::deserialize(&mut msg.tags, tag, wire_type, src)
+                    9 => ::ntex_grpc::NativeType::deserialize(&mut msg.tags, tag, wire_type, src)
                         .map_err(|err| err.push(STRUCT_NAME, "tags"))?,
-                    11 => {
+                    10 => {
                         ::ntex_grpc::NativeType::deserialize(&mut msg.pricing, tag, wire_type, src)
                             .map_err(|err| err.push(STRUCT_NAME, "pricing"))?
                     }
@@ -650,28 +691,24 @@ mod _priv_impl {
                 5,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.owner_id,
+                &self.created_by,
                 6,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.created_by,
+                &self.participants,
                 7,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.participants,
+                &self.coaches,
                 8,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.coaches,
+                &self.tags,
                 9,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.tags,
-                10,
-                ::ntex_grpc::types::DefaultValue::Default,
-            ) + ::ntex_grpc::NativeType::serialized_len(
                 &self.pricing,
-                11,
+                10,
                 ::ntex_grpc::types::DefaultValue::Default,
             )
         }
@@ -686,7 +723,6 @@ mod _priv_impl {
                 start_date: ::core::default::Default::default(),
                 end_date: ::core::default::Default::default(),
                 status: ::core::default::Default::default(),
-                owner_id: ::core::default::Default::default(),
                 created_by: ::core::default::Default::default(),
                 participants: ::core::default::Default::default(),
                 coaches: ::core::default::Default::default(),
@@ -783,38 +819,32 @@ mod _priv_impl {
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.owner_id,
+                &self.created_by,
                 7,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.created_by,
+                &self.participants,
                 8,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.participants,
+                &self.coaches,
                 9,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.coaches,
+                &self.tags,
                 10,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
             ::ntex_grpc::NativeType::serialize(
-                &self.tags,
-                11,
-                ::ntex_grpc::types::DefaultValue::Default,
-                dst,
-            );
-            ::ntex_grpc::NativeType::serialize(
                 &self.pricing,
-                12,
+                11,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
@@ -853,31 +883,27 @@ mod _priv_impl {
                     }
                     6 => ::ntex_grpc::NativeType::deserialize(&mut msg.status, tag, wire_type, src)
                         .map_err(|err| err.push(STRUCT_NAME, "status"))?,
-                    7 => {
-                        ::ntex_grpc::NativeType::deserialize(&mut msg.owner_id, tag, wire_type, src)
-                            .map_err(|err| err.push(STRUCT_NAME, "owner_id"))?
-                    }
-                    8 => ::ntex_grpc::NativeType::deserialize(
+                    7 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.created_by,
                         tag,
                         wire_type,
                         src,
                     )
                     .map_err(|err| err.push(STRUCT_NAME, "created_by"))?,
-                    9 => ::ntex_grpc::NativeType::deserialize(
+                    8 => ::ntex_grpc::NativeType::deserialize(
                         &mut msg.participants,
                         tag,
                         wire_type,
                         src,
                     )
                     .map_err(|err| err.push(STRUCT_NAME, "participants"))?,
-                    10 => {
+                    9 => {
                         ::ntex_grpc::NativeType::deserialize(&mut msg.coaches, tag, wire_type, src)
                             .map_err(|err| err.push(STRUCT_NAME, "coaches"))?
                     }
-                    11 => ::ntex_grpc::NativeType::deserialize(&mut msg.tags, tag, wire_type, src)
+                    10 => ::ntex_grpc::NativeType::deserialize(&mut msg.tags, tag, wire_type, src)
                         .map_err(|err| err.push(STRUCT_NAME, "tags"))?,
-                    12 => {
+                    11 => {
                         ::ntex_grpc::NativeType::deserialize(&mut msg.pricing, tag, wire_type, src)
                             .map_err(|err| err.push(STRUCT_NAME, "pricing"))?
                     }
@@ -914,28 +940,24 @@ mod _priv_impl {
                 6,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.owner_id,
+                &self.created_by,
                 7,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.created_by,
+                &self.participants,
                 8,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.participants,
+                &self.coaches,
                 9,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.coaches,
+                &self.tags,
                 10,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
-                &self.tags,
-                11,
-                ::ntex_grpc::types::DefaultValue::Default,
-            ) + ::ntex_grpc::NativeType::serialized_len(
                 &self.pricing,
-                12,
+                11,
                 ::ntex_grpc::types::DefaultValue::Default,
             )
         }
@@ -951,7 +973,6 @@ mod _priv_impl {
                 start_date: ::core::default::Default::default(),
                 end_date: ::core::default::Default::default(),
                 status: ::core::default::Default::default(),
-                owner_id: ::core::default::Default::default(),
                 created_by: ::core::default::Default::default(),
                 participants: ::core::default::Default::default(),
                 coaches: ::core::default::Default::default(),
@@ -1012,7 +1033,7 @@ mod _priv_impl {
         #[inline]
         fn write(&self, dst: &mut ::ntex_grpc::BytesMut) {
             ::ntex_grpc::NativeType::serialize(
-                &self.page,
+                &self.cursor,
                 1,
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
@@ -1034,8 +1055,8 @@ mod _priv_impl {
             while !src.is_empty() {
                 let (tag, wire_type) = ::ntex_grpc::encoding::decode_key(src)?;
                 match tag {
-                    1 => ::ntex_grpc::NativeType::deserialize(&mut msg.page, tag, wire_type, src)
-                        .map_err(|err| err.push(STRUCT_NAME, "page"))?,
+                    1 => ::ntex_grpc::NativeType::deserialize(&mut msg.cursor, tag, wire_type, src)
+                        .map_err(|err| err.push(STRUCT_NAME, "cursor"))?,
                     2 => ::ntex_grpc::NativeType::deserialize(&mut msg.limit, tag, wire_type, src)
                         .map_err(|err| err.push(STRUCT_NAME, "limit"))?,
                     _ => ::ntex_grpc::encoding::skip_field(wire_type, tag, src)?,
@@ -1047,7 +1068,7 @@ mod _priv_impl {
         #[inline]
         fn encoded_len(&self) -> usize {
             0 + ::ntex_grpc::NativeType::serialized_len(
-                &self.page,
+                &self.cursor,
                 1,
                 ::ntex_grpc::types::DefaultValue::Default,
             ) + ::ntex_grpc::NativeType::serialized_len(
@@ -1062,7 +1083,7 @@ mod _priv_impl {
         #[inline]
         fn default() -> Self {
             Self {
-                page: ::core::default::Default::default(),
+                cursor: ::core::default::Default::default(),
                 limit: ::core::default::Default::default(),
             }
         }
@@ -1083,6 +1104,12 @@ mod _priv_impl {
                 ::ntex_grpc::types::DefaultValue::Default,
                 dst,
             );
+            ::ntex_grpc::NativeType::serialize(
+                &self.cursor,
+                3,
+                ::ntex_grpc::types::DefaultValue::Default,
+                dst,
+            );
         }
 
         #[inline]
@@ -1100,6 +1127,8 @@ mod _priv_impl {
                     }
                     2 => ::ntex_grpc::NativeType::deserialize(&mut msg.total, tag, wire_type, src)
                         .map_err(|err| err.push(STRUCT_NAME, "total"))?,
+                    3 => ::ntex_grpc::NativeType::deserialize(&mut msg.cursor, tag, wire_type, src)
+                        .map_err(|err| err.push(STRUCT_NAME, "cursor"))?,
                     _ => ::ntex_grpc::encoding::skip_field(wire_type, tag, src)?,
                 }
             }
@@ -1116,6 +1145,10 @@ mod _priv_impl {
                 &self.total,
                 2,
                 ::ntex_grpc::types::DefaultValue::Default,
+            ) + ::ntex_grpc::NativeType::serialized_len(
+                &self.cursor,
+                3,
+                ::ntex_grpc::types::DefaultValue::Default,
             )
         }
     }
@@ -1126,6 +1159,7 @@ mod _priv_impl {
             Self {
                 programs: ::core::default::Default::default(),
                 total: ::core::default::Default::default(),
+                cursor: ::core::default::Default::default(),
             }
         }
     }

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	common "github.com/dot-coaching/gen/go/common"
 	pb "github.com/dot-coaching/gen/go/user"
 )
 
@@ -18,7 +19,7 @@ func (s *UserService) CreateUser(ctx context.Context, user *pb.CreateUserRequest
 	return s.store.CreateUser(ctx, user)
 }
 
-func (s *UserService) GetUser(ctx context.Context, body *pb.GetUserRequest) (*pb.User, error) {
+func (s *UserService) GetUser(ctx context.Context, body *common.GetByIdRequest) (*pb.User, error) {
 	return s.store.GetUser(ctx, body)
 }
 
@@ -26,6 +27,6 @@ func (s *UserService) UpdateUser(ctx context.Context, body *pb.UpdateUserRequest
 	return s.store.UpdateUser(ctx, body)
 }
 
-func (s *UserService) DeleteUser(ctx context.Context, body *pb.DeleteUserRequest) (*pb.User, error) {
+func (s *UserService) DeleteUser(ctx context.Context, body *common.GetByIdRequest) (*pb.User, error) {
 	return s.store.DeleteUser(ctx, body)
 }

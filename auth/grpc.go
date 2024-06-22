@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	common "github.com/dot-coaching/gen/go/common"
 	pb "github.com/dot-coaching/gen/go/user"
 	"google.golang.org/grpc"
 )
@@ -24,7 +25,7 @@ func (s *UserServer) CreateUser(ctx context.Context, body *pb.CreateUserRequest)
 	return s.service.CreateUser(ctx, body)
 }
 
-func (s *UserServer) GetUser(ctx context.Context, body *pb.GetUserRequest) (*pb.User, error) {
+func (s *UserServer) GetUser(ctx context.Context, body *common.GetByIdRequest) (*pb.User, error) {
 	return s.service.GetUser(ctx, body)
 }
 
@@ -32,6 +33,6 @@ func (s *UserServer) UpdateUser(ctx context.Context, body *pb.UpdateUserRequest)
 	return s.service.UpdateUser(ctx, body)
 }
 
-func (s *UserServer) DeleteUser(ctx context.Context, body *pb.DeleteUserRequest) (*pb.User, error) {
+func (s *UserServer) DeleteUser(ctx context.Context, body *common.GetByIdRequest) (*pb.User, error) {
 	return s.service.DeleteUser(ctx, body)
 }

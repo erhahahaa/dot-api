@@ -4,6 +4,30 @@ volumes:
   postgres-data:
 
 services:
+  auth:
+    build:
+      context: .
+      dockerfile: ./auth/Dockerfile
+    env_file:
+      - .env
+
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    network_mode: service:db
+
+  program:
+    build:
+      context: .
+      dockerfile: ./program/Dockerfile
+    env_file:
+      - .env
+
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    network_mode: service:db
+
   gateway:
     build:
       context: .
@@ -15,6 +39,9 @@ services:
       - ../..:/workspaces:cached
     command: sleep infinity
     network_mode: service:db
+    depends:
+      - auth
+      - program
 
   db:
     image: postgres:latest

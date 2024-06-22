@@ -1,14 +1,19 @@
 {
     "go.useLanguageServer": true,
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
     "[go]": {
-        "editor.formatOnSave": true,
         "editor.defaultFormatter": "golang.go",
-        "editor.tabSize": 2,
     },
-    "[rust]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "rust-lang.rust-analyzer",
-        "editor.tabSize": 2
+    "formatting.gofumpt": true,
+    "protoc": {
+        "path": "/usr/bin/protoc",
+        "options": [
+            "--proto_path=${workspaceRoot}/proto",
+            "--go_out=gen/go",
+            "--rust_out=gen/rust"
+        ],
     },
-    "formatting.gofumpt": true
+    "clang-format.executable": "/usr/bin/clang-format",
+    "clang-format.style": "{ IndentWidth: 2, BasedOnStyle: google, AlignConsecutiveAssignments: true }"
 }

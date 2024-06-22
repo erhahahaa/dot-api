@@ -5,4 +5,5 @@ use (
     ./common 
     ./gen/go
     ./program
+    ./gateway
 )

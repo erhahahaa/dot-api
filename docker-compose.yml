@@ -38,10 +38,7 @@ services:
     volumes:
       - ../..:/workspaces:cached
     command: sleep infinity
-    network_mode: service:db
-    depends:
-      - auth
-      - program
+    network_mode: service:db 
 
   db:
     image: postgres:latest

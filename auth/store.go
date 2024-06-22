@@ -37,7 +37,7 @@ func (s *UserStore) Register(ctx context.Context, body *pb.RegisterRequest) (*pb
 		Email:     body.Email,
 		Phone:     body.Phone,
 		Password:  pwHash,
-		Role:      UserRole(body.Role.String()),
+		Role:      body.Role,
 		Expertise: body.Expertise,
 	}
 

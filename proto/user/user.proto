@@ -9,11 +9,11 @@ import "google/protobuf/timestamp.proto";
 message GetByIdRequest {
   uint32 id = 1;
 }
-enum UserRole {
-  SUPERADMIN = 0;
-  ADMIN      = 1;
-  USER       = 3;
-}
+// enum UserRole {
+//   SUPERADMIN = 0;
+//   ADMIN      = 1;
+//   USER       = 3;
+// }
 
 message User {
   uint32 id                           = 1;
@@ -21,7 +21,7 @@ message User {
   string email                        = 3;
   string phone                        = 4;
   optional string password            = 5;
-  UserRole role                       = 6;
+  string role                         = 6;
   string expertise                    = 7;
   google.protobuf.Timestamp createdAt = 8;
   google.protobuf.Timestamp updatedAt = 9;
@@ -33,7 +33,7 @@ message RegisterRequest {
   string email     = 2;
   string phone     = 3;
   string password  = 4;
-  UserRole role    = 5;
+  string role      = 5;
   string expertise = 6;
 }
 
@@ -48,7 +48,7 @@ message UpdateUserRequest {
   string email     = 3;
   string phone     = 4;
   string password  = 5;
-  UserRole role    = 6;
+  string role      = 6;
   string expertise = 7;
 }
 

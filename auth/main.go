@@ -1,29 +1,57 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
 	"net"
+	"time"
 
+	"github.com/dot-coaching/common"
+	"github.com/dot-coaching/common/discovery"
+	"github.com/dot-coaching/common/discovery/memory"
 	"google.golang.org/grpc"
 )
 
+var (
+	serviceName = "auth"
+	hostPort    = common.GetEnv("AUTH_ADDRESS", ":50051")
+)
+
 func main() {
-	lis, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatalf("[AUTH SERVICE] failed to listen: %v", err)
+	registry := memory.NewRegistry()
+	ctx := context.Background()
+	authID := discovery.GenerateInstanceID(serviceName)
+	fmt.Println("authID: ", authID)
+	if err := registry.Register(ctx, authID, serviceName, hostPort); err != nil {
+		fmt.Println("failed to register: ", err)
 	}
-	fmt.Println("Listening on port 50051")
-	defer lis.Close()
 
-	server := grpc.NewServer()
+	go func() {
+		for {
+			if err := registry.HealthCheck(authID, serviceName); err != nil {
+				fmt.Println("Health check failed: ", err)
+			}
+			fmt.Println("Health check passed")
+			time.Sleep(5 * time.Second)
+		}
+	}()
 
-	store := NewUserStore()
-	// service := NewUserService(*store)
+	defer registry.Deregister(ctx, authID, serviceName)
 
-	NewUserServer(server, *store)
+	grpcServer := grpc.NewServer()
+	lis, err := net.Listen("tcp", hostPort)
+	if err != nil {
+		fmt.Println("failed to listen: ", err)
+	}
 
-	if err := server.Serve(lis); err != nil {
-		log.Fatalf("[AUTH SERVICE] server error: %v", err)
+	userStore := NewUserStore()
+	userService := NewUserService(*userStore)
+
+	NewUserServer(grpcServer, *userService)
+
+	fmt.Println("Starting server on ", hostPort)
+
+	if err := grpcServer.Serve(lis); err != nil {
+		fmt.Println("failed to serve: ", err)
 	}
 }

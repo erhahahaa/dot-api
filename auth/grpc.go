@@ -11,32 +11,31 @@ type UserServer struct {
 	pb.UnimplementedUserServiceServer
 
 	// service UserService
-	store UserStore
+	service UserService
 }
 
-func NewUserServer(server *grpc.Server, store UserStore) {
+func NewUserServer(server *grpc.Server, service UserService) {
 
-	handler := &UserServer{store: store}
+	handler := &UserServer{service: service}
 
 	pb.RegisterUserServiceServer(server, handler)
 }
 
 func (s *UserServer) Register(ctx context.Context, body *pb.RegisterRequest) (*pb.User, error) {
-	return s.store.Register(ctx, body)
+	return s.service.Register(ctx, body)
 }
-
 func (s *UserServer) Login(ctx context.Context, body *pb.LoginRequest) (*pb.User, error) {
-	return s.store.Login(ctx, body)
+	return s.service.Login(ctx, body)
 }
 
 func (s *UserServer) GetUser(ctx context.Context, body *pb.GetByIdRequest) (*pb.User, error) {
-	return s.store.GetUser(ctx, body)
+	return s.service.GetUser(ctx, body)
 }
 
 func (s *UserServer) UpdateUser(ctx context.Context, body *pb.UpdateUserRequest) (*pb.User, error) {
-	return s.store.UpdateUser(ctx, body)
+	return s.service.UpdateUser(ctx, body)
 }
 
 func (s *UserServer) DeleteUser(ctx context.Context, body *pb.GetByIdRequest) (*pb.User, error) {
-	return s.store.DeleteUser(ctx, body)
+	return s.service.DeleteUser(ctx, body)
 }

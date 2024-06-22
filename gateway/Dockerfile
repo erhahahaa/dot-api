@@ -1,4 +1,4 @@
-FROM golang:1.22
+FROM golang:1.22.4
 
 RUN apt update && apt upgrade -y &&\
     apt install -y git\
@@ -7,9 +7,7 @@ RUN apt update && apt upgrade -y &&\
 WORKDIR /go/src/app
 
 COPY . ./
-RUN go mod tidy \
-    && go mod verify
-    
+WORKDIR /go/src/app/gateway 
 
 RUN go build -o  /main
 CMD ["/main"]

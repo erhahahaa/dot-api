@@ -2,10 +2,11 @@ package memory
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
-	"github.com/dot-coaching/common/utils/discovery"
+	"github.com/dot-coaching/common/discovery"
 )
 
 type Registry struct {
@@ -68,6 +69,9 @@ func (r *Registry) HealthCheck(instanceID, serviceName string) error {
 func (r *Registry) Discover(ctx context.Context, serviceName string) ([]string, error) {
 	r.RLock()
 	defer r.RUnlock()
+
+	// log available services
+	fmt.Println("Available services: ", r.addrs)
 
 	if len(r.addrs[serviceName]) == 0 {
 		return nil, discovery.ErrCustomAddressNotFound

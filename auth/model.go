@@ -19,6 +19,6 @@ type UserModel struct {
 	Email     string `gorm:"uniqueIndex"`
 	Phone     string
 	Password  string
-	Role      UserRole
+	Role      string
 	Expertise string
 }

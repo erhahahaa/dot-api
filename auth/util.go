@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dot-coaching/common/utils"
+	"github.com/dot-coaching/common"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -23,10 +23,10 @@ func GenerateJWT(email string, id uint) (string, error) {
 		issuer *jwt.Token
 	)
 
-	key = []byte(utils.GetEnv("JWT_SECRET", "secret"))
+	key = []byte(common.GetEnv("JWT_SECRET", "secret"))
 	issuer = jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"iss": utils.GetEnv("SERVICE_NAME", "service"),
+			"iss": common.GetEnv("SERVICE_NAME", "service"),
 			"sub": email,
 			"id":  id,
 		})

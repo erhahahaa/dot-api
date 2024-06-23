@@ -1,15 +1,30 @@
 {
   "name": "dot-coaching",
   "version": "1.0.50",
+  "description": "DOT Coaching is visual coaching app",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
+    "db:gen": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "elysia": "latest"
+    "@elysiajs/cors": "^1.0.2",
+    "@elysiajs/jwt": "^1.0.2",
+    "@elysiajs/swagger": "^1.0.5",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.31.2",
+    "drizzle-typebox": "^0.1.1",
+    "elysia": "latest",
+    "logixlysia": "^3.4.0",
+    "postgres": "^3.4.4"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "@types/bcrypt": "^5.0.2",
+    "bun-types": "latest",
+    "drizzle-kit": "^0.22.7"
   },
   "module": "src/index.js"
 }

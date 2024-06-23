@@ -1,7 +1,7 @@
 {
   "name": "dot-coaching",
   "version": "1.0.50",
-  "description": "DOT Coaching is visual coaching app",
+  "description": "Visual coaching platform",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",

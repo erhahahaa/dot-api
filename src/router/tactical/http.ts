@@ -2,7 +2,7 @@ import { eq, gt } from "drizzle-orm";
 import { db } from "~/db";
 import { InsertTacticalSchema, tacticals } from "~/schemas/tacticals";
 import { APIResponse } from "~/types";
-import { ServerType } from "..";
+import { ServerType } from "../..";
 
 export function createTacticalRouter(app: ServerType) {
   app.get("/", async ({ query: { cursor, limit } }) => {
@@ -93,5 +93,6 @@ export function createTacticalRouter(app: ServerType) {
       data: res[0],
     } satisfies APIResponse;
   });
+
   return app;
 }

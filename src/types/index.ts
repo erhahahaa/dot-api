@@ -14,3 +14,9 @@ export type APIResponse = {
   readonly message?: string;
   readonly data?: Record<string, any> | Record<string, any>[];
 };
+
+export type WebSocketMessage = {
+  readonly type: "create" | "join" | "leave";
+  readonly params: Record<string, any> | Record<string, any>[];
+  readonly data: Record<string, any> | Record<string, any>[];
+};

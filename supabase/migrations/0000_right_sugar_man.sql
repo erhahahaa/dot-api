@@ -47,6 +47,18 @@ CREATE TABLE IF NOT EXISTS "programs" (
 	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "tacticals" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"program_id" serial NOT NULL,
+	"sport_type" text NOT NULL,
+	"name" text NOT NULL,
+	"description" text,
+	"content" json,
+	"due_at" timestamp DEFAULT now() + interval '1 day',
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
@@ -65,6 +77,7 @@ CREATE TABLE IF NOT EXISTS "users_to_programs" (
 	"user_id" serial NOT NULL,
 	"program_id" serial NOT NULL,
 	"role" "userProgramRole" DEFAULT 'athlete' NOT NULL,
+	"created_at" timestamp DEFAULT now(),
 	CONSTRAINT "users_to_programs_user_id_program_id_pk" PRIMARY KEY("user_id","program_id")
 );
 --> statement-breakpoint
@@ -82,6 +95,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "programs" ADD CONSTRAINT "programs_creator_id_users_id_fk" FOREIGN KEY ("creator_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "tacticals" ADD CONSTRAINT "tacticals_program_id_programs_id_fk" FOREIGN KEY ("program_id") REFERENCES "public"."programs"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

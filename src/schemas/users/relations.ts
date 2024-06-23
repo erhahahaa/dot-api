@@ -1,5 +1,11 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, primaryKey, serial } from "drizzle-orm/pg-core";
+import {
+  pgEnum,
+  pgTable,
+  primaryKey,
+  serial,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
 import { users } from ".";
@@ -17,6 +23,7 @@ export const usersToPrograms = pgTable(
       .notNull()
       .references(() => programs.id),
     role: userProgramRole("role").default("athlete").notNull(),
+    created_at: timestamp("created_at").defaultNow(),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.userId, t.programId] }),

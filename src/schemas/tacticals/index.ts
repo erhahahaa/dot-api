@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import {
   foreignKey,
+  json,
   pgTable,
   serial,
   text,
@@ -9,15 +10,16 @@ import {
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
 import { programs } from "../programs";
-import { questions } from "./question";
 
-export const exams = pgTable(
-  "exams",
+export const tacticals = pgTable(
+  "tacticals",
   {
     id: serial("id").primaryKey().notNull(),
     program_id: serial("program_id").notNull(),
-    title: text("title").notNull(),
-    decription: text("description"),
+    sport_type: text("sport_type").notNull(),
+    name: text("name").notNull(),
+    description: text("description"),
+    content: json("content"),
     due_at: timestamp("due_at").default(sql`now() + interval '1 day'`),
     created_at: timestamp("created_at").defaultNow(),
     updated_at: timestamp("updated_at").defaultNow(),
@@ -30,14 +32,13 @@ export const exams = pgTable(
   })
 );
 
-export const examsRelations = relations(exams, ({ one, many }) => ({
+export const tacticalRelations = relations(tacticals, ({ one, many }) => ({
   program: one(programs, {
-    fields: [exams.program_id],
+    fields: [tacticals.program_id],
     references: [programs.id],
   }),
-  questions: many(questions),
 }));
 
-export const InsertExamSchema = createInsertSchema(exams);
-export const SelectExamSchema = createSelectSchema(exams);
-export type ExamType = Static<typeof SelectExamSchema>;
+export const InsertTacticalSchema = createInsertSchema(tacticals);
+export const SelectTacticalSchema = createSelectSchema(tacticals);
+export type TacticalType = Static<typeof SelectTacticalSchema>;

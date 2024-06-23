@@ -8,3 +8,9 @@ export type JWTPlugin = {
     jwt?: string
   ) => Promise<false | (Record<string, string | number> & JWTPayloadSpec)>;
 };
+
+export type APIResponse = {
+  readonly error?: string;
+  readonly message?: string;
+  readonly data?: Record<string, any> | Record<string, any>[];
+};

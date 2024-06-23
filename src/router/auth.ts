@@ -3,6 +3,7 @@ import { t } from "elysia";
 import { db } from "~/db";
 import { authMiddleware } from "~/middleware";
 import { InsertUserSchema, users } from "~/schemas/users";
+import { APIResponse } from "~/types";
 import { rotateJWT } from "~/utils/jwt";
 import { encryptPassword, sanitize } from "~/utils/password";
 import { ServerType } from "..";
@@ -21,12 +22,15 @@ export function createAuthRouter(app: ServerType) {
           error: `User with email ${body.email} not found`,
         };
       }
-      const token = rotateJWT(jwt, auth, user[0]);
+      const token = await rotateJWT(jwt, auth, user[0]);
 
       return {
-        ...sanitize(user[0], ["password"]),
-        token,
-      };
+        message: "Sign in success, welcome back!",
+        data: {
+          ...sanitize(user[0], ["password"]),
+          token,
+        },
+      } satisfies APIResponse;
     },
     {
       body: t.Object({
@@ -54,7 +58,12 @@ export function createAuthRouter(app: ServerType) {
           error: `Failed sign up ${rest.name}`,
         };
       }
-      return sanitize(user[0], ["password"]);
+      return {
+        message: "Sign up success, welcome!",
+        data: {
+          ...sanitize(user[0], ["password"]),
+        },
+      } satisfies APIResponse;
     },
     { body: InsertUserSchema }
   );
@@ -74,9 +83,12 @@ export function createAuthRouter(app: ServerType) {
       }
       const token = await rotateJWT(jwt, auth, found[0]);
       return {
-        ...sanitize(found[0], ["password"]),
-        token,
-      };
+        message: "User found",
+        data: {
+          ...sanitize(found[0], ["password"]),
+          token,
+        },
+      } satisfies APIResponse;
     });
 
   app
@@ -88,7 +100,7 @@ export function createAuthRouter(app: ServerType) {
       });
       return {
         message: "Logout success",
-      };
+      } satisfies APIResponse;
     });
 
   return app;

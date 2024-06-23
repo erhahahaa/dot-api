@@ -1,5 +1,5 @@
 import { Cookie } from "elysia";
-import { JWTPlugin } from "~/types";
+import { APIResponse, JWTPlugin } from "~/types";
 
 export async function authMiddleware({
   request,
@@ -20,15 +20,17 @@ export async function authMiddleware({
       bearer = auth.value;
     } else {
       return {
-        error: "Unauthorized, missing bearer token",
-      };
+        error: "Unauthorized",
+        message: "Bearer token not found in header or cookie auth",
+      } satisfies APIResponse;
     }
   }
   const valid = await jwt.verify(bearer);
   if (!valid) {
     return {
-      error: "Unauthorized, invalid bearer token",
-    };
+      error: "Unauthorized",
+      message: "Bearer token not valid",
+    } satisfies APIResponse;
   }
   return;
 }

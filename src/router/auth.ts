@@ -1,7 +1,9 @@
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
 import { db } from "~/db";
+import { authMiddleware } from "~/middleware";
 import { InsertUserSchema, users } from "~/schemas/users";
+import { rotateJWT } from "~/utils/jwt";
 import { encryptPassword, sanitize } from "~/utils/password";
 import { ServerType } from "..";
 
@@ -19,17 +21,7 @@ export function createAuthRouter(app: ServerType) {
           error: `User with email ${body.email} not found`,
         };
       }
-      const token = await jwt.sign({
-        id: user[0].id,
-        email: user[0].email,
-        exp: Math.floor(Date.now() / 1000) + 7 * 86400, // 7 days
-        iat: Math.floor(Date.now() / 1000),
-      });
-      auth.set({
-        value: token,
-        httpOnly: true,
-        maxAge: 7 * 86400,
-      });
+      const token = rotateJWT(jwt, auth, user[0]);
 
       return {
         ...sanitize(user[0], ["password"]),
@@ -66,45 +58,38 @@ export function createAuthRouter(app: ServerType) {
     },
     { body: InsertUserSchema }
   );
-  app.get(
-    "/me",
-    async ({ jwt, cookie: { auth }, request }) => {
-      const header = request.headers.get("Authorization");
 
-      let bearer = header?.split(" ")[1];
-      if (!bearer) {
-        if (auth.value) {
-          bearer = auth.value;
-        } else {
-          return {
-            error: "Unauthorized",
-          };
-        }
-      }
-
-      const user = await jwt.verify(bearer);
-
-      if (!user) {
-        return {
-          error: "Unauthorized",
-        };
-      }
-
+  app
+    .onBeforeHandle(authMiddleware)
+    .get("/me/:id", async ({ jwt, cookie: { auth }, params: { id } }) => {
       const found = await db
         .select()
         .from(users)
-        .where(eq(users.id, user.id as number));
+        .where(eq(users.id, parseInt(id)));
 
       if (found.length == 0) {
         return {
           error: "User not found",
         };
       }
+      const token = await rotateJWT(jwt, auth, found[0]);
+      return {
+        ...sanitize(found[0], ["password"]),
+        token,
+      };
+    });
 
-      return sanitize(found[0], ["password"]);
-    },
-    {}
-  );
+  app
+    .onBeforeHandle(authMiddleware)
+    .get("/logout", async ({ jwt, cookie: { auth } }) => {
+      auth.set({
+        value: "",
+        maxAge: 0,
+      });
+      return {
+        message: "Logout success",
+      };
+    });
 
   return app;
 }

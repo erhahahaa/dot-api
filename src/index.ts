@@ -1,3 +1,4 @@
+import bearer from "@elysiajs/bearer";
 import cors from "@elysiajs/cors";
 import jwt from "@elysiajs/jwt";
 import { swagger } from "@elysiajs/swagger";
@@ -15,8 +16,11 @@ import { createRouter } from "./router";
 
 config({ path: ".env" });
 
-function setupApp<T>() {
-  const app = new Elysia()
+function setupApp() {
+  const app = new Elysia({
+    name: "DOT Coaching API",
+    precompile: true,
+  })
     .error({
       AUTHENTICATION: AuthenticationError,
       AUTHORIZATION: AuthorizationError,
@@ -34,11 +38,6 @@ function setupApp<T>() {
           logFilePath: "logs/app.log",
           customLogFormat:
             "🦊 {now} {level} {duration} {method} {pathname} {status} {message} {ip}",
-          // logFilter: {
-          //   level: ["ERROR", "WARNING"],
-          //   status: [500, 404],
-          //   method: "GET",
-          // },
         },
       })
     )
@@ -54,8 +53,10 @@ function setupApp<T>() {
       jwt({
         name: "jwt",
         secret: process.env.JWT_SECRET ?? "secret",
+        exp: "7d",
       })
-    );
+    )
+    .use(bearer());
   return app;
 }
 

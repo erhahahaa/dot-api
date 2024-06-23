@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
 import { db } from "~/db";
-import { InsertUserSchema, users } from "~/schemas/user";
+import { InsertUserSchema, users } from "~/schemas/users";
 import { encryptPassword, sanitize } from "~/utils/password";
 import { ServerType } from "..";
 

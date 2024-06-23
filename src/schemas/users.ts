@@ -1,7 +1,8 @@
-import { sql } from "drizzle-orm";
-import { date, pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
+import { usersToPrograms } from "./relations";
 
 export const userRole = pgEnum("role", ["superadmin", "admin", "user"]);
 
@@ -18,10 +19,13 @@ export const users = pgTable("users", {
     .$default(() => "user")
     .notNull(),
   expertise: text("expertise").notNull(),
-  created_at: date("created_at").default(sql`CURRENT_DATE`),
-  updated_at: date("updated_at").default(sql`CURRENT_DATE`),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
 });
+export const usersRelations = relations(users, ({ many }) => ({
+  usersToPrograms: many(usersToPrograms),
+}));
 
 export const InsertUserSchema = createInsertSchema(users);
-export type UserType = Static<typeof InsertUserSchema>;
 export const SelectUserSchema = createSelectSchema(users);
+export type UserType = Static<typeof SelectUserSchema>;

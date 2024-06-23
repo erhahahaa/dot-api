@@ -3,7 +3,6 @@ import { pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
 import { usersToPrograms } from "./relations";
-
 export const userRole = pgEnum("role", ["superadmin", "admin", "user"]);
 
 export const users = pgTable("users", {
@@ -15,9 +14,7 @@ export const users = pgTable("users", {
     .notNull(),
   password: text("password").notNull(),
   phone: text("phone"),
-  role: userRole("role")
-    .$default(() => "user")
-    .notNull(),
+  role: userRole("role").default("user").notNull(),
   expertise: text("expertise").notNull(),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),

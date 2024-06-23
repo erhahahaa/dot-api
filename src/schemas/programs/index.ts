@@ -8,8 +8,8 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
-import { usersToPrograms } from "./relations";
-import { users } from "./users";
+import { users } from "../users";
+import { usersToPrograms } from "../users/relations";
 
 export const programs = pgTable(
   "programs",
@@ -18,7 +18,11 @@ export const programs = pgTable(
     creator_id: serial("creator_id").notNull(),
     name: text("name").notNull(),
     description: text("description").notNull(),
-    image: text("image").notNull(),
+    image: text("image")
+      .notNull()
+      .default(
+        "https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg"
+      ),
     created_at: timestamp("created_at").defaultNow(),
     updated_at: timestamp("updated_at").defaultNow(),
   },
@@ -30,7 +34,7 @@ export const programs = pgTable(
   })
 );
 export const programsRelations = relations(programs, ({ many }) => ({
-  programsToGroups: many(usersToPrograms),
+  programsToUsers: many(usersToPrograms),
 }));
 
 export const InsertProgramSchema = createInsertSchema(programs);

@@ -43,7 +43,15 @@ export function createExamRouter(app: ServerType) {
   app.post(
     "/",
     async ({ body }) => {
-      const res = await db.insert(exams).values(body).returning();
+      const { due_at, ...rest } = body;
+
+      const res = await db
+        .insert(exams)
+        .values({
+          ...rest,
+          due_at: new Date(due_at || new Date()),
+        })
+        .returning();
       if (res.length == 0) {
         return {
           error: "Failed to insert exam",
@@ -62,9 +70,14 @@ export function createExamRouter(app: ServerType) {
   app.put(
     "/:id",
     async ({ params: { id }, body }) => {
+      const { due_at, ...rest } = body;
+
       const res = await db
         .update(exams)
-        .set(body)
+        .set({
+          ...rest,
+          due_at: new Date(due_at || new Date()),
+        })
         .where(eq(exams.id, parseInt(id)))
         .returning();
 

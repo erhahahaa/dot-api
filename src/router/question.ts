@@ -1,15 +1,24 @@
-import { eq, gt } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "~/db";
 import { InsertQuestionSchema, questions } from "~/schemas/exam/question";
 import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
 export function createQuestionRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor, limit } }) => {
+  app.get("/", async ({ query: { cursor, limit, programId } }) => {
+    if (!programId) {
+      return {
+        error: "Program id is required",
+      } satisfies APIResponse;
+    }
     const res = await db
       .select()
       .from(questions)
-      .where(gt(questions.id, parseInt(cursor as string) || 0))
+      .where(
+        sql`program_id = ${parseInt(programId) || 0} AND id > ${parseInt(
+          cursor || "0"
+        )}`
+      )
       .limit(parseInt(limit as string) || 10);
 
     if (res.length == 0) {

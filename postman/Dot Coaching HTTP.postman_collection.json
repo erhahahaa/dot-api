@@ -1,0 +1,724 @@
+{
+	"info": {
+		"_postman_id": "0cdc36c6-b37a-4fe6-b1f5-b72c6d3a00a3",
+		"name": "Dot Coaching HTTP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21874629",
+		"_collection_link": "https://planetary-crater-665941.postman.co/workspace/erhahahaa~99306df1-bc84-4717-8f60-78e5e82c189f/collection/21874629-0cdc36c6-b37a-4fe6-b1f5-b72c6d3a00a3?action=share&source=collection_link&creator=21874629"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Sign Up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John\",\n    \"email\": \"rahmat@test.dev\",\n    \"password\": \"password\",\n    \"phone\": \"+6666\",\n    \"image\": \"https://api.dicebear.com/9.x/adventurer/png\",\n    \"role\": \"user\",\n    \"expertise\": \"Badminton\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/sign-up",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"sign-up"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign In",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"rahmat@test.dev\", \n    \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/sign-in",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"sign-in"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/auth/me/3",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"me",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/auth/logout",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Program",
+			"item": [
+				{
+					"name": "Exam",
+					"item": [
+						{
+							"name": "Question",
+							"item": [
+								{
+									"name": "Get All",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/program/exam/question?cursor=0&limit=10&programId=5",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"program",
+												"exam",
+												"question"
+											],
+											"query": [
+												{
+													"key": "cursor",
+													"value": "0"
+												},
+												{
+													"key": "limit",
+													"value": "10"
+												},
+												{
+													"key": "programId",
+													"value": "5"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get by Id",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/program/exam/question/15",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"program",
+												"exam",
+												"question",
+												"15"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"program_id\": 5,\n    \"exam_id\": 5,\n    \"type\": \"essay\",\n    \"content\": \"Sebutkan cara\",\n    \"answer\": \"benar\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/program/exam/question",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"program",
+												"exam",
+												"question"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"program_id\": 5,\n    \"exam_id\": 5,\n    \"type\": \"essay\",\n    \"content\": \"Sebutkan cara\",\n    \"answer\": \"benar\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/program/exam/question/1",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"program",
+												"exam",
+												"question",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/program/exam/question/6",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"program",
+												"exam",
+												"question",
+												"6"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Get All",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/program/exam?cursor=0&limit=10",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"exam"
+									],
+									"query": [
+										{
+											"key": "cursor",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get by Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/program/exam/17",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"exam",
+										"17"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"program_id\": 5,\n    \"title\": \"Summer 1 Summit\",\n    \"description\": \"Summer 1 assesment for junior athelete\",\n    \"due_at\": \"2024-06-24T11:37:15\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/program/exam",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"exam"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"program_id\": 5,\n    \"title\": \"Summer 1 Summit\",\n    \"description\": \"Summer 1 assesment for junior athelete\",\n    \"due_at\": \"2024-06-24T10:37:15\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/program/exam/17",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"exam",
+										"17"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/program/exam/6",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"exam",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Tactical",
+					"item": [
+						{
+							"name": "Get All",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/program/tactical?cursor=0&limit=0",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"tactical"
+									],
+									"query": [
+										{
+											"key": "cursor",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get by Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/program/tactical/4",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"tactical",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"program_id\": 5,\n    \"sport_type\": \"footbal\",\n    \"name\": \"Abigail formation\",\n    \"description\": \"Formasi tanding turnamen x\",\n    \"content\": {\n        \"blue\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ],\n        \"red\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/program/tactical",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"tactical"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"program_id\": 5,\n    \"sport_type\": \"footbal\",\n    \"name\": \"Abigail formation\",\n    \"description\": \"Formasi tanding turnamen x\",\n    \"content\": {\n        \"blue\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ],\n        \"red\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/program/tactical/11",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"tactical",
+										"11"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"program_id\": 5,\n    \"sport_type\": \"footbal\",\n    \"name\": \"Abigail formation\",\n    \"description\": \"Formasi tanding turnamen x\",\n    \"content\": {\n        \"blue\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ],\n        \"red\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/program/tactical/7",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"program",
+										"tactical",
+										"7"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/program?cursor=0&limit=10",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"program"
+							],
+							"query": [
+								{
+									"key": "cursor",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"creator_id\": 3,\n    \"name\": \"Zenta Volley Club\",\n    \"description\": \"International sports club\",\n    \"image\": \"https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/program/42",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"program",
+								"42"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"creator_id\": 3,\n    \"name\": \"Zenta Volley Club\",\n    \"description\": \"International sports club\",\n    \"image\": \"https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/program",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"program"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"creator_id\": 3,\n    \"name\": \"Zenta Volley Club\",\n    \"description\": \"International sports club\",\n    \"image\": \"https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/program/8",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"program",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"creator_id\": 3,\n    \"name\": \"Zenta Volley Club\",\n    \"description\": \"International sports club\",\n    \"image\": \"https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/program/10",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"program",
+								"10"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Ping",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/health",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/health/info",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"health",
+								"info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZW1haWwiOiJyYWhtYXRAdGVzdC5kZXYiLCJleHAiOjE3MTk3Mjk2MjEsImlhdCI6MTcxOTEyNDgyMX0.0ZEQDLiS3GnfNxJ0izQn_5y9u5WwJHBHX8fpTEnErZA",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		}
+	]
+}

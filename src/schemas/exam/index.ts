@@ -1,3 +1,4 @@
+import { Type } from "@sinclair/typebox";
 import { relations, sql } from "drizzle-orm";
 import {
   foreignKey,
@@ -17,7 +18,7 @@ export const exams = pgTable(
     id: serial("id").primaryKey().notNull(),
     program_id: serial("program_id").notNull(),
     title: text("title").notNull(),
-    decription: text("description"),
+    description: text("description"),
     due_at: timestamp("due_at").default(sql`now() + interval '1 day'`),
     created_at: timestamp("created_at").defaultNow(),
     updated_at: timestamp("updated_at").defaultNow(),
@@ -38,6 +39,8 @@ export const examsRelations = relations(exams, ({ one, many }) => ({
   questions: many(questions),
 }));
 
-export const InsertExamSchema = createInsertSchema(exams);
+export const InsertExamSchema = createInsertSchema(exams, {
+  due_at: Type.String(),
+});
 export const SelectExamSchema = createSelectSchema(exams);
 export type ExamType = Static<typeof SelectExamSchema>;

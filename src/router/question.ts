@@ -73,6 +73,11 @@ export function createQuestionRouter(app: ServerType) {
           error: `Failed to update question with id ${id}`,
         } satisfies APIResponse;
       }
+
+      return {
+        message: `Question with id ${id} updated`,
+        data: res[0],
+      } satisfies APIResponse;
     },
     { body: InsertQuestionSchema }
   );

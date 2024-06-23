@@ -62,6 +62,7 @@ export function createProgramRouter(app: ServerType) {
   app.put(
     "/:id",
     async ({ params: { id }, body }) => {
+      console.log("BODY", body);
       const res = await db
         .update(programs)
         .set(body)
@@ -73,6 +74,11 @@ export function createProgramRouter(app: ServerType) {
           error: `Failed to update program with id ${id}`,
         } satisfies APIResponse;
       }
+
+      return {
+        message: `Program with id ${id} updated`,
+        data: res[0],
+      } satisfies APIResponse;
     },
     { body: InsertProgramSchema }
   );

@@ -73,6 +73,11 @@ export function createExamRouter(app: ServerType) {
           error: `Failed to update exam with id ${id}`,
         } satisfies APIResponse;
       }
+
+      return {
+        message: `Exam with id ${id} updated`,
+        data: res[0],
+      } satisfies APIResponse;
     },
     { body: InsertExamSchema }
   );

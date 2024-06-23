@@ -73,6 +73,11 @@ export function createTacticalRouter(app: ServerType) {
           error: `Failed to update tactical with id ${id}`,
         } satisfies APIResponse;
       }
+
+      return {
+        message: `Tactical with id ${id} updated`,
+        data: res[0],
+      } satisfies APIResponse;
     },
     { body: InsertTacticalSchema }
   );

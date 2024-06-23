@@ -13,6 +13,7 @@ import {
 } from "~/errors";
 import { description, version } from "../package.json";
 import { createRouter } from "./router";
+import { logConfig } from "./utils";
 
 config({ path: ".env" });
 
@@ -33,12 +34,7 @@ function setupApp() {
     })
     .use(
       logixlysia({
-        config: {
-          ip: true,
-          logFilePath: "logs/app.log",
-          customLogFormat:
-            "🦊 {now} {level} {duration} {method} {pathname} {status} {message} {ip}",
-        },
+        config: logConfig,
       })
     )
     .use(cors())

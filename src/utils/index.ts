@@ -1,3 +1,5 @@
+import { createLogger } from "logixlysia/src/logger";
+
 export const DEFAULT = Symbol();
 
 export class MapWithDefault<K, V> extends Map<K | typeof DEFAULT, V> {
@@ -5,3 +7,14 @@ export class MapWithDefault<K, V> extends Map<K | typeof DEFAULT, V> {
     return super.get(key) ?? (super.get(DEFAULT) as V);
   }
 }
+
+export const logConfig = {
+  ip: true,
+  logFilePath: "logs/app.log",
+  customLogFormat:
+    "🦊 {now} {level} {duration} {method} {pathname} {status} {message} {ip}",
+};
+
+export const log = createLogger({
+  config: logConfig,
+});

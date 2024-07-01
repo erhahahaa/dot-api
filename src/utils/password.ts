@@ -1,17 +1,15 @@
-import { compare, hash } from "bcrypt";
+import { compare, hash } from "bcrypt-ts";
 
-export async function encryptPassword(password: string) {
+export async function encryptPassword(password: string): Promise<string> {
   const salt = parseInt(process.env.SALT_ROUND ?? "10");
   return await hash(password, salt);
 }
 
-export function verifyPassword(plain: string, encrypted: string): boolean {
-  let valid: boolean = false;
-  compare(plain, encrypted, function (err, res) {
-    if (err) valid = false;
-    valid = res;
-  });
-  return valid;
+export async function verifyPassword(
+  plain: string,
+  encrypted: string
+): Promise<boolean> {
+  return await compare(plain, encrypted);
 }
 
 export function sanitize(obj: any, exceptsNotation: string[]) {

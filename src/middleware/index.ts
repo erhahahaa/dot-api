@@ -1,4 +1,4 @@
-import { Cookie } from "elysia";
+import { Cookie, error as ElysiaErrorStatus } from "elysia";
 import { APIResponse, JWTPlugin } from "~/types";
 
 export async function authMiddleware({
@@ -6,11 +6,13 @@ export async function authMiddleware({
   jwt,
   bearer,
   cookie: { auth },
+  error,
 }: {
   request: Request;
   jwt: JWTPlugin;
   cookie: Record<string, Cookie<any>>;
   bearer?: string;
+  error: typeof ElysiaErrorStatus;
 }) {
   const header = request.headers.get("Authorization");
 
@@ -19,18 +21,18 @@ export async function authMiddleware({
     if (auth.value) {
       bearer = auth.value;
     } else {
-      return {
+      return error(401, {
         error: "Unauthorized",
-        message: "Bearer token not found in header or cookie auth",
-      } satisfies APIResponse;
+        message: "Invalid session, please sign in again",
+      } satisfies APIResponse);
     }
   }
   const valid = await jwt.verify(bearer);
   if (!valid) {
-    return {
+    return error(401, {
       error: "Unauthorized",
-      message: "Bearer token not valid",
-    } satisfies APIResponse;
+      message: "Invalid session, please sign in again",
+    } satisfies APIResponse);
   }
   return;
 }

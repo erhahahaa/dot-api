@@ -11,16 +11,16 @@ import { ServerType } from "..";
 export function createAuthRouter(app: ServerType) {
   app.post(
     "/sign-in",
-    async ({ jwt, cookie: { auth }, body }) => {
+    async ({ jwt, cookie: { auth }, body, error }) => {
       const user = await db
         .select()
         .from(users)
         .where(eq(users.email, body.email));
 
       if (user.length == 0) {
-        return {
+        return error(404, {
           error: `User with email ${body.email} not found`,
-        };
+        } satisfies APIResponse);
       }
       const token = await rotateJWT(jwt, auth, user[0]);
 
@@ -41,7 +41,7 @@ export function createAuthRouter(app: ServerType) {
   );
   app.post(
     "/sign-up",
-    async ({ body }) => {
+    async ({ body, error }) => {
       const { password, ...rest } = body;
       const hash = await encryptPassword(password);
 
@@ -51,13 +51,15 @@ export function createAuthRouter(app: ServerType) {
           ...rest,
           password: hash,
         })
+        .onConflictDoNothing()
         .returning();
 
       if (user.length == 0) {
-        return {
-          error: `Failed sign up ${rest.name}`,
-        };
+        return error(500, {
+          error: `Failed to sign up ${rest.name}`,
+        } satisfies APIResponse);
       }
+
       return {
         message: "Sign up success, welcome!",
         data: {
@@ -70,17 +72,19 @@ export function createAuthRouter(app: ServerType) {
 
   app
     .onBeforeHandle(authMiddleware)
-    .get("/me/:id", async ({ jwt, cookie: { auth }, params: { id } }) => {
+    .get("/me", async ({ jwt, bearer, cookie: { auth }, error }) => {
+      const valid = (await jwt.verify(bearer)) as { id: string };
       const found = await db
         .select()
         .from(users)
-        .where(eq(users.id, parseInt(id)));
+        .where(eq(users.id, parseInt(valid.id)));
 
       if (found.length == 0) {
-        return {
-          error: "User not found",
-        };
+        return error(404, {
+          error: `User with id ${valid.id} not found`,
+        } satisfies APIResponse);
       }
+
       const token = await rotateJWT(jwt, auth, found[0]);
       return {
         message: "User found",
@@ -93,7 +97,7 @@ export function createAuthRouter(app: ServerType) {
 
   app
     .onBeforeHandle(authMiddleware)
-    .get("/logout", async ({ jwt, cookie: { auth } }) => {
+    .get("/logout", async ({ cookie: { auth } }) => {
       auth.set({
         value: "",
         maxAge: 0,

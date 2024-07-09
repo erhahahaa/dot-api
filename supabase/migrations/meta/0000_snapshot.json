@@ -1,5 +1,5 @@
 {
-  "id": "928d5a86-87b6-468a-ba71-77c740f0390e",
+  "id": "b14e86df-dca3-4b0b-bf22-a8caef188df8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -256,13 +256,6 @@
           "type": "json",
           "primaryKey": false,
           "notNull": false
-        },
-        "due_at": {
-          "name": "due_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now() + interval '1 day'"
         },
         "created_at": {
           "name": "created_at",

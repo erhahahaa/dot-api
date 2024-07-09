@@ -1,4 +1,5 @@
 import { createLogger } from "logixlysia/src/logger";
+import { Logger } from "logixlysia/src/types";
 
 export const DEFAULT = Symbol();
 
@@ -15,6 +16,6 @@ export const logConfig = {
     "🦊 {now} {level} {duration} {method} {pathname} {status} {message} {ip}",
 };
 
-export const log = createLogger({
+export const log: Logger = createLogger({
   config: logConfig,
 });

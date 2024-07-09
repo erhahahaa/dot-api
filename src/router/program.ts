@@ -5,7 +5,7 @@ import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
 export function createProgramRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor, limit } }) => {
+  app.get("/", async ({ query: { cursor, limit }, error }) => {
     const res = await db
       .select()
       .from(programs)
@@ -13,16 +13,16 @@ export function createProgramRouter(app: ServerType) {
       .limit(parseInt(limit as string) || 10);
 
     if (res.length == 0) {
-      return {
+      return error(404, {
         error: "No programs found",
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
     return {
       message: "Programs found",
       data: res,
     } satisfies APIResponse;
   });
-  app.get("/:id", async ({ params: { id } }) => {
+  app.get("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .select()
       .from(programs)
@@ -30,9 +30,9 @@ export function createProgramRouter(app: ServerType) {
       .limit(1);
 
     if (res.length == 0) {
-      return {
+      return error(404, {
         error: `Program with id ${id} not found`,
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
 
     return {
@@ -42,12 +42,12 @@ export function createProgramRouter(app: ServerType) {
   });
   app.post(
     "/",
-    async ({ body }) => {
+    async ({ body, error }) => {
       const res = await db.insert(programs).values(body).returning();
       if (res.length == 0) {
-        return {
-          error: "Failed to insert program",
-        } satisfies APIResponse;
+        return error(500, {
+          error: `Failed to insert program`,
+        } satisfies APIResponse);
       }
 
       return {
@@ -61,7 +61,7 @@ export function createProgramRouter(app: ServerType) {
   );
   app.put(
     "/:id",
-    async ({ params: { id }, body }) => {
+    async ({ params: { id }, body, error }) => {
       console.log("BODY", body);
       const res = await db
         .update(programs)
@@ -70,9 +70,9 @@ export function createProgramRouter(app: ServerType) {
         .returning();
 
       if (res.length == 0) {
-        return {
+        return error(500, {
           error: `Failed to update program with id ${id}`,
-        } satisfies APIResponse;
+        } satisfies APIResponse);
       }
 
       return {
@@ -82,7 +82,7 @@ export function createProgramRouter(app: ServerType) {
     },
     { body: InsertProgramSchema }
   );
-  app.delete("/:id", async ({ params: { id } }) => {
+  app.delete("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .delete(programs)
       .where(eq(programs.id, parseInt(id)))

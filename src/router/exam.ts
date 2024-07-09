@@ -5,7 +5,7 @@ import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
 export function createExamRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor, limit } }) => {
+  app.get("/", async ({ query: { cursor, limit }, error }) => {
     const res = await db
       .select()
       .from(exams)
@@ -13,16 +13,16 @@ export function createExamRouter(app: ServerType) {
       .limit(parseInt(limit as string) || 10);
 
     if (res.length == 0) {
-      return {
+      return error(404, {
         error: "No exams found",
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
     return {
       message: "Exams found",
       data: res,
     } satisfies APIResponse;
   });
-  app.get("/:id", async ({ params: { id } }) => {
+  app.get("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .select()
       .from(exams)
@@ -30,9 +30,9 @@ export function createExamRouter(app: ServerType) {
       .limit(1);
 
     if (res.length == 0) {
-      return {
+      return error(404, {
         error: `Exam with id ${id} not found`,
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
 
     return {
@@ -42,7 +42,7 @@ export function createExamRouter(app: ServerType) {
   });
   app.post(
     "/",
-    async ({ body }) => {
+    async ({ body, error }) => {
       const { due_at, ...rest } = body;
 
       const res = await db
@@ -53,9 +53,9 @@ export function createExamRouter(app: ServerType) {
         })
         .returning();
       if (res.length == 0) {
-        return {
-          error: "Failed to insert exam",
-        } satisfies APIResponse;
+        return error(500, {
+          error: `Failed to insert exam`,
+        } satisfies APIResponse);
       }
 
       return {
@@ -69,7 +69,7 @@ export function createExamRouter(app: ServerType) {
   );
   app.put(
     "/:id",
-    async ({ params: { id }, body }) => {
+    async ({ params: { id }, body, error }) => {
       const { due_at, ...rest } = body;
 
       const res = await db
@@ -82,9 +82,9 @@ export function createExamRouter(app: ServerType) {
         .returning();
 
       if (res.length == 0) {
-        return {
+        return error(500, {
           error: `Failed to update exam with id ${id}`,
-        } satisfies APIResponse;
+        } satisfies APIResponse);
       }
 
       return {
@@ -94,16 +94,16 @@ export function createExamRouter(app: ServerType) {
     },
     { body: InsertExamSchema }
   );
-  app.delete("/:id", async ({ params: { id } }) => {
+  app.delete("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .delete(exams)
       .where(eq(exams.id, parseInt(id)))
       .returning();
 
     if (res.length == 0) {
-      return {
+      return error(500, {
         error: `Failed to delete exam with id ${id}`,
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
 
     return {

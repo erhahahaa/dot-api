@@ -54,7 +54,6 @@ CREATE TABLE IF NOT EXISTS "tacticals" (
 	"name" text NOT NULL,
 	"description" text,
 	"content" json,
-	"due_at" timestamp DEFAULT now() + interval '1 day',
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );

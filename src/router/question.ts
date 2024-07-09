@@ -5,11 +5,11 @@ import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
 export function createQuestionRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor, limit, programId } }) => {
+  app.get("/", async ({ query: { cursor, limit, programId }, error }) => {
     if (!programId) {
-      return {
+      return error(400, {
         error: "Program id is required",
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
     const res = await db
       .select()
@@ -22,16 +22,16 @@ export function createQuestionRouter(app: ServerType) {
       .limit(parseInt(limit as string) || 10);
 
     if (res.length == 0) {
-      return {
+      return error(404, {
         error: "No questions found",
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
     return {
       message: "Questions found",
       data: res,
     } satisfies APIResponse;
   });
-  app.get("/:id", async ({ params: { id } }) => {
+  app.get("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .select()
       .from(questions)
@@ -39,9 +39,9 @@ export function createQuestionRouter(app: ServerType) {
       .limit(1);
 
     if (res.length == 0) {
-      return {
+      return error(404, {
         error: `Question with id ${id} not found`,
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
 
     return {
@@ -51,12 +51,12 @@ export function createQuestionRouter(app: ServerType) {
   });
   app.post(
     "/",
-    async ({ body }) => {
+    async ({ body, error }) => {
       const res = await db.insert(questions).values(body).returning();
       if (res.length == 0) {
-        return {
-          error: "Failed to insert question",
-        } satisfies APIResponse;
+        return error(500, {
+          error: `Failed to insert question`,
+        } satisfies APIResponse);
       }
 
       return {
@@ -70,7 +70,7 @@ export function createQuestionRouter(app: ServerType) {
   );
   app.put(
     "/:id",
-    async ({ params: { id }, body }) => {
+    async ({ params: { id }, body, error }) => {
       const res = await db
         .update(questions)
         .set(body)
@@ -78,9 +78,9 @@ export function createQuestionRouter(app: ServerType) {
         .returning();
 
       if (res.length == 0) {
-        return {
+        return error(500, {
           error: `Failed to update question with id ${id}`,
-        } satisfies APIResponse;
+        } satisfies APIResponse);
       }
 
       return {
@@ -90,16 +90,16 @@ export function createQuestionRouter(app: ServerType) {
     },
     { body: InsertQuestionSchema }
   );
-  app.delete("/:id", async ({ params: { id } }) => {
+  app.delete("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .delete(questions)
       .where(eq(questions.id, parseInt(id)))
       .returning();
 
     if (res.length == 0) {
-      return {
-        error: `Failed to delete question with id ${id}`,
-      } satisfies APIResponse;
+      return error(404, {
+        error: `Question with id ${id} not found`,
+      } satisfies APIResponse);
     }
 
     return {

@@ -9,10 +9,10 @@ import {
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
 import { users } from "../users";
-import { usersToPrograms } from "../users/relations";
+import { usersToClubs } from "../users/relations";
 
-export const programs = pgTable(
-  "programs",
+export const clubs = pgTable(
+  "clubs",
   {
     id: serial("id").primaryKey().notNull(),
     creator_id: serial("creator_id").notNull(),
@@ -33,10 +33,10 @@ export const programs = pgTable(
     }),
   })
 );
-export const programsRelations = relations(programs, ({ many }) => ({
-  programsToUsers: many(usersToPrograms),
+export const clubsRelations = relations(clubs, ({ many }) => ({
+  clubsToUsers: many(usersToClubs),
 }));
 
-export const InsertProgramSchema = createInsertSchema(programs);
-export const SelectProgramSchema = createSelectSchema(programs);
-export type ProgramType = Static<typeof SelectProgramSchema>;
+export const InsertClubSchema = createInsertSchema(clubs);
+export const SelectClubSchema = createSelectSchema(clubs);
+export type ClubType = Static<typeof SelectClubSchema>;

@@ -9,13 +9,13 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
-import { programs } from "../programs";
+import { clubs } from "../clubs";
 
 export const tacticals = pgTable(
   "tacticals",
   {
     id: serial("id").primaryKey().notNull(),
-    program_id: serial("program_id").notNull(),
+    club_id: serial("club_id").notNull(),
     sport_type: text("sport_type").notNull(),
     name: text("name").notNull(),
     description: text("description"),
@@ -24,17 +24,17 @@ export const tacticals = pgTable(
     updated_at: timestamp("updated_at").defaultNow(),
   },
   (t) => ({
-    programReference: foreignKey({
-      columns: [t.program_id],
-      foreignColumns: [programs.id],
+    clubReference: foreignKey({
+      columns: [t.club_id],
+      foreignColumns: [clubs.id],
     }),
   })
 );
 
 export const tacticalRelations = relations(tacticals, ({ one, many }) => ({
-  program: one(programs, {
-    fields: [tacticals.program_id],
-    references: [programs.id],
+  club: one(clubs, {
+    fields: [tacticals.club_id],
+    references: [clubs.id],
   }),
 }));
 

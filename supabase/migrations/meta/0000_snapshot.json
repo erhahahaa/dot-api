@@ -1,155 +1,11 @@
 {
-  "id": "b14e86df-dca3-4b0b-bf22-a8caef188df8",
+  "id": "bb1cc650-9797-4264-803e-f5a6c999af95",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.exams": {
-      "name": "exams",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "program_id": {
-          "name": "program_id",
-          "type": "serial",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "due_at": {
-          "name": "due_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now() + interval '1 day'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "exams_program_id_programs_id_fk": {
-          "name": "exams_program_id_programs_id_fk",
-          "tableFrom": "exams",
-          "tableTo": "programs",
-          "columnsFrom": [
-            "program_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.questions": {
-      "name": "questions",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "program_id": {
-          "name": "program_id",
-          "type": "serial",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "exam_id": {
-          "name": "exam_id",
-          "type": "serial",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "type": {
-          "name": "type",
-          "type": "questionType",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "answer": {
-          "name": "answer",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "questions_program_id_programs_id_fk": {
-          "name": "questions_program_id_programs_id_fk",
-          "tableFrom": "questions",
-          "tableTo": "programs",
-          "columnsFrom": [
-            "program_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.programs": {
-      "name": "programs",
+    "public.clubs": {
+      "name": "clubs",
       "schema": "",
       "columns": {
         "id": {
@@ -200,12 +56,156 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "programs_creator_id_users_id_fk": {
-          "name": "programs_creator_id_users_id_fk",
-          "tableFrom": "programs",
+        "clubs_creator_id_users_id_fk": {
+          "name": "clubs_creator_id_users_id_fk",
+          "tableFrom": "clubs",
           "tableTo": "users",
           "columnsFrom": [
             "creator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.exams": {
+      "name": "exams",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "club_id": {
+          "name": "club_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_at": {
+          "name": "due_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now() + interval '1 day'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "exams_club_id_clubs_id_fk": {
+          "name": "exams_club_id_clubs_id_fk",
+          "tableFrom": "exams",
+          "tableTo": "clubs",
+          "columnsFrom": [
+            "club_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.questions": {
+      "name": "questions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "club_id": {
+          "name": "club_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exam_id": {
+          "name": "exam_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "questionType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer": {
+          "name": "answer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "questions_club_id_clubs_id_fk": {
+          "name": "questions_club_id_clubs_id_fk",
+          "tableFrom": "questions",
+          "tableTo": "clubs",
+          "columnsFrom": [
+            "club_id"
           ],
           "columnsTo": [
             "id"
@@ -227,8 +227,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "program_id": {
-          "name": "program_id",
+        "club_id": {
+          "name": "club_id",
           "type": "serial",
           "primaryKey": false,
           "notNull": true
@@ -274,12 +274,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "tacticals_program_id_programs_id_fk": {
-          "name": "tacticals_program_id_programs_id_fk",
+        "tacticals_club_id_clubs_id_fk": {
+          "name": "tacticals_club_id_clubs_id_fk",
           "tableFrom": "tacticals",
-          "tableTo": "programs",
+          "tableTo": "clubs",
           "columnsFrom": [
-            "program_id"
+            "club_id"
           ],
           "columnsTo": [
             "id"
@@ -374,8 +374,8 @@
         }
       }
     },
-    "public.users_to_programs": {
-      "name": "users_to_programs",
+    "public.users_to_clubs": {
+      "name": "users_to_clubs",
       "schema": "",
       "columns": {
         "user_id": {
@@ -384,15 +384,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "program_id": {
-          "name": "program_id",
+        "club_id": {
+          "name": "club_id",
           "type": "serial",
           "primaryKey": false,
           "notNull": true
         },
         "role": {
           "name": "role",
-          "type": "userProgramRole",
+          "type": "userClubRole",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
@@ -408,9 +408,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "users_to_programs_user_id_users_id_fk": {
-          "name": "users_to_programs_user_id_users_id_fk",
-          "tableFrom": "users_to_programs",
+        "users_to_clubs_user_id_users_id_fk": {
+          "name": "users_to_clubs_user_id_users_id_fk",
+          "tableFrom": "users_to_clubs",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -421,12 +421,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "users_to_programs_program_id_programs_id_fk": {
-          "name": "users_to_programs_program_id_programs_id_fk",
-          "tableFrom": "users_to_programs",
-          "tableTo": "programs",
+        "users_to_clubs_club_id_clubs_id_fk": {
+          "name": "users_to_clubs_club_id_clubs_id_fk",
+          "tableFrom": "users_to_clubs",
+          "tableTo": "clubs",
           "columnsFrom": [
-            "program_id"
+            "club_id"
           ],
           "columnsTo": [
             "id"
@@ -436,11 +436,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "users_to_programs_user_id_program_id_pk": {
-          "name": "users_to_programs_user_id_program_id_pk",
+        "users_to_clubs_user_id_club_id_pk": {
+          "name": "users_to_clubs_user_id_club_id_pk",
           "columns": [
             "user_id",
-            "program_id"
+            "club_id"
           ]
         }
       },
@@ -467,8 +467,8 @@
         "user"
       ]
     },
-    "public.userProgramRole": {
-      "name": "userProgramRole",
+    "public.userClubRole": {
+      "name": "userClubRole",
       "schema": "public",
       "values": [
         "coach",

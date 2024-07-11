@@ -1,13 +1,13 @@
 import { getTableName } from "drizzle-orm";
 import { exit } from "process";
 import { db } from "~/db";
+import { clubs } from "~/schemas/clubs";
 import { exams } from "~/schemas/exam";
 import { questions } from "~/schemas/exam/question";
-import { programs } from "~/schemas/programs";
 import { tacticals } from "~/schemas/tacticals";
 import { users } from "~/schemas/users";
 
-const tables = [questions, exams, tacticals, programs, users] as const;
+const tables = [questions, exams, tacticals, clubs, users] as const;
 
 console.log("Dropping the entire database");
 

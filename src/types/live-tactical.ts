@@ -7,7 +7,7 @@ export enum WebSocketMessageType {
   destroy = "destroy",
 }
 export const LiveTacticalParams = t.Object({
-  programId: t.String(),
+  clubId: t.String(),
   sessionName: t.String(),
   roomId: t.Optional(t.String()),
   userId: t.String(),

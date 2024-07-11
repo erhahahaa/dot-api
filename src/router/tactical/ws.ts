@@ -10,7 +10,7 @@ export function createLiveTacticalRouter(app: ServerType) {
     body: t.Object({
       type: t.Enum(WebSocketMessageType),
       params: t.Object({
-        programId: t.String(),
+        clubId: t.String(),
         sessionName: t.String(),
         roomId: t.Optional(t.String()),
         userId: t.String(),
@@ -24,7 +24,7 @@ export function createLiveTacticalRouter(app: ServerType) {
           ws.send({
             type: WebSocketMessageType.create,
             params: {
-              programId: params.programId,
+              clubId: params.clubId,
               sessionName: params.sessionName,
               roomId,
             },
@@ -37,7 +37,7 @@ export function createLiveTacticalRouter(app: ServerType) {
           ws.send({
             type: WebSocketMessageType.join,
             params: {
-              programId: params.programId,
+              clubId: params.clubId,
               sessionName: params.sessionName,
               roomId: joinId,
               userId: params.userId,
@@ -51,7 +51,7 @@ export function createLiveTacticalRouter(app: ServerType) {
           ws.send({
             type: WebSocketMessageType.leave,
             params: {
-              programId: params.programId,
+              clubId: params.clubId,
               sessionName: params.sessionName,
               roomId: params.roomId,
               userId: params.userId,
@@ -65,7 +65,7 @@ export function createLiveTacticalRouter(app: ServerType) {
           ws.send({
             type: WebSocketMessageType.destroy,
             params: {
-              programId: params.programId,
+              clubId: params.clubId,
               sessionName: params.sessionName,
               roomId: params.roomId,
             },
@@ -96,7 +96,7 @@ function generateRoomId() {
 function createRoom(params: LiveTacticalParamsType) {
   const roomId = generateRoomId();
   rooms[roomId] = {
-    programId: params.programId,
+    clubId: params.clubId,
     sessionName: params.sessionName,
     participants: [],
   };

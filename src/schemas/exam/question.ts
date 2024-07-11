@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
-import { programs } from "../programs";
+import { clubs } from "../clubs";
 
 export const questionType = pgEnum("questionType", [
   "multipleChoice",
@@ -22,7 +22,7 @@ export const questions = pgTable(
   "questions",
   {
     id: serial("id").primaryKey().notNull(),
-    program_id: serial("program_id").notNull(),
+    club_id: serial("club_id").notNull(),
     exam_id: serial("exam_id").notNull(),
     type: questionType("type").notNull(),
     content: text("content").notNull(),
@@ -31,21 +31,21 @@ export const questions = pgTable(
     updated_at: timestamp("updated_at").defaultNow(),
   },
   (t) => ({
-    programReference: foreignKey({
-      columns: [t.program_id],
-      foreignColumns: [programs.id],
+    clubReference: foreignKey({
+      columns: [t.club_id],
+      foreignColumns: [clubs.id],
     }),
   })
 );
 
 export const questionsRelations = relations(questions, ({ one }) => ({
-  exam_id: one(programs, {
+  exam_id: one(clubs, {
     fields: [questions.exam_id],
-    references: [programs.id],
+    references: [clubs.id],
   }),
-  program: one(programs, {
-    fields: [questions.program_id],
-    references: [programs.id],
+  club: one(clubs, {
+    fields: [questions.club_id],
+    references: [clubs.id],
   }),
 }));
 

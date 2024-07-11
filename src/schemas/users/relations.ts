@@ -9,40 +9,37 @@ import {
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
 import { users } from ".";
-import { programs } from "../programs";
+import { clubs } from "../clubs";
 
-export const userProgramRole = pgEnum("userProgramRole", ["coach", "athlete"]);
+export const userClubRole = pgEnum("userClubRole", ["coach", "athlete"]);
 
-export const usersToPrograms = pgTable(
-  "users_to_programs",
+export const usersToClubs = pgTable(
+  "users_to_clubs",
   {
     userId: serial("user_id")
       .notNull()
       .references(() => users.id),
-    programId: serial("program_id")
+    clubId: serial("club_id")
       .notNull()
-      .references(() => programs.id),
-    role: userProgramRole("role").default("athlete").notNull(),
+      .references(() => clubs.id),
+    role: userClubRole("role").default("athlete").notNull(),
     created_at: timestamp("created_at").defaultNow(),
   },
   (t) => ({
-    pk: primaryKey({ columns: [t.userId, t.programId] }),
+    pk: primaryKey({ columns: [t.userId, t.clubId] }),
   })
 );
-export const usersToProgramsRelations = relations(
-  usersToPrograms,
-  ({ one }) => ({
-    program: one(programs, {
-      fields: [usersToPrograms.programId],
-      references: [programs.id],
-    }),
-    user: one(users, {
-      fields: [usersToPrograms.userId],
-      references: [users.id],
-    }),
-  })
-);
+export const usersToClubsRelations = relations(usersToClubs, ({ one }) => ({
+  club: one(clubs, {
+    fields: [usersToClubs.clubId],
+    references: [clubs.id],
+  }),
+  user: one(users, {
+    fields: [usersToClubs.userId],
+    references: [users.id],
+  }),
+}));
 
-export const InsertUserToProgramSchema = createInsertSchema(usersToPrograms);
-export const SelectUserToProgramSchema = createSelectSchema(usersToPrograms);
-export type UserToProgramType = Static<typeof SelectUserToProgramSchema>;
+export const InsertUserToClubSchema = createInsertSchema(usersToClubs);
+export const SelectUserToClubSchema = createSelectSchema(usersToClubs);
+export type UserToClubType = Static<typeof SelectUserToClubSchema>;

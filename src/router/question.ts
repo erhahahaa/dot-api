@@ -5,17 +5,17 @@ import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
 export function createQuestionRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor, limit, programId }, error }) => {
-    if (!programId) {
+  app.get("/", async ({ query: { cursor, limit, clubId }, error }) => {
+    if (!clubId) {
       return error(400, {
-        error: "Program id is required",
+        error: "Club id is required",
       } satisfies APIResponse);
     }
     const res = await db
       .select()
       .from(questions)
       .where(
-        sql`program_id = ${parseInt(programId) || 0} AND id > ${parseInt(
+        sql`club_id = ${parseInt(clubId) || 0} AND id > ${parseInt(
           cursor || "0"
         )}`
       )

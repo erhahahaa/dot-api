@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
-import { clubs } from "../clubs";
+import { clubs } from "~/schemas/clubs";
 
 export const questionType = pgEnum("questionType", [
   "multipleChoice",

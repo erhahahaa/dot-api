@@ -1,115 +1,103 @@
 import { eq, gt } from "drizzle-orm";
 import { db } from "~/db";
-import { exams, InsertExamSchema } from "~/schemas/clubs/exam";
+import { InsertProgramSchema, programs } from "~/schemas/clubs/programs";
 import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
-export function createExamRouter(app: ServerType) {
+export function createProgramRouter(app: ServerType) {
   app.get("/", async ({ query: { cursor, limit }, error }) => {
     const res = await db
       .select()
-      .from(exams)
-      .where(gt(exams.id, parseInt(cursor as string) || 0))
-      .limit(parseInt(limit as string) || 10);
+      .from(programs)
+      .where(gt(programs.id, parseInt(cursor || "0")))
+      .limit(parseInt(limit || "10"));
 
     if (res.length == 0) {
       return error(404, {
-        error: "No exams found",
+        error: "No programs found",
       } satisfies APIResponse);
     }
     return {
-      message: "Exams found",
+      message: "Programs found",
       data: res,
     } satisfies APIResponse;
   });
   app.get("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .select()
-      .from(exams)
-      .where(eq(exams.id, parseInt(id)))
+      .from(programs)
+      .where(eq(programs.id, parseInt(id)))
       .limit(1);
 
     if (res.length == 0) {
       return error(404, {
-        error: `Exam with id ${id} not found`,
+        error: `Program with id ${id} not found`,
       } satisfies APIResponse);
     }
 
     return {
-      message: `Exam with id ${id} found`,
+      message: `Program with id ${id} found`,
       data: res[0],
     } satisfies APIResponse;
   });
   app.post(
     "/",
     async ({ body, error }) => {
-      const { due_at, ...rest } = body;
-
-      const res = await db
-        .insert(exams)
-        .values({
-          ...rest,
-          due_at: new Date(due_at || new Date()),
-        })
-        .returning();
+      const res = await db.insert(programs).values(body).returning();
       if (res.length == 0) {
         return error(500, {
-          error: `Failed to insert exam`,
+          error: `Failed to create program`,
         } satisfies APIResponse);
       }
 
       return {
-        message: "Exam inserted",
+        message: "Program inserted",
         data: res[0],
       } satisfies APIResponse;
     },
     {
-      body: InsertExamSchema,
+      body: InsertProgramSchema,
     }
   );
   app.put(
     "/:id",
     async ({ params: { id }, body, error }) => {
-      const { due_at, ...rest } = body;
-
       const res = await db
-        .update(exams)
-        .set({
-          ...rest,
-          due_at: new Date(due_at || new Date()),
-        })
-        .where(eq(exams.id, parseInt(id)))
+        .update(programs)
+        .set(body)
+        .where(eq(programs.id, parseInt(id)))
         .returning();
 
       if (res.length == 0) {
         return error(500, {
-          error: `Failed to update exam with id ${id}`,
+          error: `Failed to update program with id ${id}`,
         } satisfies APIResponse);
       }
 
       return {
-        message: `Exam with id ${id} updated`,
+        message: `Program with id ${id} updated`,
         data: res[0],
       } satisfies APIResponse;
     },
-    { body: InsertExamSchema }
+    { body: InsertProgramSchema }
   );
   app.delete("/:id", async ({ params: { id }, error }) => {
     const res = await db
-      .delete(exams)
-      .where(eq(exams.id, parseInt(id)))
+      .delete(programs)
+      .where(eq(programs.id, parseInt(id)))
       .returning();
 
     if (res.length == 0) {
       return error(500, {
-        error: `Failed to delete exam with id ${id}`,
+        error: `Failed to delete program with id ${id}`,
       } satisfies APIResponse);
     }
 
     return {
-      message: `Exam with id ${id} deleted`,
+      message: `Program with id ${id} deleted`,
       data: res[0],
     } satisfies APIResponse;
   });
+
   return app;
 }

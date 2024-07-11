@@ -1,11 +1,11 @@
 import { eq, gt } from "drizzle-orm";
 import { db } from "~/db";
-import { InsertTacticalSchema, tacticals } from "~/schemas/tacticals";
+import { InsertTacticalSchema, tacticals } from "~/schemas/clubs/tacticals";
 import { APIResponse } from "~/types";
 import { ServerType } from "../..";
 
 export function createTacticalRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor, limit } }) => {
+  app.get("/", async ({ query: { cursor, limit }, error }) => {
     const res = await db
       .select()
       .from(tacticals)
@@ -13,16 +13,16 @@ export function createTacticalRouter(app: ServerType) {
       .limit(parseInt(limit as string) || 10);
 
     if (res.length == 0) {
-      return {
+      return error(404, {
         error: "No tacticals found",
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
     return {
       message: "Tacticals found",
       data: res,
     } satisfies APIResponse;
   });
-  app.get("/:id", async ({ params: { id } }) => {
+  app.get("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .select()
       .from(tacticals)
@@ -30,9 +30,9 @@ export function createTacticalRouter(app: ServerType) {
       .limit(1);
 
     if (res.length == 0) {
-      return {
+      return error(404, {
         error: `Tactical with id ${id} not found`,
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
 
     return {
@@ -42,12 +42,12 @@ export function createTacticalRouter(app: ServerType) {
   });
   app.post(
     "/",
-    async ({ body }) => {
+    async ({ body, error }) => {
       const res = await db.insert(tacticals).values(body).returning();
       if (res.length == 0) {
-        return {
+        return error(500, {
           error: "Failed to insert tactical",
-        } satisfies APIResponse;
+        } satisfies APIResponse);
       }
 
       return {
@@ -61,7 +61,7 @@ export function createTacticalRouter(app: ServerType) {
   );
   app.put(
     "/:id",
-    async ({ params: { id }, body }) => {
+    async ({ params: { id }, body, error }) => {
       const res = await db
         .update(tacticals)
         .set(body)
@@ -69,9 +69,9 @@ export function createTacticalRouter(app: ServerType) {
         .returning();
 
       if (res.length == 0) {
-        return {
+        return error(500, {
           error: `Failed to update tactical with id ${id}`,
-        } satisfies APIResponse;
+        } satisfies APIResponse);
       }
 
       return {
@@ -81,16 +81,16 @@ export function createTacticalRouter(app: ServerType) {
     },
     { body: InsertTacticalSchema }
   );
-  app.delete("/:id", async ({ params: { id } }) => {
+  app.delete("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .delete(tacticals)
       .where(eq(tacticals.id, parseInt(id)))
       .returning();
 
     if (res.length == 0) {
-      return {
+      return error(500, {
         error: `Failed to delete tactical with id ${id}`,
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
 
     return {

@@ -1,6 +1,6 @@
 {
-  "id": "4b69c7a0-c98f-42cd-8828-9a6c88db9301",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "244d82c6-b63e-42e7-8165-00c73b66e2f5",
+  "prevId": "4b69c7a0-c98f-42cd-8828-9a6c88db9301",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -412,7 +412,7 @@
           "name": "expertise",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

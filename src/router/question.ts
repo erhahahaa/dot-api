@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "~/db";
-import { InsertQuestionSchema, questions } from "~/schemas/exam/question";
+import { InsertQuestionSchema, questions } from "~/schemas/clubs/exam/question";
 import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
@@ -19,7 +19,7 @@ export function createQuestionRouter(app: ServerType) {
           cursor || "0"
         )}`
       )
-      .limit(parseInt(limit as string) || 10);
+      .limit(parseInt(limit || "10"));
 
     if (res.length == 0) {
       return error(404, {

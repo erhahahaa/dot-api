@@ -9,16 +9,15 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
-import { clubs } from "../clubs";
+import { clubs } from "~/schemas/clubs";
 
-export const tacticals = pgTable(
-  "tacticals",
+export const programs = pgTable(
+  "programs",
   {
     id: serial("id").primaryKey().notNull(),
     club_id: serial("club_id").notNull(),
     sport_type: text("sport_type").notNull(),
     name: text("name").notNull(),
-    description: text("description"),
     content: json("content"),
     created_at: timestamp("created_at").defaultNow(),
     updated_at: timestamp("updated_at").defaultNow(),
@@ -31,13 +30,13 @@ export const tacticals = pgTable(
   })
 );
 
-export const tacticalRelations = relations(tacticals, ({ one, many }) => ({
+export const programRelations = relations(programs, ({ one, many }) => ({
   club: one(clubs, {
-    fields: [tacticals.club_id],
+    fields: [programs.club_id],
     references: [clubs.id],
   }),
 }));
 
-export const InsertTacticalSchema = createInsertSchema(tacticals);
-export const SelectTacticalSchema = createSelectSchema(tacticals);
-export type TacticalType = Static<typeof SelectTacticalSchema>;
+export const InsertProgramSchema = createInsertSchema(programs);
+export const SelectProgramSchema = createSelectSchema(programs);
+export type ProgramType = Static<typeof SelectProgramSchema>;

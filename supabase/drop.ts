@@ -2,8 +2,8 @@ import { getTableName } from "drizzle-orm";
 import { exit } from "process";
 import { db } from "~/db";
 import { clubs } from "~/schemas/clubs";
+import { questions } from "~/schemas/clubs/exam/question";
 import { exams } from "~/schemas/exam";
-import { questions } from "~/schemas/exam/question";
 import { tacticals } from "~/schemas/tacticals";
 import { users } from "~/schemas/users";
 

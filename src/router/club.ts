@@ -42,7 +42,12 @@ export function createClubRouter(app: ServerType) {
   });
   app.post(
     "/",
-    async ({ body, error }) => {
+    async ({ body, error, jwt, bearer }) => {
+      const user = await jwt.verify(bearer);
+      if (!user || !user.id) {
+        return error(401, { error: "Unauthorized" } satisfies APIResponse);
+      }
+      body.creator_id = parseInt(user.id as string);
       const res = await db.insert(clubs).values(body).returning();
       if (res.length == 0) {
         return error(500, {
@@ -61,8 +66,12 @@ export function createClubRouter(app: ServerType) {
   );
   app.put(
     "/:id",
-    async ({ params: { id }, body, error }) => {
-      console.log("BODY", body);
+    async ({ params: { id }, body, error, jwt, bearer }) => {
+      const user = await jwt.verify(bearer);
+      if (!user || !user.id) {
+        return error(401, { error: "Unauthorized" } satisfies APIResponse);
+      }
+      body.creator_id = parseInt(user.id as string);
       const res = await db
         .update(clubs)
         .set(body)
@@ -89,9 +98,9 @@ export function createClubRouter(app: ServerType) {
       .returning();
 
     if (res.length == 0) {
-      return {
+      return error(500, {
         error: `Failed to delete club with id ${id}`,
-      } satisfies APIResponse;
+      } satisfies APIResponse);
     }
 
     return {

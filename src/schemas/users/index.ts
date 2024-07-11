@@ -15,7 +15,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   phone: text("phone"),
   role: userRole("role").default("user").notNull(),
-  expertise: text("expertise").notNull(),
+  expertise: text("expertise"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });

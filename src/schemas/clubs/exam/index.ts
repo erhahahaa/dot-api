@@ -9,8 +9,8 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
-import { clubs } from "../clubs";
-import { questions } from "./question";
+import { clubs } from "~/schemas/clubs";
+import { questions } from "~/schemas/clubs/exam/question";
 
 export const exams = pgTable(
   "exams",

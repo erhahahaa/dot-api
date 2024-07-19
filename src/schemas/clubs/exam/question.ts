@@ -11,7 +11,7 @@ import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
 import { clubs } from "~/schemas/clubs";
 
-export const questionType = pgEnum("questionType", [
+export const questionType = pgEnum("question_type", [
   "multipleChoice",
   "trueFalse",
   "shortAnswer",
@@ -22,29 +22,29 @@ export const questions = pgTable(
   "questions",
   {
     id: serial("id").primaryKey().notNull(),
-    club_id: serial("club_id").notNull(),
-    exam_id: serial("exam_id").notNull(),
+    clubId: serial("club_id").notNull(),
+    examId: serial("exam_id").notNull(),
     type: questionType("type").notNull(),
     content: text("content").notNull(),
     answer: text("answer").notNull(),
-    created_at: timestamp("created_at").defaultNow(),
-    updated_at: timestamp("updated_at").defaultNow(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
   },
   (t) => ({
     clubReference: foreignKey({
-      columns: [t.club_id],
+      columns: [t.clubId],
       foreignColumns: [clubs.id],
     }),
   })
 );
 
 export const questionsRelations = relations(questions, ({ one }) => ({
-  exam_id: one(clubs, {
-    fields: [questions.exam_id],
+  examId: one(clubs, {
+    fields: [questions.examId],
     references: [clubs.id],
   }),
   club: one(clubs, {
-    fields: [questions.club_id],
+    fields: [questions.clubId],
     references: [clubs.id],
   }),
 }));

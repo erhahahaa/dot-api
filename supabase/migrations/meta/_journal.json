@@ -5,15 +5,50 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1720703025932,
-      "tag": "0000_bumpy_vision",
+      "when": 1721331291405,
+      "tag": "0000_exotic_garia",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1720703904561,
-      "tag": "0001_perfect_white_tiger",
+      "when": 1721331842885,
+      "tag": "0001_far_night_thrasher",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1721356090119,
+      "tag": "0002_ambitious_arclight",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1721356340941,
+      "tag": "0003_condemned_lifeguard",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1721356796263,
+      "tag": "0004_happy_stellaris",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1721388981917,
+      "tag": "0005_last_calypso",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1721389108207,
+      "tag": "0006_lame_spectrum",
       "breakpoints": true
     }
   ]

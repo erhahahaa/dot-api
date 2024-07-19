@@ -4,8 +4,9 @@ import { db } from "~/db";
 import { authMiddleware } from "~/middleware";
 import { InsertUserSchema, users } from "~/schemas/users";
 import { APIResponse } from "~/types";
+import { sanitize } from "~/utils";
 import { rotateJWT } from "~/utils/jwt";
-import { encryptPassword, sanitize } from "~/utils/password";
+import { encryptPassword } from "~/utils/password";
 import { ServerType } from "..";
 
 export function createAuthRouter(app: ServerType) {

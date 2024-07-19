@@ -3,7 +3,8 @@ import { pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
 import { usersToClubs } from "./relations";
-export const userRole = pgEnum("role", ["superadmin", "admin", "user"]);
+
+export const userRole = pgEnum("user_role", ["coach", "athlete"]);
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey().notNull(),
@@ -14,10 +15,10 @@ export const users = pgTable("users", {
     .notNull(),
   password: text("password").notNull(),
   phone: text("phone"),
-  role: userRole("role").default("user").notNull(),
+  role: userRole("role").default("athlete").notNull(),
   expertise: text("expertise"),
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 export const usersRelations = relations(users, ({ many }) => ({
   usersToClubs: many(usersToClubs),

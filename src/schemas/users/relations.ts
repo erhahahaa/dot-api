@@ -11,7 +11,7 @@ import { Static } from "elysia";
 import { users } from ".";
 import { clubs } from "../clubs";
 
-export const userClubRole = pgEnum("userClubRole", ["coach", "athlete"]);
+export const userRole = pgEnum("user_role", ["coach", "athlete"]);
 
 export const usersToClubs = pgTable(
   "users_to_clubs",
@@ -22,7 +22,7 @@ export const usersToClubs = pgTable(
     clubId: serial("club_id")
       .notNull()
       .references(() => clubs.id),
-    role: userClubRole("role").default("athlete").notNull(),
+    role: userRole("role").default("athlete").notNull(),
     created_at: timestamp("created_at").defaultNow(),
   },
   (t) => ({

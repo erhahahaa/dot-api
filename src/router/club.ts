@@ -1,15 +1,23 @@
-import { eq, gt } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import { db } from "~/db";
-import { InsertClubSchema, clubs } from "~/schemas/clubs";
+import { clubs, InsertClubSchema } from "~/schemas/clubs";
+import { usersToClubs } from "~/schemas/users/relations";
 import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
 export function createClubRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor, limit }, error }) => {
+  app.get("/", async ({ query: { cursor, limit, creator_id }, error }) => {
     const res = await db
       .select()
       .from(clubs)
-      .where(gt(clubs.id, parseInt(cursor as string) || 0))
+      .where(
+        creator_id
+          ? and(
+              gt(clubs.id, parseInt(cursor as string) || 0),
+              eq(clubs.creatorId, parseInt(creator_id as string) || 0)
+            )
+          : gt(clubs.id, parseInt(cursor as string) || 0)
+      )
       .limit(parseInt(limit as string) || 10);
 
     if (res.length == 0) {
@@ -17,6 +25,15 @@ export function createClubRouter(app: ServerType) {
         error: "No clubs found",
       } satisfies APIResponse);
     }
+
+    for (const club of res as any) {
+      const memberCount = await db
+        .select()
+        .from(usersToClubs)
+        .where(eq(usersToClubs.clubId, club.id));
+      club.memberCount = memberCount.length;
+    }
+
     return {
       message: "Clubs found",
       data: res,
@@ -47,13 +64,20 @@ export function createClubRouter(app: ServerType) {
       if (!user || !user.id) {
         return error(401, { error: "Unauthorized" } satisfies APIResponse);
       }
-      body.creator_id = parseInt(user.id as string);
+      body.creatorId = parseInt(user.id as string);
+
       const res = await db.insert(clubs).values(body).returning();
       if (res.length == 0) {
         return error(500, {
           error: `Failed to insert club`,
         } satisfies APIResponse);
       }
+
+      await db.insert(usersToClubs).values({
+        role: "coach",
+        clubId: res[0].id,
+        userId: body.creatorId,
+      });
 
       return {
         message: "Club inserted",
@@ -71,7 +95,7 @@ export function createClubRouter(app: ServerType) {
       if (!user || !user.id) {
         return error(401, { error: "Unauthorized" } satisfies APIResponse);
       }
-      body.creator_id = parseInt(user.id as string);
+      body.creatorId = parseInt(user.id as string);
       const res = await db
         .update(clubs)
         .set(body)

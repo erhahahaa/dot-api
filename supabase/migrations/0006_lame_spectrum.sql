@@ -1,0 +1,1 @@
+ALTER TABLE "program_exercises" ALTER COLUMN "program_id" SET DATA TYPE integer;

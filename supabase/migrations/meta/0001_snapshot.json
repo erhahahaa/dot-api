@@ -1,6 +1,6 @@
 {
-  "id": "244d82c6-b63e-42e7-8165-00c73b66e2f5",
-  "prevId": "4b69c7a0-c98f-42cd-8828-9a6c88db9301",
+  "id": "62b72030-79f9-4091-b367-035fe7606a6f",
+  "prevId": "28a7467a-4294-4bb4-bec4-4f910fa8c255",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -97,7 +97,7 @@
         },
         "type": {
           "name": "type",
-          "type": "questionType",
+          "type": "question_type",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
@@ -173,6 +173,13 @@
         "description": {
           "name": "description",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "sport_type",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -402,11 +409,11 @@
         },
         "role": {
           "name": "role",
-          "type": "role",
+          "type": "user_role",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'user'"
+          "default": "'athlete'"
         },
         "expertise": {
           "name": "expertise",
@@ -460,7 +467,7 @@
         },
         "role": {
           "name": "role",
-          "type": "userClubRole",
+          "type": "user_role",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
@@ -516,8 +523,8 @@
     }
   },
   "enums": {
-    "public.questionType": {
-      "name": "questionType",
+    "public.question_type": {
+      "name": "question_type",
       "schema": "public",
       "values": [
         "multipleChoice",
@@ -526,17 +533,17 @@
         "essay"
       ]
     },
-    "public.role": {
-      "name": "role",
+    "public.sport_type": {
+      "name": "sport_type",
       "schema": "public",
       "values": [
-        "superadmin",
-        "admin",
-        "user"
+        "volleyBall",
+        "basketBall",
+        "soccer"
       ]
     },
-    "public.userClubRole": {
-      "name": "userClubRole",
+    "public.user_role": {
+      "name": "user_role",
       "schema": "public",
       "values": [
         "coach",

@@ -11,13 +11,3 @@ export async function verifyPassword(
 ): Promise<boolean> {
   return await compare(plain, encrypted);
 }
-
-export function sanitize(obj: any, exceptsNotation: string[]) {
-  const result: any = {};
-  Object.keys(obj).forEach((key) => {
-    if (!exceptsNotation.includes(key)) {
-      result[key] = obj[key];
-    }
-  });
-  return result;
-}

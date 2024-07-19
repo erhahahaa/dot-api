@@ -15,17 +15,17 @@ export const tacticals = pgTable(
   "tacticals",
   {
     id: serial("id").primaryKey().notNull(),
-    club_id: serial("club_id").notNull(),
-    sport_type: text("sport_type").notNull(),
+    clubId: serial("club_id").notNull(),
+    sportType: text("sport_type").notNull(),
     name: text("name").notNull(),
     description: text("description"),
     content: json("content"),
-    created_at: timestamp("created_at").defaultNow(),
-    updated_at: timestamp("updated_at").defaultNow(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
   },
   (t) => ({
     clubReference: foreignKey({
-      columns: [t.club_id],
+      columns: [t.clubId],
       foreignColumns: [clubs.id],
     }),
   })
@@ -33,7 +33,7 @@ export const tacticals = pgTable(
 
 export const tacticalRelations = relations(tacticals, ({ one, many }) => ({
   club: one(clubs, {
-    fields: [tacticals.club_id],
+    fields: [tacticals.clubId],
     references: [clubs.id],
   }),
 }));

@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
   foreignKey,
+  pgEnum,
   pgTable,
   serial,
   text,
@@ -11,24 +12,27 @@ import { Static } from "elysia";
 import { users } from "../users";
 import { usersToClubs } from "../users/relations";
 
+export const sportType = pgEnum("sport_type", [
+  "volleyBall",
+  "basketBall",
+  "soccer",
+]);
+
 export const clubs = pgTable(
   "clubs",
   {
     id: serial("id").primaryKey().notNull(),
-    creator_id: serial("creator_id").notNull(),
+    creatorId: serial("creator_id").notNull(),
     name: text("name").notNull(),
     description: text("description").notNull(),
-    image: text("image")
-      .notNull()
-      .default(
-        "https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg"
-      ),
-    created_at: timestamp("created_at").defaultNow(),
-    updated_at: timestamp("updated_at").defaultNow(),
+    type: sportType("type").notNull(),
+    image: text("image"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
   },
   (t) => ({
     creatorReference: foreignKey({
-      columns: [t.creator_id],
+      columns: [t.creatorId],
       foreignColumns: [users.id],
     }),
   })

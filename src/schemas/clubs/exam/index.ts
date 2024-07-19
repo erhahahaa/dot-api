@@ -16,16 +16,16 @@ export const exams = pgTable(
   "exams",
   {
     id: serial("id").primaryKey().notNull(),
-    club_id: serial("club_id").notNull(),
+    clubId: serial("club_id").notNull(),
     title: text("title").notNull(),
     description: text("description"),
-    due_at: timestamp("due_at").default(sql`now() + interval '1 day'`),
-    created_at: timestamp("created_at").defaultNow(),
-    updated_at: timestamp("updated_at").defaultNow(),
+    dueAt: timestamp("due_at").default(sql`now() + interval '1 day'`),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
   },
   (t) => ({
     clubReference: foreignKey({
-      columns: [t.club_id],
+      columns: [t.clubId],
       foreignColumns: [clubs.id],
     }),
   })
@@ -33,14 +33,14 @@ export const exams = pgTable(
 
 export const examsRelations = relations(exams, ({ one, many }) => ({
   club: one(clubs, {
-    fields: [exams.club_id],
+    fields: [exams.clubId],
     references: [clubs.id],
   }),
   questions: many(questions),
 }));
 
 export const InsertExamSchema = createInsertSchema(exams, {
-  due_at: Type.String(),
+  dueAt: Type.String(),
 });
 export const SelectExamSchema = createSelectSchema(exams);
 export type ExamType = Static<typeof SelectExamSchema>;

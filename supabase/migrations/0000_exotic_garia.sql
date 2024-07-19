@@ -1,17 +1,17 @@
 DO $$ BEGIN
- CREATE TYPE "public"."questionType" AS ENUM('multipleChoice', 'trueFalse', 'shortAnswer', 'essay');
+ CREATE TYPE "public"."question_type" AS ENUM('multipleChoice', 'trueFalse', 'shortAnswer', 'essay');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."role" AS ENUM('superadmin', 'admin', 'user');
+ CREATE TYPE "public"."sport_type" AS ENUM('volleyBall', 'basketBall', 'soccer');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."userClubRole" AS ENUM('coach', 'athlete');
+ CREATE TYPE "public"."user_role" AS ENUM('coach', 'athlete');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS "questions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"club_id" serial NOT NULL,
 	"exam_id" serial NOT NULL,
-	"type" "questionType" NOT NULL,
+	"type" "question_type" NOT NULL,
 	"content" text NOT NULL,
 	"answer" text NOT NULL,
 	"created_at" timestamp DEFAULT now(),
@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS "clubs" (
 	"creator_id" serial NOT NULL,
 	"name" text NOT NULL,
 	"description" text NOT NULL,
-	"image" text DEFAULT 'https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg' NOT NULL,
+	"type" "sport_type" NOT NULL,
+	"image" text DEFAULT 'https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg',
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -75,8 +76,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"image" text DEFAULT 'https://api.dicebear.com/9.x/adventurer/png' NOT NULL,
 	"password" text NOT NULL,
 	"phone" text,
-	"role" "role" DEFAULT 'user' NOT NULL,
-	"expertise" text NOT NULL,
+	"role" "user_role" DEFAULT 'athlete' NOT NULL,
+	"expertise" text,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "users_email_unique" UNIQUE("email")
@@ -85,7 +86,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 CREATE TABLE IF NOT EXISTS "users_to_clubs" (
 	"user_id" serial NOT NULL,
 	"club_id" serial NOT NULL,
-	"role" "userClubRole" DEFAULT 'athlete' NOT NULL,
+	"role" "user_role" DEFAULT 'athlete' NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	CONSTRAINT "users_to_clubs_user_id_club_id_pk" PRIMARY KEY("user_id","club_id")
 );

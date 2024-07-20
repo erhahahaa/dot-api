@@ -1,6 +1,7 @@
 import { eq, gt } from "drizzle-orm";
-import { db } from "~/db";
+import { db } from "~/lib";
 import { InsertTacticalSchema, tacticals } from "~/schemas/clubs/tacticals";
+
 import { APIResponse } from "~/types";
 import { ServerType } from "../..";
 
@@ -64,7 +65,7 @@ export function createTacticalRouter(app: ServerType) {
     async ({ params: { id }, body, error }) => {
       const res = await db
         .update(tacticals)
-        .set(body)
+        .set(body as any)
         .where(eq(tacticals.id, parseInt(id)))
         .returning();
 

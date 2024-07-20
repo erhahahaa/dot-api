@@ -1,5 +1,5 @@
 import { eq, gt } from "drizzle-orm";
-import { db } from "~/db";
+import { db } from "~/lib";
 import { exams, InsertExamSchema } from "~/schemas/clubs/exam";
 import { APIResponse } from "~/types";
 import { ServerType } from "..";
@@ -43,13 +43,13 @@ export function createExamRouter(app: ServerType) {
   app.post(
     "/",
     async ({ body, error }) => {
-      const { due_at, ...rest } = body;
+      const { dueAt, ...rest } = body;
 
       const res = await db
         .insert(exams)
         .values({
           ...rest,
-          due_at: new Date(due_at || new Date()),
+          dueAt: new Date(dueAt || new Date()),
         })
         .returning();
       if (res.length == 0) {
@@ -70,13 +70,13 @@ export function createExamRouter(app: ServerType) {
   app.put(
     "/:id",
     async ({ params: { id }, body, error }) => {
-      const { due_at, ...rest } = body;
+      const { dueAt, ...rest } = body;
 
       const res = await db
         .update(exams)
         .set({
           ...rest,
-          due_at: new Date(due_at || new Date()),
+          dueAt: new Date(dueAt || new Date()),
         })
         .where(eq(exams.id, parseInt(id)))
         .returning();

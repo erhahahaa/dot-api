@@ -16,12 +16,12 @@ export const userRole = pgEnum("user_role", ["coach", "athlete"]);
 export const usersToClubs = pgTable(
   "users_to_clubs",
   {
-    userId: serial("user_id")
-      .notNull()
-      .references(() => users.id),
-    clubId: serial("club_id")
-      .notNull()
-      .references(() => clubs.id),
+    userId: serial("user_id").references(() => users.id, {
+      onDelete: "cascade",
+    }),
+    clubId: serial("club_id").references(() => clubs.id, {
+      onDelete: "cascade",
+    }),
     role: userRole("role").default("athlete").notNull(),
     created_at: timestamp("created_at").defaultNow(),
   },

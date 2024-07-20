@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
-import { db } from "~/db";
+import { db } from "~/lib";
 import { authMiddleware } from "~/middleware";
 import { InsertUserSchema, users } from "~/schemas/users";
 import { APIResponse } from "~/types";
@@ -44,6 +44,19 @@ export function createAuthRouter(app: ServerType) {
     "/sign-up",
     async ({ body, error }) => {
       const { password, ...rest } = body;
+      const find = await db.query.users.findFirst({
+        where(fields, { eq }) {
+          return eq(fields.email, rest.email);
+        },
+      });
+
+      if (find) {
+        return error(409, {
+          error: `Email signed up`,
+          message: `Email ${rest.email} already signed up, please sign in`,
+        } satisfies APIResponse);
+      }
+
       const hash = await encryptPassword(password);
 
       const user = await db

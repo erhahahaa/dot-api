@@ -1,0 +1,1 @@
+ALTER TABLE "tacticals" DROP COLUMN IF EXISTS "sport_type";

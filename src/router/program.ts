@@ -1,16 +1,16 @@
 import { and, eq, gt } from "drizzle-orm";
-import { t } from "elysia";
-import { db } from "~/db";
+import { db } from "~/lib";
 import { InsertProgramSchema, programs } from "~/schemas/clubs/programs";
-import {
-  InsertProgramExerciseSchema,
-  programExercises,
-} from "~/schemas/clubs/programs/exercise";
 import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
 export function createProgramRouter(app: ServerType) {
   app.get("/", async ({ query: { cursor, limit, clubId }, error }) => {
+    if (!clubId) {
+      return error(400, {
+        error: "Club id is required",
+      } satisfies APIResponse);
+    }
     const res = await db
       .select()
       .from(programs)
@@ -53,43 +53,34 @@ export function createProgramRouter(app: ServerType) {
   app.post(
     "/",
     async ({ body, error }) => {
-      const program = await db
-        .insert(programs)
-        .values(body.program)
-        .returning();
+      const program = await db.insert(programs).values(body).returning();
       if (program.length == 0) {
         return error(500, {
-          error: `Failed to create ${body.program.name} program`,
+          error: `Failed to create ${body.name} program`,
         } satisfies APIResponse);
       }
 
-      for (const exercise of body.exercises) {
-        exercise.programId = program[0].id;
-      }
+      // for (const exercise of body.exercises) {
+      //   exercise.programId = program[0].id;
+      // }
 
-      const exercises = await db
-        .insert(programExercises)
-        .values(body.exercises)
-        .returning();
-      if (exercises.length == 0) {
-        return error(500, {
-          error: `Failed to create program exercises`,
-        });
-      }
+      // const exercises = await db
+      //   .insert(programExercises)
+      //   .values(body.exercises)
+      //   .returning();
+      // if (exercises.length == 0) {
+      //   return error(500, {
+      //     error: `Failed to create program exercises`,
+      //   });
+      // }
 
       return {
         message: "Program inserted",
-        data: {
-          ...program[0],
-          exercises,
-        },
+        data: program[0],
       } satisfies APIResponse;
     },
     {
-      body: t.Object({
-        program: InsertProgramSchema,
-        exercises: t.Array(InsertProgramExerciseSchema),
-      }),
+      body: InsertProgramSchema,
     }
   );
   app.put(
@@ -97,7 +88,7 @@ export function createProgramRouter(app: ServerType) {
     async ({ params: { id }, body, error }) => {
       const program = await db
         .update(programs)
-        .set(body.program)
+        .set(body)
         .where(eq(programs.id, parseInt(id)))
         .returning();
 
@@ -107,39 +98,33 @@ export function createProgramRouter(app: ServerType) {
         } satisfies APIResponse);
       }
 
-      let exercises = [];
-      for (const exercise of body.exercises) {
-        if (exercise.id == undefined) continue;
+      // let exercises = [];
+      // for (const exercise of body.exercises) {
+      //   if (exercise.id == undefined) continue;
 
-        exercise.programId = parseInt(id);
-        const update = await db
-          .update(programExercises)
-          .set(exercise)
-          .where(eq(programExercises.id, exercise.id))
-          .returning();
+      //   exercise.programId = parseInt(id);
+      //   const update = await db
+      //     .update(programExercises)
+      //     .set(exercise)
+      //     .where(eq(programExercises.id, exercise.id))
+      //     .returning();
 
-        if (update.length != 0) exercises.push(update);
-      }
+      //   if (update.length != 0) exercises.push(update);
+      // }
 
-      if (exercises.length == 0) {
-        return error(500, {
-          error: `Failed to update program exercises`,
-        });
-      }
+      // if (exercises.length == 0) {
+      //   return error(500, {
+      //     error: `Failed to update program exercises`,
+      //   });
+      // }
 
       return {
         message: `Program with id ${id} updated`,
-        data: {
-          ...program[0],
-          exercises,
-        },
+        data: program[0],
       } satisfies APIResponse;
     },
     {
-      body: t.Object({
-        program: InsertProgramSchema,
-        exercises: t.Array(InsertProgramExerciseSchema),
-      }),
+      body: InsertProgramSchema,
     }
   );
   app.delete("/:id", async ({ params: { id }, error }) => {

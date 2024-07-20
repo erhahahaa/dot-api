@@ -36,3 +36,11 @@ export const ERROR_CODE_STATUS_MAP = new MapWithDefault<string, number>([
   ["UNKNOWN", 500],
   [DEFAULT, 500],
 ]);
+
+export class StorageError extends Error {
+  public status = 500;
+  public type = "storage";
+  constructor(public message: string) {
+    super(message);
+  }
+}

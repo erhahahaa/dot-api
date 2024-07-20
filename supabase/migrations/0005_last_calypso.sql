@@ -1,1 +1,0 @@
-ALTER TABLE "program_exercises" ALTER COLUMN "description" DROP NOT NULL;

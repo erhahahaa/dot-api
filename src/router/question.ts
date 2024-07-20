@@ -1,6 +1,9 @@
 import { eq, sql } from "drizzle-orm";
-import { db } from "~/db";
-import { InsertQuestionSchema, questions } from "~/schemas/clubs/exam/question";
+import { db } from "~/lib";
+import {
+  examQuestions,
+  InsertExamQuestionSchema,
+} from "~/schemas/clubs/exam/question";
 import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
@@ -13,7 +16,7 @@ export function createQuestionRouter(app: ServerType) {
     }
     const res = await db
       .select()
-      .from(questions)
+      .from(examQuestions)
       .where(
         sql`club_id = ${parseInt(clubId) || 0} AND id > ${parseInt(
           cursor || "0"
@@ -34,8 +37,8 @@ export function createQuestionRouter(app: ServerType) {
   app.get("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .select()
-      .from(questions)
-      .where(eq(questions.id, parseInt(id)))
+      .from(examQuestions)
+      .where(eq(examQuestions.id, parseInt(id)))
       .limit(1);
 
     if (res.length == 0) {
@@ -52,7 +55,7 @@ export function createQuestionRouter(app: ServerType) {
   app.post(
     "/",
     async ({ body, error }) => {
-      const res = await db.insert(questions).values(body).returning();
+      const res = await db.insert(examQuestions).values(body).returning();
       if (res.length == 0) {
         return error(500, {
           error: `Failed to insert question`,
@@ -65,16 +68,16 @@ export function createQuestionRouter(app: ServerType) {
       } satisfies APIResponse;
     },
     {
-      body: InsertQuestionSchema,
+      body: InsertExamQuestionSchema,
     }
   );
   app.put(
     "/:id",
     async ({ params: { id }, body, error }) => {
       const res = await db
-        .update(questions)
+        .update(examQuestions)
         .set(body)
-        .where(eq(questions.id, parseInt(id)))
+        .where(eq(examQuestions.id, parseInt(id)))
         .returning();
 
       if (res.length == 0) {
@@ -88,12 +91,12 @@ export function createQuestionRouter(app: ServerType) {
         data: res[0],
       } satisfies APIResponse;
     },
-    { body: InsertQuestionSchema }
+    { body: InsertExamQuestionSchema }
   );
   app.delete("/:id", async ({ params: { id }, error }) => {
     const res = await db
-      .delete(questions)
-      .where(eq(questions.id, parseInt(id)))
+      .delete(examQuestions)
+      .where(eq(examQuestions.id, parseInt(id)))
       .returning();
 
     if (res.length == 0) {

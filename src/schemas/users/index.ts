@@ -7,7 +7,7 @@ import { usersToClubs } from "./relations";
 export const userRole = pgEnum("user_role", ["coach", "athlete"]);
 
 export const users = pgTable("users", {
-  id: serial("id").primaryKey().notNull(),
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   image: text("image")
@@ -21,7 +21,7 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 export const usersRelations = relations(users, ({ many }) => ({
-  usersToClubs: many(usersToClubs),
+  clubsPivot: many(usersToClubs),
 }));
 
 export const InsertUserSchema = createInsertSchema(users);

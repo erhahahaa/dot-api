@@ -12,7 +12,7 @@ export async function uploadSBFile({
 
   const res = await sb.storage.from(`${parent}s`).upload(path, blob, {
     contentType: blob.type,
-    // upsert: true,
+    upsert: true,
   });
 
   if (res.error) {

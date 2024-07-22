@@ -14,6 +14,16 @@ export function createMediaRouter(app: ServerType) {
       params: { dir },
       query: { cursor = "0", limit = "20", clubId = "0" },
     }) => {
+      const find = await db.query.clubs.findFirst({
+        where(fields, { eq }) {
+          return eq(fields.id, parseInt(clubId));
+        },
+      });
+
+      if (!find) {
+        return error(404, { error: "Club not found" } satisfies APIResponse);
+      }
+
       const res = await db.query.medias.findMany({
         // columns: MEDIA_QUERY_WITH,
         where(fields, { eq, and, gt }) {
@@ -51,6 +61,23 @@ export function createMediaRouter(app: ServerType) {
       if (!user || !user.id) {
         return error(401, { error: "Unauthorized" } satisfies APIResponse);
       }
+
+      const find = await db.query.clubs.findFirst({
+        where(fields, { eq }) {
+          return eq(fields.id, parseInt(clubId));
+        },
+      });
+
+      if (!find) {
+        return error(404, { error: "Club not found" } satisfies APIResponse);
+      }
+
+      if (body.file.size == 0) {
+        return error(400, {
+          error: "File size is 0",
+        });
+      }
+
       if (body.file.type.length == 0) {
         body.file = new File([body.file], body.file.name, {
           type: "application/octet-stream",
@@ -78,6 +105,7 @@ export function createMediaRouter(app: ServerType) {
           type: body.file.type as typeof InsertMediaSchema.properties.type.type,
           parent: dir,
           url: upload.result.url,
+          clubId: parseInt(clubId),
         })
         .returning();
 

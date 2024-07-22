@@ -1,5 +1,5 @@
 {
-  "id": "90a045fa-fe28-4d74-8c2d-9d897aafae40",
+  "id": "9a9d440c-26ea-4029-8c8a-49281ba6e677",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -20,8 +20,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "image_id": {
-          "name": "image_id",
+        "media_id": {
+          "name": "media_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -75,12 +75,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "exams_image_id_medias_id_fk": {
-          "name": "exams_image_id_medias_id_fk",
+        "exams_media_id_medias_id_fk": {
+          "name": "exams_media_id_medias_id_fk",
           "tableFrom": "exams",
           "tableTo": "medias",
           "columnsFrom": [
-            "image_id"
+            "media_id"
           ],
           "columnsTo": [
             "id"
@@ -150,10 +150,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "exam_questions_exam_id_clubs_id_fk": {
-          "name": "exam_questions_exam_id_clubs_id_fk",
+        "exam_questions_exam_id_exams_id_fk": {
+          "name": "exam_questions_exam_id_exams_id_fk",
           "tableFrom": "exam_questions",
-          "tableTo": "clubs",
+          "tableTo": "exams",
           "columnsFrom": [
             "exam_id"
           ],
@@ -196,8 +196,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "image_id": {
-          "name": "image_id",
+        "media_id": {
+          "name": "media_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -251,12 +251,12 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "clubs_image_id_medias_id_fk": {
-          "name": "clubs_image_id_medias_id_fk",
+        "clubs_media_id_medias_id_fk": {
+          "name": "clubs_media_id_medias_id_fk",
           "tableFrom": "clubs",
           "tableTo": "medias",
           "columnsFrom": [
-            "image_id"
+            "media_id"
           ],
           "columnsTo": [
             "id"
@@ -383,8 +383,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "image_id": {
-          "name": "image_id",
+        "media_id": {
+          "name": "media_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -439,12 +439,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "programs_image_id_medias_id_fk": {
-          "name": "programs_image_id_medias_id_fk",
+        "programs_media_id_medias_id_fk": {
+          "name": "programs_media_id_medias_id_fk",
           "tableFrom": "programs",
           "tableTo": "medias",
           "columnsFrom": [
-            "image_id"
+            "media_id"
           ],
           "columnsTo": [
             "id"
@@ -472,17 +472,11 @@
           "primaryKey": false,
           "notNull": false
         },
-        "image_id": {
-          "name": "image_id",
+        "media_id": {
+          "name": "media_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
-        },
-        "sport_type": {
-          "name": "sport_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
         },
         "name": {
           "name": "name",
@@ -496,8 +490,20 @@
           "primaryKey": false,
           "notNull": false
         },
-        "content": {
-          "name": "content",
+        "board": {
+          "name": "board",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team": {
+          "name": "team",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "strategic": {
+          "name": "strategic",
           "type": "json",
           "primaryKey": false,
           "notNull": false
@@ -532,12 +538,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "tacticals_image_id_medias_id_fk": {
-          "name": "tacticals_image_id_medias_id_fk",
+        "tacticals_media_id_medias_id_fk": {
+          "name": "tacticals_media_id_medias_id_fk",
           "tableFrom": "tacticals",
           "tableTo": "medias",
           "columnsFrom": [
-            "image_id"
+            "media_id"
           ],
           "columnsTo": [
             "id"
@@ -561,6 +567,12 @@
         },
         "creator_id": {
           "name": "creator_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "club_id": {
+          "name": "club_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -637,6 +649,19 @@
             "id"
           ],
           "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "medias_club_id_clubs_id_fk": {
+          "name": "medias_club_id_clubs_id_fk",
+          "tableFrom": "medias",
+          "tableTo": "clubs",
+          "columnsFrom": [
+            "club_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

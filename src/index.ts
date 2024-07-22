@@ -19,7 +19,7 @@ import { logConfig } from "./utils";
 config({ path: ".env" });
 
 const BUCKETS_NAME = [
-  "avatars",
+  "users",
   "clubs",
   "programs",
   "exercises",
@@ -60,7 +60,7 @@ export const app = new Elysia({
     BAD_REQUEST: BadRequestError,
     VALIDATION: ValidationError,
   })
-  .onError(({ error, code, set }) => {
+  .onError(({ error, code, set, request }) => {
     if (code == "VALIDATION") {
       console.log(error);
       return { errors: error.validator };

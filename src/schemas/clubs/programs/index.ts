@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
-import { Static } from "elysia";
+import { Static, t } from "elysia";
 import { clubs } from "~/schemas/clubs";
 import { medias } from "~/schemas/media";
 import { programExercises } from "./exercise";
@@ -11,7 +11,7 @@ export const programs = pgTable("programs", {
   clubId: integer("club_id").references(() => clubs.id, {
     onDelete: "cascade",
   }),
-  imageId: integer("image_id").references(() => medias.id, {
+  mediaId: integer("media_id").references(() => medias.id, {
     onDelete: "set null",
   }),
   name: text("name").notNull(),
@@ -26,13 +26,16 @@ export const programsRelations = relations(programs, ({ one, many }) => ({
     fields: [programs.clubId],
     references: [clubs.id],
   }),
-  image: one(medias, {
-    fields: [programs.imageId],
+  media: one(medias, {
+    fields: [programs.mediaId],
     references: [medias.id],
   }),
   exercises: many(programExercises),
 }));
 
-export const InsertProgramSchema = createInsertSchema(programs);
+export const InsertProgramSchema = createInsertSchema(programs, {
+  startDate: t.Union([t.String(), t.Date()]),
+  endDate: t.Union([t.String(), t.Date()]),
+});
 export const SelectProgramSchema = createSelectSchema(programs);
 export type ProgramType = Static<typeof SelectProgramSchema>;

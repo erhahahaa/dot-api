@@ -22,7 +22,7 @@ export const tacticals = pgTable("tacticals", {
   clubId: integer("club_id").references(() => clubs.id, {
     onDelete: "cascade",
   }),
-  imageId: integer("image_id").references(() => medias.id, {
+  mediaId: integer("media_id").references(() => medias.id, {
     onDelete: "set null",
   }),
   name: text("name").notNull(),
@@ -39,8 +39,8 @@ export const tacticalRelations = relations(tacticals, ({ one }) => ({
     fields: [tacticals.clubId],
     references: [clubs.id],
   }),
-  image: one(medias, {
-    fields: [tacticals.imageId],
+  media: one(medias, {
+    fields: [tacticals.mediaId],
     references: [medias.id],
   }),
 }));

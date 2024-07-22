@@ -1,27 +1,61 @@
-import { eq, gt } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import { MEDIA_QUERY_WITH } from "~/helper/query";
 import { db } from "~/lib";
 import { exams, InsertExamSchema } from "~/schemas/clubs/exam";
 import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
 export function createExamRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor, limit }, error }) => {
-    const res = await db
-      .select()
-      .from(exams)
-      .where(gt(exams.id, parseInt(cursor as string) || 0))
-      .limit(parseInt(limit as string) || 10);
+  app.get(
+    "/",
+    async ({ query: { cursor = "0", limit = "10", clubId = "0" }, error }) => {
+      if (!clubId) {
+        return error(400, {
+          error: "Club id is required",
+        } satisfies APIResponse);
+      }
 
-    if (res.length == 0) {
-      return error(404, {
-        error: "No exams found",
-      } satisfies APIResponse);
+      const find = await db.query.clubs.findFirst({
+        where(fields, { eq }) {
+          return eq(fields.id, parseInt(clubId));
+        },
+      });
+
+      if (!find) {
+        return error(404, {
+          error: `Club with id ${clubId} not found`,
+        } satisfies APIResponse);
+      }
+
+      const res = await db.query.exams.findMany({
+        where(fields, { gt }) {
+          return gt(fields.id, parseInt(cursor));
+        },
+        limit: parseInt(limit),
+        with: {
+          image: {
+            columns: MEDIA_QUERY_WITH,
+          },
+        },
+      });
+
+      if (res.length == 0) {
+        return error(404, {
+          error: "No exams found",
+        } satisfies APIResponse);
+      }
+
+      for (const exam of res as any) {
+        exam.media = exam.image;
+        delete exam.image;
+      }
+
+      return {
+        message: "Exams found",
+        data: res,
+      } satisfies APIResponse;
     }
-    return {
-      message: "Exams found",
-      data: res,
-    } satisfies APIResponse;
-  });
+  );
   app.get("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .select()
@@ -43,7 +77,25 @@ export function createExamRouter(app: ServerType) {
   app.post(
     "/",
     async ({ body, error }) => {
-      const { dueAt, ...rest } = body;
+      const { dueAt, clubId, ...rest } = body;
+
+      if (!clubId) {
+        return error(400, {
+          error: "Club id is required",
+        } satisfies APIResponse);
+      }
+
+      const find = await db.query.clubs.findFirst({
+        where(fields, { eq }) {
+          return eq(fields.id, clubId);
+        },
+      });
+
+      if (!find) {
+        return error(404, {
+          error: `Club with id ${clubId} not found`,
+        } satisfies APIResponse);
+      }
 
       const res = await db
         .insert(exams)
@@ -70,7 +122,25 @@ export function createExamRouter(app: ServerType) {
   app.put(
     "/:id",
     async ({ params: { id }, body, error }) => {
-      const { dueAt, ...rest } = body;
+      const { dueAt, clubId, ...rest } = body;
+
+      if (!clubId) {
+        return error(400, {
+          error: "Club id is required",
+        } satisfies APIResponse);
+      }
+
+      const find = await db.query.clubs.findFirst({
+        where(fields, { eq }) {
+          return eq(fields.id, clubId);
+        },
+      });
+
+      if (!find) {
+        return error(404, {
+          error: `Club with id ${clubId} not found`,
+        } satisfies APIResponse);
+      }
 
       const res = await db
         .update(exams)

@@ -9,6 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
+import { clubs } from "../clubs";
 import { users } from "../users";
 
 export const mediaType = pgEnum("media_type", [
@@ -55,6 +56,9 @@ export const medias = pgTable("medias", {
   creatorId: integer("creator_id").references(() => users.id, {
     onDelete: "set null",
   }),
+  clubId: integer("club_id").references(() => clubs.id, {
+    onDelete: "cascade",
+  }),
   name: text("name").notNull(),
   description: text("description"),
   fileSize: integer("file_size"),
@@ -70,6 +74,10 @@ export const mediasRelations = relations(medias, ({ one }) => ({
   creator: one(users, {
     fields: [medias.creatorId],
     references: [users.id],
+  }),
+  club: one(clubs, {
+    fields: [medias.clubId],
+    references: [clubs.id],
   }),
 }));
 

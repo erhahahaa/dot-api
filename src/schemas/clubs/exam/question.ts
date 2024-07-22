@@ -9,8 +9,8 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
-import { clubs } from "~/schemas/clubs";
 import { medias } from "~/schemas/media";
+import { exams } from ".";
 
 export const questionType = pgEnum("question_type", [
   "multipleChoice",
@@ -21,7 +21,7 @@ export const questionType = pgEnum("question_type", [
 
 export const examQuestions = pgTable("exam_questions", {
   id: serial("id").primaryKey(),
-  examId: integer("exam_id").references(() => clubs.id, {
+  examId: integer("exam_id").references(() => exams.id, {
     onDelete: "cascade",
   }),
   mediaId: integer("media_id").references(() => medias.id, {
@@ -35,9 +35,9 @@ export const examQuestions = pgTable("exam_questions", {
 });
 
 export const examQuestionsRelations = relations(examQuestions, ({ one }) => ({
-  exam: one(clubs, {
+  exam: one(exams, {
     fields: [examQuestions.examId],
-    references: [clubs.id],
+    references: [exams.id],
   }),
   media: one(medias, {
     fields: [examQuestions.mediaId],

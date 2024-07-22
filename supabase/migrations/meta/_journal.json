@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1721443636223,
-      "tag": "0000_loving_stranger",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1721446072866,
-      "tag": "0001_majestic_rocket_raccoon",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1721446946508,
-      "tag": "0002_slim_bloodstorm",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1721446988445,
-      "tag": "0003_tan_oracle",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1721475153634,
-      "tag": "0004_mighty_skullbuster",
+      "when": 1721617703378,
+      "tag": "0000_greedy_swordsman",
       "breakpoints": true
     }
   ]

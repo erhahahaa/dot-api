@@ -1,23 +1,36 @@
-import { eq, gt } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "~/lib";
 import { InsertTacticalSchema, tacticals } from "~/schemas/clubs/tacticals";
 
+import { MEDIA_QUERY_WITH } from "~/helper/query";
 import { APIResponse } from "~/types";
 import { ServerType } from "../..";
 
 export function createTacticalRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor, limit }, error }) => {
-    const res = await db
-      .select()
-      .from(tacticals)
-      .where(gt(tacticals.id, parseInt(cursor as string) || 0))
-      .limit(parseInt(limit as string) || 10);
+  app.get("/", async ({ query: { cursor = "0", limit = "10" }, error }) => {
+    const res = await db.query.tacticals.findMany({
+      where(fields, { gt }) {
+        return gt(fields.id, parseInt(cursor));
+      },
+      limit: parseInt(limit),
+      with: {
+        image: {
+          columns: MEDIA_QUERY_WITH,
+        },
+      },
+    });
 
     if (res.length == 0) {
       return error(404, {
         error: "No tacticals found",
       } satisfies APIResponse);
     }
+
+    for (const program of res as any) {
+      program.media = program.image;
+      delete program.image;
+    }
+
     return {
       message: "Tacticals found",
       data: res,
@@ -44,6 +57,25 @@ export function createTacticalRouter(app: ServerType) {
   app.post(
     "/",
     async ({ body, error }) => {
+      const { clubId } = body;
+      if (!clubId) {
+        return error(400, {
+          error: "clubId is required",
+        } satisfies APIResponse);
+      }
+
+      const find = await db.query.clubs.findFirst({
+        where(fields, { eq }) {
+          return eq(fields.id, clubId);
+        },
+      });
+
+      if (!find) {
+        return error(404, {
+          error: `Club with id ${clubId} not found`,
+        } satisfies APIResponse);
+      }
+
       const res = await db.insert(tacticals).values(body).returning();
       if (res.length == 0) {
         return error(500, {
@@ -63,6 +95,25 @@ export function createTacticalRouter(app: ServerType) {
   app.put(
     "/:id",
     async ({ params: { id }, body, error }) => {
+      const { clubId } = body;
+      if (!clubId) {
+        return error(400, {
+          error: "clubId is required",
+        } satisfies APIResponse);
+      }
+
+      const find = await db.query.clubs.findFirst({
+        where(fields, { eq }) {
+          return eq(fields.id, clubId);
+        },
+      });
+
+      if (!find) {
+        return error(404, {
+          error: `Club with id ${clubId} not found`,
+        } satisfies APIResponse);
+      }
+
       const res = await db
         .update(tacticals)
         .set(body as any)

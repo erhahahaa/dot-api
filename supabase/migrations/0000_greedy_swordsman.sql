@@ -31,7 +31,7 @@ END $$;
 CREATE TABLE IF NOT EXISTS "exams" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"club_id" integer,
-	"image_id" integer,
+	"media_id" integer,
 	"title" text NOT NULL,
 	"description" text,
 	"due_at" timestamp DEFAULT now() + interval '1 day',
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS "exam_questions" (
 CREATE TABLE IF NOT EXISTS "clubs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"creator_id" integer,
-	"image_id" integer,
+	"media_id" integer,
 	"name" text NOT NULL,
 	"description" text NOT NULL,
 	"type" "sport_type" NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS "program_exercises" (
 CREATE TABLE IF NOT EXISTS "programs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"club_id" integer,
-	"image_id" integer,
+	"media_id" integer,
 	"name" text NOT NULL,
 	"start_date" timestamp DEFAULT now(),
 	"end_date" timestamp DEFAULT now(),
@@ -88,11 +88,12 @@ CREATE TABLE IF NOT EXISTS "programs" (
 CREATE TABLE IF NOT EXISTS "tacticals" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"club_id" integer,
-	"image_id" integer,
-	"sport_type" text NOT NULL,
+	"media_id" integer,
 	"name" text NOT NULL,
 	"description" text,
-	"content" json,
+	"board" json,
+	"team" json,
+	"strategic" json,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -100,6 +101,7 @@ CREATE TABLE IF NOT EXISTS "tacticals" (
 CREATE TABLE IF NOT EXISTS "medias" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"creator_id" integer,
+	"club_id" integer,
 	"name" text NOT NULL,
 	"description" text,
 	"file_size" integer,
@@ -140,13 +142,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "exams" ADD CONSTRAINT "exams_image_id_medias_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
+ ALTER TABLE "exams" ADD CONSTRAINT "exams_media_id_medias_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "exam_questions" ADD CONSTRAINT "exam_questions_exam_id_clubs_id_fk" FOREIGN KEY ("exam_id") REFERENCES "public"."clubs"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "exam_questions" ADD CONSTRAINT "exam_questions_exam_id_exams_id_fk" FOREIGN KEY ("exam_id") REFERENCES "public"."exams"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -164,7 +166,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "clubs" ADD CONSTRAINT "clubs_image_id_medias_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
+ ALTER TABLE "clubs" ADD CONSTRAINT "clubs_media_id_medias_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -188,7 +190,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "programs" ADD CONSTRAINT "programs_image_id_medias_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
+ ALTER TABLE "programs" ADD CONSTRAINT "programs_media_id_medias_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -200,13 +202,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "tacticals" ADD CONSTRAINT "tacticals_image_id_medias_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
+ ALTER TABLE "tacticals" ADD CONSTRAINT "tacticals_media_id_medias_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "medias" ADD CONSTRAINT "medias_creator_id_users_id_fk" FOREIGN KEY ("creator_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "medias" ADD CONSTRAINT "medias_club_id_clubs_id_fk" FOREIGN KEY ("club_id") REFERENCES "public"."clubs"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

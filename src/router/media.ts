@@ -7,9 +7,46 @@ import { deleteSBFile, uploadSBFile } from "~/utils/uploader";
 import { ServerType } from "..";
 
 export function createMediaRouter(app: ServerType) {
+  app.get(
+    "/:dir",
+    async ({
+      error,
+      params: { dir },
+      query: { cursor = "0", limit = "20", clubId = "0" },
+    }) => {
+      const res = await db.query.medias.findMany({
+        // columns: MEDIA_QUERY_WITH,
+        where(fields, { eq, and, gt }) {
+          return and(eq(fields.parent, dir), gt(fields.id, parseInt(cursor)));
+        },
+        limit: parseInt(limit),
+      });
+
+      if (res.length == 0) {
+        return error(404, { error: "Media empty" } satisfies APIResponse);
+      }
+
+      return {
+        message: "Media list",
+        data: res,
+      } satisfies APIResponse;
+    },
+    {
+      params: t.Object({
+        dir: InsertMediaSchema.properties.parent,
+      }),
+    }
+  );
   app.post(
     "/:dir",
-    async ({ body, error, jwt, bearer, params: { dir } }) => {
+    async ({
+      body,
+      error,
+      jwt,
+      bearer,
+      params: { dir },
+      query: { clubId = "0" },
+    }) => {
       const user = await jwt.verify(bearer);
       if (!user || !user.id) {
         return error(401, { error: "Unauthorized" } satisfies APIResponse);

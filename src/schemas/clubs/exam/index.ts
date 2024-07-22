@@ -12,7 +12,7 @@ export const exams = pgTable("exams", {
   clubId: integer("club_id").references(() => clubs.id, {
     onDelete: "cascade",
   }),
-  imageId: integer("image_id").references(() => medias.id, {
+  mediaId: integer("media_id").references(() => medias.id, {
     onDelete: "set null",
   }),
   title: text("title").notNull(),
@@ -28,8 +28,8 @@ export const examsRelations = relations(exams, ({ one, many }) => ({
     references: [clubs.id],
   }),
   questions: many(examQuestions),
-  image: one(medias, {
-    fields: [exams.imageId],
+  media: one(medias, {
+    fields: [exams.mediaId],
     references: [medias.id],
   }),
 }));

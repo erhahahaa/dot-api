@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
+import { GET_CLUB_QUERY_WITH } from "~/helper/query";
 import { db } from "~/lib";
 import { clubs, InsertClubSchema } from "~/schemas/clubs";
 import { medias } from "~/schemas/media";
@@ -13,26 +14,35 @@ const TABLE_KEY = "club";
 export function createClubRouter(app: ServerType) {
   app.get(
     "/",
-    async ({ query: { cursor = "0", limit = "10", creator_id }, error }) => {
-      const res = await db.query.clubs.findMany({
-        with: {
-          image: {
-            columns: { url: true },
-          },
-          membersPivot: {
-            columns: { userId: true },
-          },
-        },
+    async ({ query: { cursor = "0", limit = "10" }, error, jwt, bearer }) => {
+      const user = await jwt.verify(bearer);
+      if (!user || !user.id) {
+        return error(401, { error: "Unauthorized" } satisfies APIResponse);
+      }
 
+      const userClubs = await db.query.usersToClubs.findMany({
         where(fields, op) {
-          if (creator_id) {
-            return op.and(
-              op.gt(fields.id, parseInt(cursor)),
-              op.eq(fields.creatorId, parseInt(creator_id))
-            );
-          } else {
-            return op.gt(fields.id, parseInt(cursor));
-          }
+          return op.eq(fields.userId, parseInt(user.id as string));
+        },
+        columns: { clubId: true },
+      });
+
+      if (userClubs.length == 0) {
+        return error(404, {
+          error: "No joined clubs found",
+        } satisfies APIResponse);
+      }
+
+      const res = await db.query.clubs.findMany({
+        with: GET_CLUB_QUERY_WITH,
+        where(fields, { inArray, gt, and }) {
+          return and(
+            gt(fields.id, parseInt(cursor)),
+            inArray(
+              fields.id,
+              userClubs.map((c) => c.clubId)
+            )
+          );
         },
         limit: parseInt(limit),
       });
@@ -45,7 +55,13 @@ export function createClubRouter(app: ServerType) {
 
       for (const club of res as any) {
         club.memberCount = club.membersPivot.length;
+        club.programCount = club.programs.length;
+        club.examCount = club.exams.length;
+        club.tacticalCount = club.tacticals.length;
         delete club.membersPivot;
+        delete club.programs;
+        delete club.exams;
+        delete club.tacticals;
       }
 
       return {
@@ -79,6 +95,7 @@ export function createClubRouter(app: ServerType) {
       if (!user || !user.id) {
         return error(401, { error: "Unauthorized" } satisfies APIResponse);
       }
+
       body.creatorId = user.id as string;
 
       if (body.image) {
@@ -98,32 +115,48 @@ export function createClubRouter(app: ServerType) {
         }
 
         if (upload.result) {
-          body.imageId = upload.result.id;
+          body.mediaId = upload.result.id;
         }
       }
 
-      const res = await db
+      const club = await db
         .insert(clubs)
         .values({
           ...body,
           creatorId: parseInt(body.creatorId),
         })
-        .returning();
-      if (res.length == 0) {
+        .returning({ id: clubs.id });
+
+      const res: any = await db.query.clubs.findFirst({
+        with: GET_CLUB_QUERY_WITH,
+        where(fields, { eq }) {
+          return eq(fields.id, club[0].id);
+        },
+      });
+      if (!res) {
         return error(500, {
           error: `Failed to insert club`,
         } satisfies APIResponse);
       }
 
+      res.memberCount = res.membersPivot.length;
+      res.programCount = res.programs.length;
+      res.examCount = res.exams.length;
+      res.tacticalCount = res.tacticals.length;
+      delete res.membersPivot;
+      delete res.programs;
+      delete res.exams;
+      delete res.tacticals;
+
       await db.insert(usersToClubs).values({
         role: "coach",
-        clubId: res[0].id,
+        clubId: res.id,
         userId: parseInt(body.creatorId),
       });
 
       return {
         message: "Club inserted",
-        data: res[0],
+        data: res,
       } satisfies APIResponse;
     },
     {
@@ -151,10 +184,10 @@ export function createClubRouter(app: ServerType) {
         },
         columns: {
           creatorId: true,
-          imageId: true,
+          mediaId: true,
         },
         with: {
-          image: {
+          media: {
             columns: {
               name: true,
               path: true,
@@ -169,14 +202,14 @@ export function createClubRouter(app: ServerType) {
       }
 
       body.creatorId = old.creatorId;
-      body.imageId = old.imageId;
+      body.mediaId = old.mediaId;
 
       if (body.image) {
         const upload = await uploadFile({
           creatorId: user.id as string,
           parent: TABLE_KEY,
           blob: body.image as Blob,
-          mediaId: old.imageId,
+          mediaId: old.mediaId,
         });
         if (upload.error) {
           return error(500, {
@@ -189,8 +222,8 @@ export function createClubRouter(app: ServerType) {
         }
 
         if (upload.result) {
-          body.imageId = upload.result.id;
-          const img = old.image;
+          body.mediaId = upload.result.id;
+          const img = old.media;
           if (img && img.path) {
             await deleteFile({
               fileName: [img.name],
@@ -256,16 +289,16 @@ export function createClubRouter(app: ServerType) {
       } satisfies APIResponse);
     }
 
-    if (club[0].imageId) {
-      const image = await db
+    if (club[0].mediaId) {
+      const media = await db
         .select()
         .from(medias)
-        .where(eq(medias.id, club[0].imageId))
+        .where(eq(medias.id, club[0].mediaId))
         .limit(1);
-      if (image.length > 0 && image[0].path) {
+      if (media.length > 0 && media[0].path) {
         await deleteFile({
-          fileName: [image[0].name],
-          path: image[0].path,
+          fileName: [media[0].name],
+          path: media[0].path,
           parent: TABLE_KEY,
         });
       }

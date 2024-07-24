@@ -16,29 +16,27 @@ export function createRouter(app: ServerType) {
     createLiveTacticalRouter(app);
     return app;
   });
-  app.group("/api", (app: any) => {
-    app.group("/auth", (app: any) => createAuthRouter(app));
-    app.group("/club", (app: any) => {
-      app.onBeforeHandle(authMiddleware);
-      createClubRouter(app);
-      app.group("/program", (app: any) => {
-        createProgramRouter(app);
-        app.group("/exercise", (app: any) => createExerciseRouter(app));
-        return app;
-      });
-      app.group("/exam", (app: any) => {
-        createExamRouter(app);
-        app.group("/question", (app: any) => createQuestionRouter(app));
-        return app;
-      });
-      app.group("/tactical", (app: any) => createTacticalRouter(app));
+
+  app.group("/auth", (app: any) => createAuthRouter(app));
+  app.group("/club", (app: any) => {
+    app.onBeforeHandle(authMiddleware);
+    createClubRouter(app);
+    app.group("/program", (app: any) => {
+      createProgramRouter(app);
+      app.group("/exercise", (app: any) => createExerciseRouter(app));
       return app;
     });
-    app.group("/health", (app: any) => createHealthRouter(app));
-    app.onBeforeHandle(authMiddleware);
-    app.group("/media", (app: any) => createMediaRouter(app));
+    app.group("/exam", (app: any) => {
+      createExamRouter(app);
+      app.group("/question", (app: any) => createQuestionRouter(app));
+      return app;
+    });
+    app.group("/tactical", (app: any) => createTacticalRouter(app));
     return app;
   });
+  app.group("/health", (app: any) => createHealthRouter(app));
+  app.onBeforeHandle(authMiddleware);
+  app.group("/media", (app: any) => createMediaRouter(app));
 
   return app;
 }

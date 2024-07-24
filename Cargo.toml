@@ -1,7 +1,6 @@
 [workspace]
 
-members = [
-    "gateway",
+members = [ 
     "gen/rust"
 ]
 

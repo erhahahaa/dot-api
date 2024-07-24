@@ -6,7 +6,7 @@ import { InsertUserSchema, users } from "~/schemas/users";
 import { APIResponse } from "~/types";
 import { sanitize } from "~/utils";
 import { rotateJWT } from "~/utils/jwt";
-import { encryptPassword } from "~/utils/password";
+import { encryptPassword, verifyPassword } from "~/utils/password";
 import { ServerType } from "..";
 
 export function createAuthRouter(app: ServerType) {
@@ -23,6 +23,15 @@ export function createAuthRouter(app: ServerType) {
           error: `User with email ${body.email} not found`,
         } satisfies APIResponse);
       }
+
+      const isValid = await verifyPassword(body.password, user[0].password);
+
+      if (!isValid) {
+        return error(401, {
+          error: `Invalid password`,
+        } satisfies APIResponse);
+      }
+
       const token = await rotateJWT(jwt, auth, user[0]);
 
       return {

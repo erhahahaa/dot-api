@@ -17,7 +17,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"John\",\n    \"email\": \"rahmat@test.dev\",\n    \"password\": \"password\",\n    \"phone\": \"+6666\",\n    \"image\": \"https://api.dicebear.com/9.x/adventurer/png\",\n    \"role\": \"user\",\n    \"expertise\": \"Badminton\"\n}",
+              "raw": "{\n    \"name\": \"Rahmat\",\n    \"email\": \"rahmat@test.dev\",\n    \"password\": \"password\",\n    \"phone\": \"+6666\",\n    \"image\": \"https://api.dicebear.com/9.x/adventurer/png\",\n    \"role\": \"athlete\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -34,12 +34,22 @@
         },
         {
           "name": "Sign In",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"rahmat@test.dev\", \n    \"password\": \"password\"\n}",
+              "raw": "{\n    \"email\": \"rahmat@test.dev\",\n    \"password\": \"password\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -60,9 +70,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/auth/me/3",
+              "raw": "{{BASE_URL}}/auth/me",
               "host": ["{{BASE_URL}}"],
-              "path": ["auth", "me", "3"]
+              "path": ["auth", "me"]
             }
           },
           "response": []
@@ -86,6 +96,228 @@
       "name": "Club",
       "item": [
         {
+          "name": "Program",
+          "item": [
+            {
+              "name": "Exercise",
+              "item": [
+                {
+                  "name": "Get All",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASE_URL}}/club/program/exercise?cursor=0&limit=0&programId=3",
+                      "host": ["{{BASE_URL}}"],
+                      "path": ["club", "program", "exercise"],
+                      "query": [
+                        {
+                          "key": "cursor",
+                          "value": "0"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "0"
+                        },
+                        {
+                          "key": "programId",
+                          "value": "3"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get by Id",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASE_URL}}/club/program/exercise/4",
+                      "host": ["{{BASE_URL}}"],
+                      "path": ["club", "program", "exercise", "4"]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "[\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 34,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 34,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 33,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    },\n    {\n        \"programId\": 34,\n        \"name\": \"Movement 2\",\n        \"repetition\": 10,\n        \"sets\": 4,\n        \"rest\": 10\n    }\n]",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/club/program/exercise",
+                      "host": ["{{BASE_URL}}"],
+                      "path": ["club", "program", "exercise"]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update",
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"programId\": 3,\n    \"name\": \"Movement 1\",\n    \"repetition\": 10,\n    \"sets\": 4,\n    \"rest\": 10\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/club/program/exercise/4",
+                      "host": ["{{BASE_URL}}"],
+                      "path": ["club", "program", "exercise", "4"]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"programId\":1,\n    \"name\":\"Movement 1\",\n    \"repetition\":10,\n    \"sets\":4,\n    \"rest\":10\n}\n",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/club/program/exercise/5",
+                      "host": ["{{BASE_URL}}"],
+                      "path": ["club", "program", "exercise", "5"]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Get All",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/club/program?cursor=0&limit=10&clubId=2",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["club", "program"],
+                  "query": [
+                    {
+                      "key": "cursor",
+                      "value": "0"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "clubId",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get by Id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/club/program/4",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["club", "program", "4"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"clubId\": 4,\n    \"name\": \"Summer session 1\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/club/program",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["club", "program"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"clubId\": 2,\n    \"name\": \"UPDATED Summer session 1\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/club/program/5",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["club", "program", "5"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"program_id\": 5,\n    \"sport_type\": \"footbal\",\n    \"name\": \"Abigail formation\",\n    \"description\": \"Formasi tanding turnamen x\",\n    \"content\": {\n        \"blue\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ],\n        \"red\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ]\n    }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/club/program/5",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["club", "program", "5"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
           "name": "Exam",
           "item": [
             {
@@ -97,7 +329,7 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{BASE_URL}}/club/exam/question?cursor=0&limit=10&clubId=5",
+                      "raw": "{{BASE_URL}}/club/exam/question?cursor=0&limit=10&examId=2",
                       "host": ["{{BASE_URL}}"],
                       "path": ["club", "exam", "question"],
                       "query": [
@@ -110,8 +342,8 @@
                           "value": "10"
                         },
                         {
-                          "key": "clubId",
-                          "value": "5"
+                          "key": "examId",
+                          "value": "2"
                         }
                       ]
                     }
@@ -138,7 +370,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\n    \"club_id\": 5,\n    \"exam_id\": 5,\n    \"type\": \"essay\",\n    \"content\": \"Sebutkan cara\",\n    \"answer\": \"benar\"\n}",
+                      "raw": "{ \n    \"examId\": 2,\n    \"type\": \"essay\",\n    \"content\": \"Sebutkan cara\",\n    \"answer\": \"benar\"\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -160,7 +392,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\n    \"club_id\": 5,\n    \"exam_id\": 5,\n    \"type\": \"essay\",\n    \"content\": \"Sebutkan cara\",\n    \"answer\": \"benar\"\n}",
+                      "raw": "{ \n    \"examId\": 2,\n    \"type\": \"essay\",\n    \"content\": \"UOPDARRW Sebutkan cara\",\n    \"answer\": \"benar\"\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -168,9 +400,9 @@
                       }
                     },
                     "url": {
-                      "raw": "{{BASE_URL}}/club/exam/question/1",
+                      "raw": "{{BASE_URL}}/club/exam/question/2",
                       "host": ["{{BASE_URL}}"],
-                      "path": ["club", "exam", "question", "1"]
+                      "path": ["club", "exam", "question", "2"]
                     }
                   },
                   "response": []
@@ -196,7 +428,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{BASE_URL}}/club/exam?cursor=0&limit=10",
+                  "raw": "{{BASE_URL}}/club/exam?cursor=0&limit=10&clubId=5",
                   "host": ["{{BASE_URL}}"],
                   "path": ["club", "exam"],
                   "query": [
@@ -207,6 +439,10 @@
                     {
                       "key": "limit",
                       "value": "10"
+                    },
+                    {
+                      "key": "clubId",
+                      "value": "5"
                     }
                   ]
                 }
@@ -233,7 +469,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"club_id\": 5,\n    \"title\": \"Summer 1 Summit\",\n    \"description\": \"Summer 1 assesment for junior athelete\",\n    \"due_at\": \"2024-06-24T11:37:15\"\n}",
+                  "raw": "{\n    \"clubId\": 5,\n    \"title\": \"Summer 1 Summit\",\n    \"description\": \"Summer 1 assesment for junior athelete\",\n    \"dueAt\": \"2024-06-24T11:37:15\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -255,7 +491,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"club_id\": 5,\n    \"title\": \"Summer 1 Summit\",\n    \"description\": \"Summer 1 assesment for junior athelete\",\n    \"due_at\": \"2024-06-24T10:37:15\"\n}",
+                  "raw": "{\n    \"clubId\": 5,\n    \"title\": \"Summer 1 Summit\",\n    \"description\": \"Summer 1 assesment for junior athelete\",\n    \"dueAt\": \"2024-06-24T10:37:15\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -294,7 +530,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{BASE_URL}}/club/tactical?cursor=0&limit=0",
+                  "raw": "{{BASE_URL}}/club/tactical?cursor=0&limit=10",
                   "host": ["{{BASE_URL}}"],
                   "path": ["club", "tactical"],
                   "query": [
@@ -304,7 +540,7 @@
                     },
                     {
                       "key": "limit",
-                      "value": "0"
+                      "value": "10"
                     }
                   ]
                 }
@@ -331,7 +567,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"club_id\": 5,\n    \"sport_type\": \"footbal\",\n    \"name\": \"Abigail formation\",\n    \"description\": \"Formasi tanding turnamen x\",\n    \"content\": {\n        \"blue\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ],\n        \"red\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ]\n    }\n}",
+                  "raw": "{\n    \"clubId\": 4,\n    \"name\": \"Abigail formation\",\n    \"description\": \"Formasi tanding turnamen x\",\n    \"board\": {\n        \"type\": \"test\",\n        \"name\": \"asfd\",\n        \"url\": \"https://api.dicebear.com/9.x/adventurer/png\"\n    },\n    \"team\": {\n        \"name\": \"Test club\",\n        \"color\": \"blue\",\n        \"totalMembers\": 18,\n        \"members\": [\n            {\n                \"name\": \"John\",\n                \"number\": 28\n            },\n            {\n                \"name\": \"Baritos\",\n                \"number\": 3\n            },\n            {\n                \"name\": \"Fihn\",\n                \"number\": 9\n            }\n        ]\n    },\n    \"strategic\": {\n        \"red\": {\n            \"1\": {\n                \"x\": 10,\n                \"y\": 20\n            },\n            \"2\": {\n                \"x\": 30,\n                \"y\": 40\n            }\n        },\n        \"blue\": {\n            \"1\": {\n                \"x\": 50,\n                \"y\": 60\n            },\n            \"3\": {\n                \"x\": 70,\n                \"y\": 80\n            }\n        }\n    }\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -361,9 +597,9 @@
                   }
                 },
                 "url": {
-                  "raw": "{{BASE_URL}}/club/tactical/11",
+                  "raw": "{{BASE_URL}}/club/tactical/2",
                   "host": ["{{BASE_URL}}"],
-                  "path": ["club", "tactical", "11"]
+                  "path": ["club", "tactical", "2"]
                 }
               },
               "response": []
@@ -375,7 +611,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"club_id\": 5,\n    \"sport_type\": \"footbal\",\n    \"name\": \"Abigail formation\",\n    \"description\": \"Formasi tanding turnamen x\",\n    \"content\": {\n        \"blue\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ],\n        \"red\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ]\n    }\n}",
+                  "raw": "{\n    \"program_id\": 5,\n    \"sport_type\": \"footbal\",\n    \"name\": \"Abigail formation\",\n    \"description\": \"Formasi tanding turnamen x\",\n    \"content\": {\n        \"blue\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ],\n        \"red\": [\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            },\n            {\n                \"x\": 12,\n                \"y\": 16\n            }\n        ]\n    }\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -383,9 +619,9 @@
                   }
                 },
                 "url": {
-                  "raw": "{{BASE_URL}}/club/tactical/7",
+                  "raw": "{{BASE_URL}}/club/tactical/1",
                   "host": ["{{BASE_URL}}"],
-                  "path": ["club", "tactical", "7"]
+                  "path": ["club", "tactical", "1"]
                 }
               },
               "response": []
@@ -398,17 +634,17 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/club?cursor=0&limit=10",
+              "raw": "{{BASE_URL}}/club?limit=10&cursor=0",
               "host": ["{{BASE_URL}}"],
               "path": ["club"],
               "query": [
                 {
-                  "key": "cursor",
-                  "value": "0"
-                },
-                {
                   "key": "limit",
                   "value": "10"
+                },
+                {
+                  "key": "cursor",
+                  "value": "0"
                 }
               ]
             }
@@ -433,9 +669,9 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/club/42",
+              "raw": "{{BASE_URL}}/club/1",
               "host": ["{{BASE_URL}}"],
-              "path": ["club", "42"]
+              "path": ["club", "1"]
             }
           },
           "response": []
@@ -446,13 +682,35 @@
             "method": "POST",
             "header": [],
             "body": {
-              "mode": "raw",
-              "raw": "{\n    \"creator_id\": 3,\n    \"name\": \"Zenta Volley Club\",\n    \"description\": \"International sports club\",\n    \"image\": \"https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "creatorId",
+                  "value": "1",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "Test Club",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Medium description",
+                  "type": "text"
+                },
+                {
+                  "key": "type",
+                  "value": "basketBall",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/home/morty/Downloads/2018_CAC_Games_Baseball.png"
                 }
-              }
+              ]
             },
             "url": {
               "raw": "{{BASE_URL}}/club",
@@ -468,18 +726,40 @@
             "method": "PUT",
             "header": [],
             "body": {
-              "mode": "raw",
-              "raw": "{\n    \"creator_id\": 3,\n    \"name\": \"Zenta Volley Club\",\n    \"description\": \"International sports club\",\n    \"image\": \"https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg\"\n}\n",
-              "options": {
-                "raw": {
-                  "language": "json"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "creatorId",
+                  "value": "1",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "Updated Club",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated desc",
+                  "type": "text"
+                },
+                {
+                  "key": "type",
+                  "value": "basketBall",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "/home/morty/Downloads/2018_Central_American_and_Caribbean_Games_Cycling_Track.png"
                 }
-              }
+              ]
             },
             "url": {
-              "raw": "{{BASE_URL}}/club/8",
+              "raw": "{{BASE_URL}}/club/1",
               "host": ["{{BASE_URL}}"],
-              "path": ["club", "8"]
+              "path": ["club", "1"]
             }
           },
           "response": []
@@ -499,9 +779,9 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/club/10",
+              "raw": "{{BASE_URL}}/club/5",
               "host": ["{{BASE_URL}}"],
-              "path": ["club", "10"]
+              "path": ["club", "5"]
             }
           },
           "response": []
@@ -538,6 +818,76 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Media",
+      "item": [
+        {
+          "name": "Upload",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/home/morty/Downloads/Frame 3895 (2).svg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/media/club?clubId=2",
+              "host": ["{{BASE_URL}}"],
+              "path": ["media", "club"],
+              "query": [
+                {
+                  "key": "clubId",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/home/morty/Downloads/docker-desktop-4.30.0-amd64.zip"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/media/club/3",
+              "host": ["{{BASE_URL}}"],
+              "path": ["media", "club", "3"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/media/club",
+              "host": ["{{BASE_URL}}"],
+              "path": ["media", "club"]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "auth": {
@@ -545,7 +895,7 @@
     "bearer": [
       {
         "key": "token",
-        "value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZW1haWwiOiJyYWhtYXRAdGVzdC5kZXYiLCJleHAiOjE3MTk3Mjk2MjEsImlhdCI6MTcxOTEyNDgyMX0.0ZEQDLiS3GnfNxJ0izQn_5y9u5WwJHBHX8fpTEnErZA",
+        "value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZW1haWwiOiJyYWhtYXRAdGVzdC5kZXYiLCJleHAiOjE3MjIyMjI4MDcsImlhdCI6MTcyMTYxODAwN30.ev3ouFTB5_V_ftXWqgit-Nn2CyYNrq8Ga7-YRXUa10Y",
         "type": "string"
       }
     ]

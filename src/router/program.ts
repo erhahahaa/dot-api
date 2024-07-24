@@ -35,7 +35,10 @@ export function createProgramRouter(app: ServerType) {
           );
         },
         with: {
-          image: {
+          // image: {
+          //   columns: MEDIA_QUERY_WITH,
+          // },
+          media: {
             columns: MEDIA_QUERY_WITH,
           },
         },

@@ -131,8 +131,7 @@ CREATE TABLE IF NOT EXISTS "users_to_clubs" (
 	"user_id" serial NOT NULL,
 	"club_id" serial NOT NULL,
 	"role" "user_role" DEFAULT 'athlete' NOT NULL,
-	"created_at" timestamp DEFAULT now(),
-	CONSTRAINT "users_to_clubs_user_id_club_id_pk" PRIMARY KEY("user_id","club_id")
+	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 DO $$ BEGIN

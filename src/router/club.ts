@@ -1,9 +1,10 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
 import { GET_CLUB_QUERY_WITH } from "~/helper/query";
 import { db } from "~/lib";
 import { clubs, InsertClubSchema } from "~/schemas/clubs";
 import { medias } from "~/schemas/media";
+import { UserType } from "~/schemas/users";
 import { usersToClubs } from "~/schemas/users/relations";
 import { APIResponse } from "~/types";
 import { deleteFile, uploadFile } from "~/utils";
@@ -95,6 +96,8 @@ export function createClubRouter(app: ServerType) {
       if (!user || !user.id) {
         return error(401, { error: "Unauthorized" } satisfies APIResponse);
       }
+
+      console.log("Incoming body\n", body);
 
       body.creatorId = user.id as string;
 
@@ -320,5 +323,121 @@ export function createClubRouter(app: ServerType) {
       data: res[0],
     } satisfies APIResponse;
   });
+  app.get(
+    "/:id/members",
+    async ({ params: { id }, query: { limit = "10" }, error }) => {
+      const res = await db.query.usersToClubs.findMany({
+        with: {
+          user: {
+            columns: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true,
+              role: true,
+            },
+          },
+        },
+        where(fields, { eq }) {
+          return eq(fields.clubId, parseInt(id));
+        },
+        limit: parseInt(limit),
+      });
+
+      if (res.length == 0) {
+        return error(404, {
+          error: `No members found for club with id ${id}`,
+        } satisfies APIResponse);
+      }
+
+      let members: UserType[] = [];
+      for (const member of res) {
+        if (members.find((m) => m.id === member.user.id)) {
+          continue;
+        }
+        members.push(member.user as any);
+      }
+
+      return {
+        message: `Members found for club with id ${id}`,
+        data: members,
+      } satisfies APIResponse;
+    }
+  );
+
+  return createClubActionRouter(app);
+}
+
+function createClubActionRouter(app: ServerType) {
+  app.get("/:id/join", async ({ params: { id }, jwt, bearer, error }) => {
+    const user = await jwt.verify(bearer);
+    if (!user || !user.id) {
+      return error(401, { error: "Unauthorized" } satisfies APIResponse);
+    }
+
+    const relation = await db.query.usersToClubs.findFirst({
+      where(fields, { eq, and }) {
+        return and(
+          eq(fields.userId, parseInt(user.id as string)),
+          eq(fields.clubId, parseInt(id))
+        );
+      },
+    });
+
+    if (relation) {
+      return error(500, {
+        error: `User already joined club with id ${id}`,
+      } satisfies APIResponse);
+    }
+
+    const res = await db
+      .insert(usersToClubs)
+      .values({
+        role: "athlete",
+        clubId: parseInt(id),
+        userId: parseInt(user.id as string),
+      })
+      .returning();
+
+    if (res.length == 0) {
+      return error(500, {
+        error: `Failed to join club with id ${id}`,
+      } satisfies APIResponse);
+    }
+
+    return {
+      message: `User joined club with id ${id}`,
+      data: res[0],
+    } satisfies APIResponse;
+  });
+
+  app.get("/:id/leave", async ({ params: { id }, jwt, bearer, error }) => {
+    const user = await jwt.verify(bearer);
+    if (!user || !user.id) {
+      return error(401, { error: "Unauthorized" } satisfies APIResponse);
+    }
+
+    const res = await db
+      .delete(usersToClubs)
+      .where(
+        and(
+          eq(usersToClubs.userId, parseInt(user.id as string)),
+          eq(usersToClubs.clubId, parseInt(id))
+        )
+      )
+      .returning();
+
+    if (res.length == 0) {
+      return error(500, {
+        error: `Failed to leave club with id ${id}`,
+      } satisfies APIResponse);
+    }
+
+    return {
+      message: `User left club with id ${id}`,
+      data: res[0],
+    } satisfies APIResponse;
+  });
+
   return app;
 }

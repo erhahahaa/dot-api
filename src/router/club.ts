@@ -355,6 +355,7 @@ export function createClubRouter(app: ServerType) {
         if (members.find((m) => m.id === member.user.id)) {
           continue;
         }
+        member.user.role = member.role;
         members.push(member.user as any);
       }
 

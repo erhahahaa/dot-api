@@ -440,5 +440,65 @@ function createClubActionRouter(app: ServerType) {
     } satisfies APIResponse;
   });
 
+  app.get(
+    "/:id/kick/:userId",
+    async ({ params: { id, userId }, error, jwt, bearer }) => {
+      const user = await jwt.verify(bearer);
+      if (!user || !user.id) {
+        return error(401, { error: "Unauthorized" } satisfies APIResponse);
+      }
+
+      const verify = await db.query.usersToClubs.findFirst({
+        where(fields, { eq, and }) {
+          return and(
+            eq(fields.userId, parseInt(user.id as string)),
+            eq(fields.clubId, parseInt(id)),
+            eq(fields.role, "coach")
+          );
+        },
+      });
+
+      if (!verify) {
+        return error(401, {
+          error: "Unauthorized",
+        } satisfies APIResponse);
+      }
+
+      const lastCoach = await db.query.usersToClubs.findFirst({
+        where(fields, { eq, and }) {
+          return and(eq(fields.clubId, parseInt(id)), eq(fields.role, "coach"));
+        },
+      });
+
+      if (!lastCoach) {
+        return error(500, {
+          error: `Failed to kick user with id ${userId}`,
+          message: "Club must have at least one coach",
+        } satisfies APIResponse);
+      }
+
+      const res = await db
+        .delete(usersToClubs)
+        .where(
+          and(
+            eq(usersToClubs.userId, parseInt(userId)),
+            eq(usersToClubs.clubId, parseInt(id))
+          )
+        )
+        .returning();
+
+      if (res.length == 0) {
+        return error(500, {
+          error: `Failed to kick user with id ${userId}`,
+        } satisfies APIResponse);
+      }
+
+      return {
+        message: `User with id ${userId} kicked from club with id ${id}`,
+        data: res[0],
+      } satisfies APIResponse;
+    }
+  );
+
   return app;
 }

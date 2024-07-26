@@ -434,6 +434,17 @@ function createClubActionRouter(app: ServerType) {
       } satisfies APIResponse);
     }
 
+    // count members in club if 0 delete club
+    const members = await db.query.usersToClubs.findMany({
+      where(fields, { eq }) {
+        return eq(fields.clubId, parseInt(id));
+      },
+    });
+
+    if (members.length == 0) {
+      await db.delete(clubs).where(eq(clubs.id, parseInt(id)));
+    }
+
     return {
       message: `User left club with id ${id}`,
       data: res[0],

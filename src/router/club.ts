@@ -464,16 +464,15 @@ function createClubActionRouter(app: ServerType) {
         } satisfies APIResponse);
       }
 
-      const lastCoach = await db.query.usersToClubs.findFirst({
+      const lastCoach = await db.query.usersToClubs.findMany({
         where(fields, { eq, and }) {
           return and(eq(fields.clubId, parseInt(id)), eq(fields.role, "coach"));
         },
       });
 
-      if (!lastCoach) {
+      if (lastCoach.length == 1) {
         return error(500, {
-          error: `Failed to kick user with id ${userId}`,
-          message: "Club must have at least one coach",
+          error: "Cannot kick last coach",
         } satisfies APIResponse);
       }
 

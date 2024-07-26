@@ -14,7 +14,7 @@ export function createTacticalRouter(app: ServerType) {
       },
       limit: parseInt(limit),
       with: {
-        image: {
+        media: {
           columns: MEDIA_QUERY_WITH,
         },
       },

@@ -370,86 +370,107 @@ export function createClubRouter(app: ServerType) {
 }
 
 function createClubActionRouter(app: ServerType) {
-  app.get("/:id/join", async ({ params: { id }, jwt, bearer, error }) => {
-    const user = await jwt.verify(bearer);
-    if (!user || !user.id) {
-      return error(401, { error: "Unauthorized" } satisfies APIResponse);
-    }
-
-    const relation = await db.query.usersToClubs.findFirst({
+  app.get("/:id/:userId", async ({ params: { id, userId }, error }) => {
+    const res = await db.query.usersToClubs.findFirst({
       where(fields, { eq, and }) {
         return and(
-          eq(fields.userId, parseInt(user.id as string)),
+          eq(fields.userId, parseInt(userId)),
           eq(fields.clubId, parseInt(id))
         );
       },
     });
 
-    if (relation) {
-      return error(500, {
-        error: `User already joined club with id ${id}`,
-      } satisfies APIResponse);
-    }
-
-    const res = await db
-      .insert(usersToClubs)
-      .values({
-        role: "athlete",
-        clubId: parseInt(id),
-        userId: parseInt(user.id as string),
-      })
-      .returning();
-
-    if (res.length == 0) {
-      return error(500, {
-        error: `Failed to join club with id ${id}`,
+    if (!res) {
+      return error(404, {
+        error: `User with id ${userId} not found in club with id ${id}`,
       } satisfies APIResponse);
     }
 
     return {
-      message: `User joined club with id ${id}`,
-      data: res[0],
+      message: `User with id ${userId} found in club with id ${id}`,
+      data: res,
     } satisfies APIResponse;
   });
 
-  app.get("/:id/leave", async ({ params: { id }, jwt, bearer, error }) => {
-    const user = await jwt.verify(bearer);
-    if (!user || !user.id) {
-      return error(401, { error: "Unauthorized" } satisfies APIResponse);
-    }
+  app
+    .get("/:id/join", async ({ params: { id }, jwt, bearer, error }) => {
+      const user = await jwt.verify(bearer);
+      if (!user || !user.id) {
+        return error(401, { error: "Unauthorized" } satisfies APIResponse);
+      }
 
-    const res = await db
-      .delete(usersToClubs)
-      .where(
-        and(
-          eq(usersToClubs.userId, parseInt(user.id as string)),
-          eq(usersToClubs.clubId, parseInt(id))
+      const relation = await db.query.usersToClubs.findFirst({
+        where(fields, { eq, and }) {
+          return and(
+            eq(fields.userId, parseInt(user.id as string)),
+            eq(fields.clubId, parseInt(id))
+          );
+        },
+      });
+
+      if (relation) {
+        return error(500, {
+          error: `User already joined club with id ${id}`,
+        } satisfies APIResponse);
+      }
+
+      const res = await db
+        .insert(usersToClubs)
+        .values({
+          role: "athlete",
+          clubId: parseInt(id),
+          userId: parseInt(user.id as string),
+        })
+        .returning();
+
+      if (res.length == 0) {
+        return error(500, {
+          error: `Failed to join club with id ${id}`,
+        } satisfies APIResponse);
+      }
+
+      return {
+        message: `User joined club with id ${id}`,
+        data: res[0],
+      } satisfies APIResponse;
+    })
+    .get("/:id/leave", async ({ params: { id }, jwt, bearer, error }) => {
+      const user = await jwt.verify(bearer);
+      if (!user || !user.id) {
+        return error(401, { error: "Unauthorized" } satisfies APIResponse);
+      }
+
+      const res = await db
+        .delete(usersToClubs)
+        .where(
+          and(
+            eq(usersToClubs.userId, parseInt(user.id as string)),
+            eq(usersToClubs.clubId, parseInt(id))
+          )
         )
-      )
-      .returning();
+        .returning();
 
-    if (res.length == 0) {
-      return error(500, {
-        error: `Failed to leave club with id ${id}`,
-      } satisfies APIResponse);
-    }
+      if (res.length == 0) {
+        return error(500, {
+          error: `Failed to leave club with id ${id}`,
+        } satisfies APIResponse);
+      }
 
-    // count members in club if 0 delete club
-    const members = await db.query.usersToClubs.findMany({
-      where(fields, { eq }) {
-        return eq(fields.clubId, parseInt(id));
-      },
+      const members = await db.query.usersToClubs.findMany({
+        where(fields, { eq }) {
+          return eq(fields.clubId, parseInt(id));
+        },
+      });
+
+      if (members.length == 0) {
+        await db.delete(clubs).where(eq(clubs.id, parseInt(id)));
+      }
+
+      return {
+        message: `User left club with id ${id}`,
+        data: res[0],
+      } satisfies APIResponse;
     });
-
-    if (members.length == 0) {
-      await db.delete(clubs).where(eq(clubs.id, parseInt(id)));
-    }
-
-    return {
-      message: `User left club with id ${id}`,
-      data: res[0],
-    } satisfies APIResponse;
-  });
 
   app.get(
     "/:id/kick/:userId",

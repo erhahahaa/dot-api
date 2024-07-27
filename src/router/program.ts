@@ -35,9 +35,6 @@ export function createProgramRouter(app: ServerType) {
           );
         },
         with: {
-          // image: {
-          //   columns: MEDIA_QUERY_WITH,
-          // },
           media: {
             columns: MEDIA_QUERY_WITH,
           },
@@ -122,7 +119,7 @@ export function createProgramRouter(app: ServerType) {
       }
 
       return {
-        message: "Program inserted",
+        message: "Program created",
         data: res[0],
       } satisfies APIResponse;
     },

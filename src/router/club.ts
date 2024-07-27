@@ -484,7 +484,7 @@ function createClubActionRouter(app: ServerType) {
         return error(401, { error: "Unauthorized" } satisfies APIResponse);
       }
 
-      const res = await db
+      const deleted = await db
         .delete(usersToClubs)
         .where(
           and(
@@ -494,11 +494,18 @@ function createClubActionRouter(app: ServerType) {
         )
         .returning();
 
-      if (res.length == 0) {
+      if (deleted.length == 0) {
         return error(500, {
           error: `Failed to leave club with id ${id}`,
         } satisfies APIResponse);
       }
+
+      const res = await db.query.clubs.findFirst({
+        with: GET_CLUB_QUERY_WITH,
+        where(fields, { eq }) {
+          return eq(fields.id, parseInt(id));
+        },
+      });
 
       const members = await db.query.usersToClubs.findMany({
         where(fields, { eq }) {
@@ -512,7 +519,7 @@ function createClubActionRouter(app: ServerType) {
 
       return {
         message: `User left club with id ${id}`,
-        data: res[0],
+        data: res,
       } satisfies APIResponse;
     });
 

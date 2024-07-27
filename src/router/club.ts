@@ -370,27 +370,35 @@ export function createClubRouter(app: ServerType) {
 }
 
 function createClubActionRouter(app: ServerType) {
-  app.get("/:id/:userId", async ({ params: { id, userId }, error }) => {
-    const res = await db.query.usersToClubs.findFirst({
-      where(fields, { eq, and }) {
-        return and(
-          eq(fields.userId, parseInt(userId)),
-          eq(fields.clubId, parseInt(id))
-        );
-      },
-    });
+  app.get(
+    "/:id/add/:userId",
+    async ({ params: { id, userId }, error, jwt, bearer }) => {
+      const user = await jwt.verify(bearer);
+      if (!user || !user.id) {
+        return error(401, { error: "Unauthorized" } satisfies APIResponse);
+      }
 
-    if (!res) {
-      return error(404, {
-        error: `User with id ${userId} not found in club with id ${id}`,
-      } satisfies APIResponse);
+      const res = await db.query.usersToClubs.findFirst({
+        where(fields, { eq, and }) {
+          return and(
+            eq(fields.userId, parseInt(userId)),
+            eq(fields.clubId, parseInt(id))
+          );
+        },
+      });
+
+      if (!res) {
+        return error(404, {
+          error: `User with id ${userId} not found in club with id ${id}`,
+        } satisfies APIResponse);
+      }
+
+      return {
+        message: `User with id ${userId} found in club with id ${id}`,
+        data: res,
+      } satisfies APIResponse;
     }
-
-    return {
-      message: `User with id ${userId} found in club with id ${id}`,
-      data: res,
-    } satisfies APIResponse;
-  });
+  );
 
   app
     .get("/:id/join", async ({ params: { id }, jwt, bearer, error }) => {

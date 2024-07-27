@@ -33,7 +33,7 @@ export function createExamRouter(app: ServerType) {
         },
         limit: parseInt(limit),
         with: {
-          image: {
+          media: {
             columns: MEDIA_QUERY_WITH,
           },
         },

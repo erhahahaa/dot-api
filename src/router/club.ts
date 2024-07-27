@@ -378,7 +378,7 @@ function createClubActionRouter(app: ServerType) {
         return error(401, { error: "Unauthorized" } satisfies APIResponse);
       }
 
-      const res = await db.query.usersToClubs.findFirst({
+      const find = await db.query.usersToClubs.findFirst({
         where(fields, { eq, and }) {
           return and(
             eq(fields.userId, parseInt(userId)),
@@ -387,15 +387,30 @@ function createClubActionRouter(app: ServerType) {
         },
       });
 
-      if (!res) {
+      if (!find) {
         return error(404, {
           error: `User with id ${userId} not found in club with id ${id}`,
         } satisfies APIResponse);
       }
 
+      const res = await db
+        .insert(usersToClubs)
+        .values({
+          role: "athlete",
+          clubId: parseInt(id),
+          userId: parseInt(userId),
+        })
+        .returning();
+
+      if (res.length == 0) {
+        return error(500, {
+          error: `Failed to add user with id ${userId} to club with id ${id}`,
+        } satisfies APIResponse);
+      }
+
       return {
-        message: `User with id ${userId} found in club with id ${id}`,
-        data: res,
+        message: `User with id ${userId} added to club with id ${id}`,
+        data: res[0],
       } satisfies APIResponse;
     }
   );

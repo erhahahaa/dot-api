@@ -237,7 +237,7 @@ export function createClubRouter(app: ServerType) {
         }
       }
 
-      const res = await db
+      const club = await db
         .update(clubs)
         .set({
           ...body,
@@ -246,7 +246,28 @@ export function createClubRouter(app: ServerType) {
         .where(eq(clubs.id, parseInt(id)))
         .returning();
 
-      if (res.length == 0) {
+      if (club.length == 0) {
+        return error(500, {
+          error: `Failed to update club with id ${id}`,
+        } satisfies APIResponse);
+      }
+      const res: any = await db.query.clubs.findFirst({
+        with: GET_CLUB_QUERY_WITH,
+        where(fields, { eq }) {
+          return eq(fields.id, club[0].id);
+        },
+      });
+
+      res.memberCount = res.membersPivot.length;
+      res.programCount = res.programs.length;
+      res.examCount = res.exams.length;
+      res.tacticalCount = res.tacticals.length;
+      delete res.membersPivot;
+      delete res.programs;
+      delete res.exams;
+      delete res.tacticals;
+
+      if (!res) {
         return error(500, {
           error: `Failed to update club with id ${id}`,
         } satisfies APIResponse);
@@ -254,7 +275,7 @@ export function createClubRouter(app: ServerType) {
 
       return {
         message: `Club with id ${id} updated`,
-        data: res[0],
+        data: res,
       } satisfies APIResponse;
     },
     {

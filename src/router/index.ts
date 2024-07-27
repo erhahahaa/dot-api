@@ -10,6 +10,7 @@ import { createProgramRouter } from "./program";
 import { createQuestionRouter } from "./question";
 import { createTacticalRouter } from "./tactical/http";
 import { createLiveTacticalRouter } from "./tactical/ws";
+import { createUserRouter } from "./user";
 
 export function createRouter(app: ServerType) {
   app.group("/ws", (app: any) => {
@@ -18,6 +19,10 @@ export function createRouter(app: ServerType) {
   });
 
   app.group("/auth", (app: any) => createAuthRouter(app));
+  app.group("/user", (app: any) => {
+    createUserRouter(app);
+    return app;
+  });
   app.group("/club", (app: any) => {
     app.onBeforeHandle(authMiddleware);
     createClubRouter(app);

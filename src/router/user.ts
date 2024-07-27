@@ -2,13 +2,25 @@ import { db } from "~/lib";
 import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
-export function createUser(app: ServerType) {
-  app.get("/:query", async ({ params: { query }, error }) => {
+export function createUserRouter(app: ServerType) {
+  app.get("/", async ({ query: { query }, error }) => {
     const find = await db.query.users.findMany({
-      where(fields, { like }) {
-        return like(fields.name, `%${query}%`);
+      where(fields, { ilike }) {
+        return ilike(fields.name, `%${query}%`);
+      },
+      columns: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        phone: true,
+        role: true,
+        expertise: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
+
     if (find.length === 0) {
       return error(404, {
         error: "User not found",

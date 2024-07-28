@@ -126,6 +126,62 @@ export function createExerciseRouter(app: ServerType) {
     }
   );
   app.put(
+    "/batch",
+    async ({ body, error }) => {
+      let programIds: number[] = [];
+      for (const exercise of body) {
+        const { programId } = exercise;
+        if (!programId) {
+          return error(400, {
+            error: "Program id is required",
+          } satisfies APIResponse);
+        }
+
+        if (!programIds.includes(programId)) {
+          programIds.push(programId);
+        }
+      }
+
+      const finds = await db.query.programs.findMany({
+        where(fields, { inArray }) {
+          return inArray(fields.id, programIds);
+        },
+      });
+
+      for (const programId of programIds) {
+        const find = finds.find((f) => f.id === programId);
+        if (!find) {
+          return error(404, {
+            error: `Program with id ${programId} not found`,
+          } satisfies APIResponse);
+        }
+      }
+
+      let exercises = [];
+      for (const exercise of body) {
+        const res = await db
+          .update(programExercises)
+          .set(exercise)
+          .where(eq(programExercises.id, exercise.id || 0))
+          .returning();
+        if (res.length == 0) {
+          return error(500, {
+            error: `Failed to update exercise with id ${exercise.id}`,
+          } satisfies APIResponse);
+        }
+        exercises.push(res[0]);
+      }
+
+      return {
+        message: "Exercises updated",
+        data: exercises,
+      } satisfies APIResponse;
+    },
+    {
+      body: t.Array(InsertProgramExerciseSchema),
+    }
+  );
+  app.put(
     "/:id",
     async ({ params: { id }, body, error }) => {
       const { programId } = body;

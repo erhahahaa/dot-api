@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
-import { MEDIA_QUERY_WITH } from "~/helper/query";
 import { db } from "~/lib";
 import {
   InsertProgramExerciseSchema,
@@ -43,9 +42,7 @@ export function createExerciseRouter(app: ServerType) {
         },
         limit: parseInt(limit),
         with: {
-          media: {
-            columns: MEDIA_QUERY_WITH,
-          },
+          media: true,
         },
       });
       if (res.length == 0) {

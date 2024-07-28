@@ -126,7 +126,7 @@ export function createExerciseRouter(app: ServerType) {
     }
   );
   app.put(
-    "/batch",
+    "/bulk",
     async ({ body, error }) => {
       let programIds: number[] = [];
       for (const exercise of body) {

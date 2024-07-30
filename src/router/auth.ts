@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { t } from "elysia";
 import { db } from "~/lib";
 import { authMiddleware } from "~/middleware";
@@ -13,14 +13,35 @@ export function createAuthRouter(app: ServerType) {
   app.post(
     "/sign-in",
     async ({ jwt, cookie: { auth }, body, error }) => {
+      const identifier = body.identifier;
+      if (identifier?.startsWith("0")) {
+        body.identifier = `62${identifier}`;
+      }
+      if (identifier?.startsWith("8")) {
+        body.identifier = `62${identifier}`;
+      }
+      if (identifier?.startsWith("62")) {
+        body.identifier = identifier;
+      }
+      if (identifier?.startsWith("+62")) {
+        body.identifier = identifier.replace("+", "");
+      }
+
       const user = await db
         .select()
         .from(users)
-        .where(eq(users.email, body.email));
+        .where(
+          or(
+            eq(users.email, body.identifier ?? ""),
+            eq(users.username, body.identifier ?? ""),
+            eq(users.phone, parseInt(body.identifier ?? "0"))
+          )
+        );
 
       if (user.length == 0) {
         return error(404, {
-          error: `User with email ${body.email} not found`,
+          error: `Email, username, or phone not found`,
+          message: `User with email, username, or phone ${body.identifier} not found`,
         } satisfies APIResponse);
       }
 
@@ -44,7 +65,7 @@ export function createAuthRouter(app: ServerType) {
     },
     {
       body: t.Object({
-        email: t.String(),
+        identifier: t.Optional(t.String()),
         password: t.String(),
       }),
     }
@@ -52,17 +73,46 @@ export function createAuthRouter(app: ServerType) {
   app.post(
     "/sign-up",
     async ({ body, error }) => {
+      const strPhone = body.phone.toString();
+      if (strPhone.length < 9 || strPhone.length > 13) {
+        return error(400, {
+          error: `Invalid phone number`,
+          message: `Phone number must be between 9 and 13 digits`,
+        } satisfies APIResponse);
+      }
+
+      if (strPhone.startsWith("8")) {
+        body.phone = parseInt(`62${strPhone}`);
+      } else {
+        return error(400, {
+          error: `Invalid phone number`,
+          message: `Phone number must start with 8`,
+        } satisfies APIResponse);
+      }
+
+      if (body.username.includes(" ")) {
+        return error(400, {
+          error: `Username cannot contain spaces`,
+          message: `Username cannot contain spaces`,
+        } satisfies APIResponse);
+      }
+
       const { password, ...rest } = body;
+
       const find = await db.query.users.findFirst({
-        where(fields, { eq }) {
-          return eq(fields.email, rest.email);
+        where(fields, { eq, or }) {
+          return or(
+            eq(fields.email, rest.email),
+            eq(fields.username, rest.username),
+            eq(fields.phone, rest.phone ?? 0)
+          );
         },
       });
 
       if (find) {
         return error(409, {
-          error: `Email signed up`,
-          message: `Email ${rest.email} already signed up, please sign in`,
+          error: `Email, username, or phone already exists`,
+          message: `User with email ${rest.email}, username ${rest.username}, or phone ${rest.phone} already exists`,
         } satisfies APIResponse);
       }
 

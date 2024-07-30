@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  bigint,
   pgEnum,
   pgTable,
   serial,
@@ -26,7 +27,7 @@ export const users = pgTable(
       .default("https://api.dicebear.com/9.x/adventurer/png")
       .notNull(),
     password: text("password").notNull(),
-    phone: text("phone"),
+    phone: bigint("phone", { mode: "number" }).notNull(),
     gender: userGender("gender"),
     role: userRole("role").default("athlete").notNull(),
     bornPlace: text("born_place"),

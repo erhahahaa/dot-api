@@ -65,8 +65,8 @@ export const app = new Elysia({
   // })
   .onError(({ error, code, set, request }) => {
     if (code == "VALIDATION") {
-      console.log(error);
-      return { errors: error.validator };
+      console.log(error.all);
+      return { errors: error.all };
     }
     set.status = ERROR_CODE_STATUS_MAP.get(code);
     const errorType = "type" in error ? error.type : "internal";

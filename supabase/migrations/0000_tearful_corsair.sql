@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"username" text NOT NULL,
 	"image" text DEFAULT 'https://api.dicebear.com/9.x/adventurer/png' NOT NULL,
 	"password" text NOT NULL,
-	"phone" text,
+	"phone" integer,
 	"gender" "user_gender",
 	"role" "user_role" DEFAULT 'athlete' NOT NULL,
 	"born_place" text,

@@ -1,6 +1,6 @@
 {
-  "id": "952ad53d-0cee-42b5-a810-5c2aaba6e3e3",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "7d40bbfc-cb26-4b3f-9406-65132c099070",
+  "prevId": "277efc4a-9b1c-4b9f-99a2-00411df3f458",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -867,9 +867,9 @@
         },
         "phone": {
           "name": "phone",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "gender": {
           "name": "gender",

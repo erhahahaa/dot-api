@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
   integer,
-  json,
+  jsonb,
   pgTable,
   serial,
   text,
@@ -27,9 +27,9 @@ export const tacticals = pgTable("tacticals", {
   }),
   name: text("name").notNull(),
   description: text("description"),
-  board: json("board").$type<TacticalBoard>(),
-  team: json("team").$type<TacticalTeam>(),
-  strategic: json("strategic").$type<TacticalStrategic>(),
+  board: jsonb("board").$type<TacticalBoard>(),
+  team: jsonb("team").$type<TacticalTeam>(),
+  strategic: jsonb("strategic").$type<TacticalStrategic>(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

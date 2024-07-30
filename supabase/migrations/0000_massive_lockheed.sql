@@ -87,11 +87,11 @@ CREATE TABLE IF NOT EXISTS "program_exercises" (
 	"order" integer,
 	"name" text NOT NULL,
 	"description" text,
-	"repetition" integer,
-	"sets" integer,
-	"rest" integer,
-	"tempo" integer,
-	"intesity" integer,
+	"repetition" jsonb,
+	"sets" jsonb,
+	"rest" jsonb,
+	"tempo" jsonb,
+	"intesity" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -113,9 +113,9 @@ CREATE TABLE IF NOT EXISTS "tacticals" (
 	"media_id" integer,
 	"name" text NOT NULL,
 	"description" text,
-	"board" json,
-	"team" json,
-	"strategic" json,
+	"board" jsonb,
+	"team" jsonb,
+	"strategic" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );

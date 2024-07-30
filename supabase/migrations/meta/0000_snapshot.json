@@ -1,5 +1,5 @@
 {
-  "id": "2e92aac2-0684-47fa-83ba-59d68341ddb8",
+  "id": "df30e7b7-3030-4d05-bdab-4ae5abb84e63",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -448,31 +448,31 @@
         },
         "repetition": {
           "name": "repetition",
-          "type": "integer",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
         "sets": {
           "name": "sets",
-          "type": "integer",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
         "rest": {
           "name": "rest",
-          "type": "integer",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
         "tempo": {
           "name": "tempo",
-          "type": "integer",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
         "intesity": {
           "name": "intesity",
-          "type": "integer",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
@@ -648,19 +648,19 @@
         },
         "board": {
           "name": "board",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
         "team": {
           "name": "team",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
         "strategic": {
           "name": "strategic",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },

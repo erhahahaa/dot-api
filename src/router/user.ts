@@ -6,12 +6,16 @@ import { ServerType } from "..";
 export function createUserRouter(app: ServerType) {
   app.get("/search", async ({ query: { query }, error }) => {
     const find = await db.query.users.findMany({
-      where(fields, { ilike }) {
-        return ilike(fields.name, `%${query}%`);
+      where(fields, { ilike, or }) {
+        return or(
+          ilike(fields.name, `%${query}%`),
+          ilike(fields.username, `%${query}%`)
+        );
       },
       columns: {
         id: true,
         name: true,
+        username: true,
         email: true,
         image: true,
         phone: true,

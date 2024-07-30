@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS "exam_questions" (
 	"media_id" integer,
 	"type" "question_type" NOT NULL,
 	"content" text NOT NULL,
-	"answer" text NOT NULL,
+	"answer" text,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );

@@ -2,6 +2,7 @@ import { authMiddleware } from "~/middleware";
 import { ServerType } from "..";
 import { createAuthRouter } from "./auth";
 import { createClubRouter } from "./club";
+import { createEvaluationRouter } from "./evaluation";
 import { createExamRouter } from "./exam";
 import { createExerciseRouter } from "./exercise";
 import { createHealthRouter } from "./health";
@@ -34,6 +35,7 @@ export function createRouter(app: ServerType) {
     app.group("/exam", (app: any) => {
       createExamRouter(app);
       app.group("/question", (app: any) => createQuestionRouter(app));
+      createEvaluationRouter(app);
       return app;
     });
     app.group("/tactical", (app: any) => createTacticalRouter(app));

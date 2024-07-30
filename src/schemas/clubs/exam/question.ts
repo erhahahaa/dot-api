@@ -29,7 +29,7 @@ export const examQuestions = pgTable("exam_questions", {
   }),
   type: questionType("type").notNull(),
   content: text("content").notNull(),
-  answer: text("answer").notNull(),
+  answer: text("answer"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

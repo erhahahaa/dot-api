@@ -1,5 +1,5 @@
 {
-  "id": "df30e7b7-3030-4d05-bdab-4ae5abb84e63",
+  "id": "8051cc85-3c12-4a4a-9e3e-691c565e2fbc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -269,7 +269,7 @@
           "name": "answer",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

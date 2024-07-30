@@ -35,7 +35,7 @@ export function createRouter(app: ServerType) {
     app.group("/exam", (app: any) => {
       createExamRouter(app);
       app.group("/question", (app: any) => createQuestionRouter(app));
-      createEvaluationRouter(app);
+      app.group("/evaluation", (app: any) => createEvaluationRouter(app));
       return app;
     });
     app.group("/tactical", (app: any) => createTacticalRouter(app));

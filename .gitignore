@@ -43,3 +43,4 @@ package-lock.json
 **/*.bun
 
 logs/*
+fb-key.json

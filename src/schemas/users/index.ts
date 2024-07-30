@@ -9,7 +9,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
-import { Static } from "elysia";
+import { Static, t } from "elysia";
 import { examEvaluations } from "../clubs/exam/evaluation";
 import { usersToClubs } from "./relations";
 
@@ -50,6 +50,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   evaluations: many(examEvaluations),
 }));
 
-export const InsertUserSchema = createInsertSchema(users);
+export const InsertUserSchema = createInsertSchema(users, {
+  bornDate: t.Union([t.String(), t.Date()]),
+});
 export const SelectUserSchema = createSelectSchema(users);
 export type UserType = Static<typeof SelectUserSchema>;

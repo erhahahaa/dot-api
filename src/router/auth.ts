@@ -20,12 +20,11 @@ export function createAuthRouter(app: ServerType) {
       if (identifier?.startsWith("8")) {
         body.identifier = `62${identifier}`;
       }
-      if (identifier?.startsWith("62")) {
-        body.identifier = identifier;
-      }
       if (identifier?.startsWith("+62")) {
         body.identifier = identifier.replace("+", "");
       }
+
+      const isPhone = /^\d+$/.test(body.identifier ?? "");
 
       const user = await db
         .select()
@@ -34,7 +33,9 @@ export function createAuthRouter(app: ServerType) {
           or(
             eq(users.email, body.identifier ?? ""),
             eq(users.username, body.identifier ?? ""),
-            eq(users.phone, parseInt(body.identifier ?? "0"))
+            isPhone
+              ? eq(users.phone, parseInt(body.identifier ?? ""))
+              : undefined
           )
         );
 
@@ -97,7 +98,7 @@ export function createAuthRouter(app: ServerType) {
         } satisfies APIResponse);
       }
 
-      const { password, ...rest } = body;
+      const { bornDate, password, ...rest } = body;
 
       const find = await db.query.users.findFirst({
         where(fields, { eq, or }) {
@@ -122,6 +123,7 @@ export function createAuthRouter(app: ServerType) {
         .insert(users)
         .values({
           ...rest,
+          bornDate: new Date((bornDate as string) || new Date()),
           password: hash,
         })
         .onConflictDoNothing()

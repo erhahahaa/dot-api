@@ -21,6 +21,7 @@
     "drizzle-orm": "^0.31.2",
     "drizzle-typebox": "^0.1.1",
     "elysia": "latest",
+    "firebase-admin": "^12.3.0",
     "logixlysia": "^3.4.0",
     "postgres": "^3.4.4"
   },

@@ -12,7 +12,7 @@ import {
   ERROR_CODE_STATUS_MAP,
 } from "~/errors";
 import { description, version } from "../package.json";
-import { sb } from "./lib";
+import { initializeFirebase, sb } from "./lib";
 import { createRouter } from "./router";
 import { logConfig } from "./utils";
 
@@ -71,8 +71,7 @@ export const app = new Elysia({
     set.status = ERROR_CODE_STATUS_MAP.get(code);
     const errorType = "type" in error ? error.type : "internal";
     return { errors: { [errorType]: error.message } };
-  })
-
+  }) 
   .use(cors())
   .use(
     swagger({
@@ -93,6 +92,7 @@ export const app = new Elysia({
 export type ServerType = typeof app;
 
 async function main() {
+  initializeFirebase();
   await initalizeSupabase();
   createRouter(app);
 

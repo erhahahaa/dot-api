@@ -15,6 +15,7 @@ import { medias } from "../media";
 import { users } from "../users";
 import { usersToClubs } from "../users/relations";
 import { exams } from "./exam";
+import { examEvaluations } from "./exam/evaluation";
 import { programs } from "./programs";
 import { tacticals } from "./tacticals";
 
@@ -52,6 +53,7 @@ export const clubsRelations = relations(clubs, ({ many, one }) => ({
     fields: [clubs.mediaId],
     references: [medias.id],
   }),
+  evaluations: many(examEvaluations),
 }));
 
 export const InsertClubSchema = createInsertSchema(clubs, {

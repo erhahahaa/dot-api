@@ -3,7 +3,7 @@ import { APIResponse } from "~/types";
 import { ServerType } from "..";
 
 export function createUserRouter(app: ServerType) {
-  app.get("/", async ({ query: { query }, error }) => {
+  app.get("/search", async ({ query: { query }, error }) => {
     const find = await db.query.users.findMany({
       where(fields, { ilike }) {
         return ilike(fields.name, `%${query}%`);

@@ -5,6 +5,7 @@ import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
 import { clubs } from "~/schemas/clubs";
 import { medias } from "~/schemas/media";
+import { examEvaluations } from "./evaluation";
 import { examQuestions } from "./question";
 
 export const exams = pgTable("exams", {
@@ -32,6 +33,7 @@ export const examsRelations = relations(exams, ({ one, many }) => ({
     fields: [exams.mediaId],
     references: [medias.id],
   }),
+  evaluations: many(examEvaluations),
 }));
 
 export const InsertExamSchema = createInsertSchema(exams, {

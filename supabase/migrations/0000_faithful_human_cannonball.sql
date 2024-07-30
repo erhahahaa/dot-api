@@ -23,10 +23,29 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ CREATE TYPE "public"."user_gender" AS ENUM('male', 'female');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."user_role" AS ENUM('coach', 'athlete');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "exam_evaluations" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"club_id" integer,
+	"exam_id" integer,
+	"question_id" integer,
+	"user_id" integer,
+	"coach_id" integer,
+	"answer" text,
+	"score" integer,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "exams" (
 	"id" serial PRIMARY KEY NOT NULL,
@@ -65,11 +84,14 @@ CREATE TABLE IF NOT EXISTS "program_exercises" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"program_id" integer,
 	"media_id" integer,
+	"order" integer,
 	"name" text NOT NULL,
 	"description" text,
 	"repetition" integer,
 	"sets" integer,
 	"rest" integer,
+	"tempo" integer,
+	"intesity" integer,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -117,14 +139,19 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"email" text NOT NULL,
+	"username" text NOT NULL,
 	"image" text DEFAULT 'https://api.dicebear.com/9.x/adventurer/png' NOT NULL,
 	"password" text NOT NULL,
 	"phone" text,
+	"gender" "user_gender",
 	"role" "user_role" DEFAULT 'athlete' NOT NULL,
+	"born_place" text,
+	"born_date" timestamp,
+	"religion" text,
+	"address" text,
 	"expertise" text,
 	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now(),
-	CONSTRAINT "users_email_unique" UNIQUE("email")
+	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users_to_clubs" (
@@ -133,6 +160,36 @@ CREATE TABLE IF NOT EXISTS "users_to_clubs" (
 	"role" "user_role" DEFAULT 'athlete' NOT NULL,
 	"created_at" timestamp DEFAULT now()
 );
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "exam_evaluations" ADD CONSTRAINT "exam_evaluations_club_id_clubs_id_fk" FOREIGN KEY ("club_id") REFERENCES "public"."clubs"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "exam_evaluations" ADD CONSTRAINT "exam_evaluations_exam_id_exams_id_fk" FOREIGN KEY ("exam_id") REFERENCES "public"."exams"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "exam_evaluations" ADD CONSTRAINT "exam_evaluations_question_id_exam_questions_id_fk" FOREIGN KEY ("question_id") REFERENCES "public"."exam_questions"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "exam_evaluations" ADD CONSTRAINT "exam_evaluations_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "exam_evaluations" ADD CONSTRAINT "exam_evaluations_coach_id_users_id_fk" FOREIGN KEY ("coach_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "exams" ADD CONSTRAINT "exams_club_id_clubs_id_fk" FOREIGN KEY ("club_id") REFERENCES "public"."clubs"("id") ON DELETE cascade ON UPDATE no action;
@@ -229,3 +286,6 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "email_idx" ON "users" USING btree ("email");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "username_idx" ON "users" USING btree ("username");

@@ -50,6 +50,9 @@ export function createExerciseRouter(app: ServerType) {
           error: "No Exercises found",
         } satisfies APIResponse);
       }
+
+      res.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
       return {
         message: "Exercises found",
         data: res,

@@ -4,6 +4,10 @@ import postgres from "postgres";
 import { clubs, clubsRelations } from "~/schemas/clubs";
 import { exams, examsRelations } from "~/schemas/clubs/exam";
 import {
+  examEvaluations,
+  examEvaluationsRelations,
+} from "~/schemas/clubs/exam/evaluation";
+import {
   examQuestions,
   examQuestionsRelations,
 } from "~/schemas/clubs/exam/question";
@@ -50,6 +54,9 @@ export const db = drizzle(client, {
     // EXAM QUESTION
     examQuestions,
     examQuestionsRelations,
+    // EXAM EVALUATION
+    examEvaluations,
+    examEvaluationsRelations,
 
     // TACTICAL
     tacticals,

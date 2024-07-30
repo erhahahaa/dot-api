@@ -14,11 +14,14 @@ export const programExercises = pgTable("program_exercises", {
   mediaId: integer("media_id").references(() => medias.id, {
     onDelete: "set null",
   }),
+  order: integer("order"),
   name: text("name").notNull(),
   description: text("description"),
   repetition: integer("repetition"),
   sets: integer("sets"),
   rest: integer("rest"),
+  tempo: integer("tempo"),
+  intesity: integer("intesity"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

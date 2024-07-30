@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1721822611400,
-      "tag": "0000_furry_boomerang",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1721862624594,
-      "tag": "0001_wooden_firedrake",
+      "when": 1722336457409,
+      "tag": "0000_faithful_human_cannonball",
       "breakpoints": true
     }
   ]

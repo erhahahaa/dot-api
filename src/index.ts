@@ -60,6 +60,9 @@ export const app = new Elysia({
     BAD_REQUEST: BadRequestError,
     VALIDATION: ValidationError,
   })
+  // .onRequest(async ({ request }) => {
+  //   console.log("[BODY]\n", await request.json());
+  // })
   .onError(({ error, code, set, request }) => {
     if (code == "VALIDATION") {
       console.log(error);

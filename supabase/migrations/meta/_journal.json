@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1722347426101,
-      "tag": "0000_tearful_corsair",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1722347608958,
-      "tag": "0001_fine_riptide",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1722348713079,
-      "tag": "0002_great_titania",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1722386626099,
-      "tag": "0003_blue_may_parker",
+      "when": 1722397056643,
+      "tag": "0000_little_vindicator",
       "breakpoints": true
     }
   ]

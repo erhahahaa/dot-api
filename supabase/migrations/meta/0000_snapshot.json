@@ -1,5 +1,5 @@
 {
-  "id": "952ad53d-0cee-42b5-a810-5c2aaba6e3e3",
+  "id": "7c8fe679-fdce-4c8b-b2fe-25aa58af175c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -470,8 +470,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "intesity": {
-          "name": "intesity",
+        "intensity": {
+          "name": "intensity",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false
@@ -867,9 +867,9 @@
         },
         "phone": {
           "name": "phone",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "gender": {
           "name": "gender",
@@ -971,15 +971,21 @@
       "name": "users_to_clubs",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
         "user_id": {
           "name": "user_id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
         "club_id": {
           "name": "club_id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },

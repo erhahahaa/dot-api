@@ -114,6 +114,16 @@ export function createUserRouter(app: ServerType) {
     }
   );
   app.get("/search", async ({ query: { query }, error }) => {
+    console.log("query", query);
+    if (!query || query.length === 0) {
+      const random = await db.query.users.findMany();
+
+      return {
+        message: "Random user found",
+        data: random,
+      } satisfies APIResponse;
+    }
+
     const find = await db.query.users.findMany({
       where(fields, { ilike, or }) {
         return or(
@@ -134,12 +144,6 @@ export function createUserRouter(app: ServerType) {
         updatedAt: true,
       },
     });
-
-    if (find.length === 0) {
-      return error(404, {
-        error: "User not found",
-      } satisfies APIResponse);
-    }
 
     return {
       message: "User found",

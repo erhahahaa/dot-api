@@ -416,7 +416,7 @@ function createClubActionRouter(app: ServerType) {
       const find = await db.query.usersToClubs.findFirst({
         where(fields, { eq, and }) {
           return and(
-            eq(fields.userId, parseInt(userId)),
+            eq(fields.userId, parseInt(user.id as string)),
             eq(fields.clubId, parseInt(id))
           );
         },
@@ -428,6 +428,21 @@ function createClubActionRouter(app: ServerType) {
         } satisfies APIResponse);
       }
 
+      const relation = await db.query.usersToClubs.findFirst({
+        where(fields, { eq, and }) {
+          return and(
+            eq(fields.userId, parseInt(userId)),
+            eq(fields.clubId, parseInt(id))
+          );
+        },
+      });
+
+      if (relation) {
+        return error(500, {
+          error: `User with id ${userId} already in club with id ${id}`,
+        } satisfies APIResponse);
+      }
+
       const res = await db
         .insert(usersToClubs)
         .values({
@@ -435,6 +450,7 @@ function createClubActionRouter(app: ServerType) {
           clubId: parseInt(id),
           userId: parseInt(userId),
         })
+        .onConflictDoNothing()
         .returning();
 
       if (res.length == 0) {

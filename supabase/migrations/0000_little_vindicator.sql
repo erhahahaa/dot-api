@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS "program_exercises" (
 	"sets" jsonb,
 	"rest" jsonb,
 	"tempo" jsonb,
-	"intesity" jsonb,
+	"intensity" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"username" text NOT NULL,
 	"image" text DEFAULT 'https://api.dicebear.com/9.x/adventurer/png' NOT NULL,
 	"password" text NOT NULL,
-	"phone" integer,
+	"phone" bigint NOT NULL,
 	"gender" "user_gender",
 	"role" "user_role" DEFAULT 'athlete' NOT NULL,
 	"born_place" text,
@@ -155,8 +155,9 @@ CREATE TABLE IF NOT EXISTS "users" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users_to_clubs" (
-	"user_id" serial NOT NULL,
-	"club_id" serial NOT NULL,
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" integer NOT NULL,
+	"club_id" integer NOT NULL,
 	"role" "user_role" DEFAULT 'athlete' NOT NULL,
 	"created_at" timestamp DEFAULT now()
 );

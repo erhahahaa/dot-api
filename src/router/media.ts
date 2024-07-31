@@ -183,6 +183,7 @@ export function createMediaRouter(app: ServerType) {
           type: body.file.type as typeof InsertMediaSchema.properties.type.type,
           parent: dir,
           url: upload.result.url,
+          updatedAt: new Date(),
         })
         .where(eq(medias.id, parseInt(id)))
         .returning();

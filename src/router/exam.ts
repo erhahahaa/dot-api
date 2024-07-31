@@ -1,8 +1,10 @@
 import { eq } from "drizzle-orm";
+import { t } from "elysia";
 import { MEDIA_QUERY_WITH } from "~/helper/query";
 import { db } from "~/lib";
 import { exams, InsertExamSchema } from "~/schemas/clubs/exam";
 import { APIResponse } from "~/types";
+import { uploadFile } from "~/utils";
 import { ServerType } from "..";
 
 export function createExamRouter(app: ServerType) {
@@ -147,6 +149,7 @@ export function createExamRouter(app: ServerType) {
         .set({
           ...rest,
           dueAt: new Date(dueAt || new Date()),
+          updatedAt: new Date(),
         })
         .where(eq(exams.id, parseInt(id)))
         .returning();
@@ -181,5 +184,67 @@ export function createExamRouter(app: ServerType) {
       data: res[0],
     } satisfies APIResponse;
   });
+  app.put(
+    "/:id/image",
+    async ({ params: { id }, body, error, jwt, bearer }) => {
+      const verify = await jwt.verify(bearer);
+      if (!verify) {
+        return error(401, {
+          error: "Unauthorized",
+        } satisfies APIResponse);
+      }
+      const program = await db.query.programs.findFirst({
+        where(fields, { eq }) {
+          return eq(fields.id, parseInt(id));
+        },
+      });
+
+      if (!program || !program.clubId) {
+        return error(404, {
+          error: `Program with id ${id} not found`,
+        } satisfies APIResponse);
+      }
+
+      const upload = await uploadFile({
+        creatorId: verify.id.toString(),
+        parent: "program",
+        blob: body.image,
+        clubId: program.clubId,
+      });
+
+      if (upload.error || !upload.result) {
+        return error(500, {
+          error: "Failed to update image",
+        });
+      }
+      console.log("RESULT", upload.result);
+      const res = await db
+        .update(exams)
+        .set({
+          mediaId: upload.result.id,
+        })
+        .where(eq(exams.id, parseInt(id)))
+        .returning();
+
+      if (res.length == 0) {
+        return error(500, {
+          error: `Failed to update program with id ${id}`,
+        } satisfies APIResponse);
+      }
+
+      return {
+        message: `Program with id ${id} updated`,
+        data: res[0],
+      } satisfies APIResponse;
+    },
+    {
+      body: t.Object({
+        image: t.File({
+          maxSize: 100 * 1024 * 1024, // 100MB
+        }),
+      }),
+      type: "multipart/form-data",
+    }
+  );
   return app;
 }

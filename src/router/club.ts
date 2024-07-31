@@ -249,6 +249,7 @@ export function createClubRouter(app: ServerType) {
         .set({
           ...body,
           creatorId: body.creatorId,
+          updatedAt: new Date(),
         })
         .where(eq(clubs.id, parseInt(id)))
         .returning();

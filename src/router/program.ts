@@ -152,6 +152,7 @@ export function createProgramRouter(app: ServerType) {
           ...body,
           endDate: new Date(body.endDate || new Date()),
           startDate: new Date(body.startDate || new Date()),
+          updatedAt: new Date(),
         })
         .where(eq(programs.id, parseInt(id)))
         .returning();

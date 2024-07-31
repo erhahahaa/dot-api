@@ -163,7 +163,7 @@ export function createExerciseRouter(app: ServerType) {
       for (const exercise of body) {
         const res = await db
           .update(programExercises)
-          .set(exercise)
+          .set({ ...exercise, updatedAt: new Date() })
           .where(eq(programExercises.id, exercise.id || 0))
           .returning();
         if (res.length == 0) {

@@ -129,6 +129,7 @@ export function createEvaluationRouter(app: ServerType) {
         .set({
           ...body,
           coachId: parseInt(user.id as string),
+          updatedAt: new Date(),
         })
         .where(eq(examEvaluations.id, parseInt(id)))
         .returning();

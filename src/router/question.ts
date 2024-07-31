@@ -135,7 +135,7 @@ export function createQuestionRouter(app: ServerType) {
 
       const res = await db
         .update(examQuestions)
-        .set(body)
+        .set({ ...body, updatedAt: new Date() })
         .where(eq(examQuestions.id, parseInt(id)))
         .returning();
 

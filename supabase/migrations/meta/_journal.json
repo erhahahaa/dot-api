@@ -22,6 +22,13 @@
       "when": 1722348713079,
       "tag": "0002_great_titania",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1722386626099,
+      "tag": "0003_blue_may_parker",
+      "breakpoints": true
     }
   ]
 }

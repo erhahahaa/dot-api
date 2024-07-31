@@ -84,3 +84,4 @@ export const mediasRelations = relations(medias, ({ one }) => ({
 export const InsertMediaSchema = createInsertSchema(medias);
 export const SelectMediaSchema = createSelectSchema(medias);
 export type MediaType = Static<typeof SelectMediaSchema>;
+export type ParentType = Static<typeof InsertMediaSchema.properties.parent>;

@@ -1,10 +1,11 @@
 import { sb } from "~/lib";
+import { ParentType } from "~/schemas/media";
 
 export async function uploadSBFile({
   parent,
   blob,
 }: {
-  parent: string;
+  parent: ParentType;
   blob: Blob;
 }) {
   const hash = Math.floor(Math.random() * 900000) + 100000;

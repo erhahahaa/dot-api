@@ -29,7 +29,7 @@ export const programExercises = pgTable("program_exercises", {
   sets: jsonb("sets").$type<ProgramUnitValue>(),
   rest: jsonb("rest").$type<ProgramUnitValue>(),
   tempo: jsonb("tempo").$type<ProgramUnitValue>(),
-  intesity: jsonb("intesity").$type<ProgramUnitValue>(),
+  intensity: jsonb("intensity").$type<ProgramUnitValue>(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -67,7 +67,7 @@ export const InsertProgramExerciseSchema = createInsertSchema(
       unit: t.Optional(t.String()),
       value: t.Number(),
     }),
-    intesity: t.Object({
+    intensity: t.Object({
       unit: t.Optional(t.String()),
       value: t.Number(),
     }),

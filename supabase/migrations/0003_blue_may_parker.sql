@@ -1,0 +1,1 @@
+ALTER TABLE "program_exercises" RENAME COLUMN "intesity" TO "intensity";

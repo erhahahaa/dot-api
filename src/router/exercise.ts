@@ -109,6 +109,8 @@ export function createExerciseRouter(app: ServerType) {
         }
       }
 
+      console.log("BODY", body);
+
       const res = await db.insert(programExercises).values(body).returning();
       if (res.length == 0) {
         return error(500, {
@@ -156,7 +158,7 @@ export function createExerciseRouter(app: ServerType) {
           } satisfies APIResponse);
         }
       }
-
+      console.log("BODY", body);
       let exercises = [];
       for (const exercise of body) {
         const res = await db

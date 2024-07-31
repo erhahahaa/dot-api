@@ -25,7 +25,6 @@ export function createMediaRouter(app: ServerType) {
       }
 
       const res = await db.query.medias.findMany({
-        // columns: MEDIA_QUERY_WITH,
         where(fields, { eq, and, gt }) {
           return and(eq(fields.parent, dir), gt(fields.id, parseInt(cursor)));
         },

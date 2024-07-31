@@ -157,6 +157,13 @@ export function createClubRouter(app: ServerType) {
         userId: parseInt(body.creatorId),
       });
 
+      await db
+        .update(medias)
+        .set({
+          clubId: res.id,
+        })
+        .where(eq(medias.id, res.mediaId));
+
       return {
         message: "Club inserted",
         data: res,
@@ -272,6 +279,13 @@ export function createClubRouter(app: ServerType) {
           error: `Failed to update club with id ${id}`,
         } satisfies APIResponse);
       }
+
+      await db
+        .update(medias)
+        .set({
+          clubId: res.id,
+        })
+        .where(eq(medias.id, res.mediaId));
 
       return {
         message: `Club with id ${id} updated`,

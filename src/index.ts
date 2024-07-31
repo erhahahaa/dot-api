@@ -65,13 +65,14 @@ export const app = new Elysia({
   // })
   .onError(({ error, code, set, request }) => {
     if (code == "VALIDATION") {
+      console.log("BODY", error.value);
       console.log(error.all);
       return { errors: error.all };
     }
     set.status = ERROR_CODE_STATUS_MAP.get(code);
     const errorType = "type" in error ? error.type : "internal";
     return { errors: { [errorType]: error.message } };
-  }) 
+  })
   .use(cors())
   .use(
     swagger({

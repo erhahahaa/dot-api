@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { createLogger } from "logixlysia/src/logger";
 import { Logger } from "logixlysia/src/types";
 import { db, sb } from "~/lib";
-import { medias, MediaType } from "~/schemas/media";
+import { medias, MediaType, ParentType } from "~/schemas/media";
 
 export const DEFAULT = Symbol();
 
@@ -48,11 +48,13 @@ export async function uploadFile({
   parent,
   blob,
   mediaId,
+  clubId,
 }: {
   creatorId: string;
-  parent: MediaType["parent"];
+  parent: ParentType;
   blob: Blob;
   mediaId?: number | null;
+  clubId?: number;
 }) {
   const hash = Math.floor(Math.random() * 900000) + 100000;
   const path = `${hash}_${blob.name}`;
@@ -77,6 +79,7 @@ export async function uploadFile({
     type: blob.type as any,
     parent: parent as any,
     url: url.data.publicUrl,
+    clubId,
   };
   let media;
   if (mediaId) {

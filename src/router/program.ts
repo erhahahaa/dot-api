@@ -1,11 +1,12 @@
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
+import { getMessaging, Message } from "firebase-admin/messaging";
 import { MEDIA_QUERY_WITH } from "~/helper/query";
 import { db } from "~/lib";
 import { InsertProgramSchema, programs } from "~/schemas/clubs/programs";
 import { APIResponse } from "~/types";
 import { uploadFile } from "~/utils";
-import { ServerType } from "..";
+import { fbApp, ServerType } from "..";
 
 export function createProgramRouter(app: ServerType) {
   app.get(
@@ -114,6 +115,29 @@ export function createProgramRouter(app: ServerType) {
           error: `Failed to create ${body.name} program`,
         } satisfies APIResponse);
       }
+      const msg: Message = {
+        notification: {
+          title: "Program Created",
+          body: `Program with id ${res[0].id} created`,
+        },
+        data: {
+          programId: res[0].id.toString(),
+          name: res[0].name,
+        },
+        android: {
+          priority: "high",
+          notification: {
+            sound: "default",
+            title: "Program Created",
+            body: `Program with id ${res[0].id} created`,
+          },
+        },
+        topic: `all`,
+      };
+
+      const send = await getMessaging(fbApp).send(msg);
+
+      console.log("SEND", send);
 
       return {
         message: "Program created",
@@ -127,46 +151,63 @@ export function createProgramRouter(app: ServerType) {
   app.put(
     "/:id",
     async ({ params: { id }, body, error }) => {
-      const { clubId } = body;
-      if (!clubId) {
-        return error(400, {
-          error: "Club id is required",
-        } satisfies APIResponse);
-      }
+      try {
+        const { clubId } = body;
+        if (!clubId) {
+          return error(400, {
+            error: "Club id is required",
+          } satisfies APIResponse);
+        }
 
-      const find = await db.query.clubs.findFirst({
-        where(fields, { eq }) {
-          return eq(fields.id, clubId);
-        },
-      });
+        const find = await db.query.clubs.findFirst({
+          where(fields, { eq }) {
+            return eq(fields.id, clubId);
+          },
+        });
 
-      if (!find) {
-        return error(404, {
-          error: `Club with id ${clubId} not found`,
-        } satisfies APIResponse);
-      }
+        if (!find) {
+          return error(404, {
+            error: `Club with id ${clubId} not found`,
+          } satisfies APIResponse);
+        }
 
-      const res = await db
-        .update(programs)
-        .set({
-          ...body,
-          endDate: new Date(body.endDate || new Date()),
-          startDate: new Date(body.startDate || new Date()),
-          updatedAt: new Date(),
-        })
-        .where(eq(programs.id, parseInt(id)))
-        .returning();
+        const res = await db
+          .update(programs)
+          .set({
+            ...body,
+            endDate: new Date(body.endDate || new Date()),
+            startDate: new Date(body.startDate || new Date()),
+            updatedAt: new Date(),
+          })
+          .where(eq(programs.id, parseInt(id)))
+          .returning();
 
-      if (res.length == 0) {
+        if (res.length == 0) {
+          return error(500, {
+            error: `Failed to update program with id ${id}`,
+          } satisfies APIResponse);
+        }
+
+        const send = await getMessaging().send({
+          notification: {
+            title: "Program Updated",
+            body: `Program with id ${id} updated`,
+          },
+          topic: `program-${id}`,
+        });
+
+        console.log("SEND", send);
+
+        return {
+          message: `Program with id ${id} updated`,
+          data: res[0],
+        } satisfies APIResponse;
+      } catch (err) {
+        console.log("ERROR", err);
         return error(500, {
           error: `Failed to update program with id ${id}`,
         } satisfies APIResponse);
       }
-
-      return {
-        message: `Program with id ${id} updated`,
-        data: res[0],
-      } satisfies APIResponse;
     },
     {
       body: InsertProgramSchema,

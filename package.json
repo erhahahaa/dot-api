@@ -11,23 +11,23 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@elysiajs/bearer": "^1.0.2",
-    "@elysiajs/cors": "^1.0.2",
-    "@elysiajs/jwt": "^1.0.2",
-    "@elysiajs/swagger": "^1.0.5",
-    "@supabase/supabase-js": "^2.44.4",
+    "@elysiajs/bearer": "^1.1.1",
+    "@elysiajs/cors": "^1.1.0",
+    "@elysiajs/jwt": "^1.1.0",
+    "@elysiajs/swagger": "^1.1.0",
+    "@supabase/supabase-js": "^2.45.0",
     "bcrypt-ts": "^5.0.2",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.31.2",
+    "drizzle-orm": "^0.31.4",
     "drizzle-typebox": "^0.1.1",
     "elysia": "latest",
     "firebase-admin": "^12.3.0",
-    "logixlysia": "^3.4.0",
+    "logixlysia": "^3.6.0",
     "postgres": "^3.4.4"
   },
   "devDependencies": {
     "bun-types": "latest",
-    "drizzle-kit": "^0.22.7"
+    "drizzle-kit": "^0.22.8"
   },
   "module": "src/index.js"
 }

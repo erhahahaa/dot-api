@@ -2,6 +2,7 @@ import { credential } from "firebase-admin";
 import { initializeApp, ServiceAccount } from "firebase-admin/app";
 
 export function initializeFirebase() {
+  console.log(" 🔥 Initializing Firebase");
   const cert: ServiceAccount = {
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,

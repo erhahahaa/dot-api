@@ -91,9 +91,9 @@ export const app = new Elysia({
   .use(bearer());
 
 export type ServerType = typeof app;
+export const fbApp = initializeFirebase();
 
 async function main() {
-  initializeFirebase();
   await initalizeSupabase();
   createRouter(app);
 

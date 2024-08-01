@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
-import { getMessaging, Message } from "firebase-admin/messaging";
+import { Message } from "firebase-admin/messaging";
 import { MEDIA_QUERY_WITH } from "~/helper/query";
 import { db } from "~/lib";
 import { InsertProgramSchema, programs } from "~/schemas/clubs/programs";
 import { APIResponse } from "~/types";
 import { uploadFile } from "~/utils";
-import { fbApp, ServerType } from "..";
+import { ServerType } from "..";
 
 export function createProgramRouter(app: ServerType) {
   app.get(
@@ -135,9 +135,9 @@ export function createProgramRouter(app: ServerType) {
         topic: `all`,
       };
 
-      const send = await getMessaging(fbApp).send(msg);
+      // const send = await getMessaging(fbApp).send(msg);
 
-      console.log("SEND", send);
+      // console.log("SEND", send);
 
       return {
         message: "Program created",
@@ -188,15 +188,15 @@ export function createProgramRouter(app: ServerType) {
           } satisfies APIResponse);
         }
 
-        const send = await getMessaging().send({
-          notification: {
-            title: "Program Updated",
-            body: `Program with id ${id} updated`,
-          },
-          topic: `program-${id}`,
-        });
+        // const send = await getMessaging().send({
+        //   notification: {
+        //     title: "Program Updated",
+        //     body: `Program with id ${id} updated`,
+        //   },
+        //   topic: `program-${id}`,
+        // });
 
-        console.log("SEND", send);
+        // console.log("SEND", send);
 
         return {
           message: `Program with id ${id} updated`,

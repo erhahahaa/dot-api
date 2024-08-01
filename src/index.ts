@@ -12,7 +12,7 @@ import {
   ERROR_CODE_STATUS_MAP,
 } from "~/errors";
 import { description, version } from "../package.json";
-import { initializeFirebase, sb } from "./lib";
+import { sb } from "./lib";
 import { createRouter } from "./router";
 import { logConfig } from "./utils";
 
@@ -91,7 +91,7 @@ export const app = new Elysia({
   .use(bearer());
 
 export type ServerType = typeof app;
-export const fbApp = initializeFirebase();
+// export const fbApp = initializeFirebase();
 
 async function main() {
   await initalizeSupabase();

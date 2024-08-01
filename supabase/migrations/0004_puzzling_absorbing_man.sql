@@ -1,0 +1,1 @@
+ALTER TABLE "exams" ALTER COLUMN "due_at" DROP DEFAULT;

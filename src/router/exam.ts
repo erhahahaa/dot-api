@@ -30,8 +30,11 @@ export function createExamRouter(app: ServerType) {
       }
 
       const res = await db.query.exams.findMany({
-        where(fields, { gt }) {
-          return gt(fields.id, parseInt(cursor));
+        where(fields, { gt, and, eq }) {
+          return and(
+            gt(fields.id, parseInt(cursor)),
+            eq(fields.clubId, parseInt(clubId))
+          );
         },
         limit: parseInt(limit),
         with: {
@@ -103,6 +106,7 @@ export function createExamRouter(app: ServerType) {
         .insert(exams)
         .values({
           ...rest,
+          clubId,
           dueAt: new Date(dueAt || new Date()),
         })
         .returning();
@@ -148,6 +152,7 @@ export function createExamRouter(app: ServerType) {
         .update(exams)
         .set({
           ...rest,
+          clubId,
           dueAt: new Date(dueAt || new Date()),
           updatedAt: new Date(),
         })

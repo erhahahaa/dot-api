@@ -1,5 +1,5 @@
 import { Type } from "@sinclair/typebox";
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static } from "elysia";
@@ -18,7 +18,7 @@ export const exams = pgTable("exams", {
   }),
   title: text("title").notNull(),
   description: text("description"),
-  dueAt: timestamp("due_at").default(sql`now() + interval '1 day'`),
+  dueAt: timestamp("due_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

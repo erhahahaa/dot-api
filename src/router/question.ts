@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import { t } from "elysia";
 import { MEDIA_QUERY_WITH } from "~/helper/query";
 import { db } from "~/lib";
 import {
@@ -73,43 +74,114 @@ export function createQuestionRouter(app: ServerType) {
     } satisfies APIResponse;
   });
   app.post(
-    "/",
+    "/bulk",
     async ({ body, error }) => {
-      const { examId } = body;
-      if (!examId) {
-        return error(400, {
-          error: "Exam id is required",
-        } satisfies APIResponse);
+      let examIds: number[] = [];
+      for (const question of body) {
+        const { examId } = question;
+        if (!examId) {
+          return error(400, {
+            error: "Exam id is required",
+          } satisfies APIResponse);
+        }
+
+        if (!examIds.includes(examId)) {
+          examIds.push(examId);
+        }
       }
 
-      const find = await db.query.exams.findFirst({
-        where(fields, { eq }) {
-          return eq(fields.id, examId);
+      const finds = await db.query.exams.findMany({
+        where(fields, { inArray }) {
+          return inArray(fields.id, examIds);
         },
       });
 
-      if (!find) {
-        return error(404, {
-          error: `Exam with id ${examId} not found`,
-        } satisfies APIResponse);
+      for (const examId of examIds) {
+        const find = finds.find((f) => f.id === examId);
+        if (!find) {
+          return error(404, {
+            error: `Exam with id ${examId} not found`,
+          } satisfies APIResponse);
+        }
       }
 
       const res = await db.insert(examQuestions).values(body).returning();
+
       if (res.length == 0) {
         return error(500, {
-          error: `Failed to insert question`,
+          error: `Failed to insert questions`,
         } satisfies APIResponse);
       }
 
       return {
-        message: "Question inserted",
-        data: res[0],
+        message: "Questions inserted",
+        data: res,
       } satisfies APIResponse;
     },
     {
-      body: InsertExamQuestionSchema,
+      body: t.Array(InsertExamQuestionSchema),
     }
   );
+
+  app.put(
+    "/bulk",
+    async ({ body, error }) => {
+      let examIds: number[] = [];
+      for (const question of body) {
+        const { examId } = question;
+        if (!examId) {
+          return error(400, {
+            error: "Exam id is required",
+          } satisfies APIResponse);
+        }
+
+        if (!examIds.includes(examId)) {
+          examIds.push(examId);
+        }
+      }
+
+      const finds = await db.query.exams.findMany({
+        where(fields, { inArray }) {
+          return inArray(fields.id, examIds);
+        },
+      });
+
+      for (const examId of examIds) {
+        const find = finds.find((f) => f.id === examId);
+        if (!find) {
+          return error(404, {
+            error: `Exam with id ${examId} not found`,
+          } satisfies APIResponse);
+        }
+      }
+
+      let questions = [];
+      for (const question of body) {
+        const res = await db
+          .update(examQuestions)
+          .set({
+            ...question,
+            updatedAt: new Date(),
+          })
+          .where(eq(examQuestions.id, question.id || 0))
+          .returning();
+
+        if (res.length == 0) {
+          return error(500, {
+            error: `Failed to update question with id ${question.id}`,
+          } satisfies APIResponse);
+        }
+        questions.push(res[0]);
+      }
+
+      return {
+        message: "Questions updated",
+        data: questions,
+      } satisfies APIResponse;
+    },
+    { body: t.Array(InsertExamQuestionSchema) }
+  );
+
   app.put(
     "/:id",
     async ({ params: { id }, body, error }) => {

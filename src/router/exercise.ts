@@ -78,7 +78,7 @@ export function createExerciseRouter(app: ServerType) {
     } satisfies APIResponse;
   });
   app.post(
-    "/",
+    "/bulk",
     async ({ body, error }) => {
       let programIds: number[] = [];
       for (const exercise of body) {
@@ -158,7 +158,7 @@ export function createExerciseRouter(app: ServerType) {
           } satisfies APIResponse);
         }
       }
-      console.log("BODY", body);
+
       let exercises = [];
       for (const exercise of body) {
         const res = await db

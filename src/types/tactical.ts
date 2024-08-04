@@ -1,26 +1,33 @@
 export type TacticalBoard = {
-  type: string;
-  name: string;
-  url: string;
+  width: number;
+  height: number;
 };
 
-export type TacticalTeam = {
-  name: string;
-  color: string;
-  totalMembers: number;
-  members: TacticalMember[];
-};
+// export type TacticalTeam = {
+//   name: string;
+//   color: string;
+//   totalMembers: number;
+//   members: TacticalMember[];
+// };
 
-export type TacticalMember = {
-  name: string;
-  number: number;
-};
+// export type TacticalMember = {
+//   name: string;
+//   number: number;
+// };
 
-export type TacticalStrategic = {
-  [key: string]: {
-    [key: string]: {
-      x: number;
-      y: number;
-    };
-  };
-};
+// export type TacticalStrategic = {
+//   players: {
+//     [key: string]: {
+//       x: number;
+//       y: number;
+//       number: number;
+//       team: number;
+//       hexColor: number;
+//     };
+//   };
+//   arrows: {
+//     from: string;
+//     to: string;
+//     color: string;
+//   }[];
+// };

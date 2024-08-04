@@ -1,1 +1,0 @@
-ALTER TABLE "exam_questions" ADD COLUMN "order" integer;

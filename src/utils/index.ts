@@ -134,3 +134,14 @@ export async function deleteFile({
     result: media[0],
   };
 }
+
+export function debounce(
+  func: { apply: (arg0: any, arg1: any[]) => void },
+  wait: number | undefined
+) {
+  let timeout: number | Timer | undefined;
+  return  (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}

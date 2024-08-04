@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   integer,
   jsonb,
   pgTable,
@@ -11,11 +12,7 @@ import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static, t } from "elysia";
 import { clubs } from "~/schemas/clubs";
 import { medias } from "~/schemas/media";
-import {
-  TacticalBoard,
-  TacticalStrategic,
-  TacticalTeam,
-} from "~/types/tactical";
+import { TacticalBoard } from "~/types/tactical";
 
 export const tacticals = pgTable("tacticals", {
   id: serial("id").primaryKey(),
@@ -28,8 +25,9 @@ export const tacticals = pgTable("tacticals", {
   name: text("name").notNull(),
   description: text("description"),
   board: jsonb("board").$type<TacticalBoard>(),
-  team: jsonb("team").$type<TacticalTeam>(),
-  strategic: jsonb("strategic").$type<TacticalStrategic>(),
+  // team: jsonb("team").$type<TacticalTeam>(),
+  strategic: jsonb("strategic"),
+  isLive: boolean("is_live").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -45,33 +43,32 @@ export const tacticalRelations = relations(tacticals, ({ one }) => ({
   }),
 }));
 
+export const StrategicSchema = t.Object({
+  players: t.Array(
+    t.Object({
+      x: t.Number(),
+      y: t.Number(),
+      number: t.Number(),
+      team: t.Number(),
+      hexColor: t.Number(),
+    })
+  ),
+  arrows: t.Array(
+    t.Object({
+      startX: t.Number(),
+      startY: t.Number(),
+      endX: t.Number(),
+      endY: t.Number(),
+    })
+  ),
+});
+
 export const InsertTacticalSchema = createInsertSchema(tacticals, {
   board: t.Object({
-    type: t.String(),
-    name: t.String(),
-    url: t.String(),
+    width: t.Number(),
+    height: t.Number(),
   }),
-  team: t.Object({
-    name: t.String(),
-    color: t.String(),
-    totalMembers: t.Number(),
-    members: t.Array(
-      t.Object({
-        name: t.String(),
-        number: t.Number(),
-      })
-    ),
-  }),
-  strategic: t.Record(
-    t.String(),
-    t.Record(
-      t.Number(),
-      t.Object({
-        x: t.Number(),
-        y: t.Number(),
-      })
-    )
-  ),
+  strategic: StrategicSchema,
 });
 export const SelectTacticalSchema = createSelectSchema(tacticals);
 export type TacticalType = Static<typeof SelectTacticalSchema>;

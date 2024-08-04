@@ -14,7 +14,7 @@ import { createLiveTacticalRouter } from "./tactical/ws";
 import { createUserRouter } from "./user";
 
 export function createRouter(app: ServerType) {
-  app.group("/ws", (app: any) => {
+  app.group("/live", (app: any) => {
     createLiveTacticalRouter(app);
     return app;
   });

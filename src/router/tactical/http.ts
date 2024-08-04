@@ -7,35 +7,41 @@ import { APIResponse } from "~/types";
 import { ServerType } from "../..";
 
 export function createTacticalRouter(app: ServerType) {
-  app.get("/", async ({ query: { cursor = "0", limit = "10" }, error }) => {
-    const res = await db.query.tacticals.findMany({
-      where(fields, { gt }) {
-        return gt(fields.id, parseInt(cursor));
-      },
-      limit: parseInt(limit),
-      with: {
-        media: {
-          columns: MEDIA_QUERY_WITH,
+  app.get(
+    "/",
+    async ({ query: { cursor = "0", limit = "10", clubId = "0" }, error }) => {
+      const res = await db.query.tacticals.findMany({
+        where(fields, { gt, and, eq }) {
+          return and(
+            gt(fields.id, parseInt(cursor)),
+            eq(fields.clubId, parseInt(clubId))
+          );
         },
-      },
-    });
+        limit: parseInt(limit),
+        with: {
+          media: {
+            columns: MEDIA_QUERY_WITH,
+          },
+        },
+      });
 
-    if (res.length == 0) {
-      return error(404, {
-        error: "No tacticals found",
-      } satisfies APIResponse);
+      if (res.length == 0) {
+        return error(404, {
+          error: "No tacticals found",
+        } satisfies APIResponse);
+      }
+
+      for (const program of res as any) {
+        program.media = program.image;
+        delete program.image;
+      }
+
+      return {
+        message: "Tacticals found",
+        data: res,
+      } satisfies APIResponse;
     }
-
-    for (const program of res as any) {
-      program.media = program.image;
-      delete program.image;
-    }
-
-    return {
-      message: "Tacticals found",
-      data: res,
-    } satisfies APIResponse;
-  });
+  );
   app.get("/:id", async ({ params: { id }, error }) => {
     const res = await db
       .select()
@@ -57,6 +63,7 @@ export function createTacticalRouter(app: ServerType) {
   app.post(
     "/",
     async ({ body, error }) => {
+      console.log("BODY", body);
       const { clubId } = body;
       if (!clubId) {
         return error(400, {
@@ -116,7 +123,7 @@ export function createTacticalRouter(app: ServerType) {
 
       const res = await db
         .update(tacticals)
-        .set(body as any)
+        .set({ ...body, updatedAt: new Date() })
         .where(eq(tacticals.id, parseInt(id)))
         .returning();
 

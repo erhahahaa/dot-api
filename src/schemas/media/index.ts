@@ -48,6 +48,7 @@ export const mediaParent = pgEnum("media_parent", [
   "exercise",
   "exam",
   "question",
+  "tactical",
   "user",
 ]);
 

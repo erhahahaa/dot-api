@@ -10,6 +10,8 @@ export async function rotateJWT(
   const token = await jwt.sign({
     id: user.id,
     email: user.email,
+    name: user.name,
+    image: user.image,
     exp: Math.floor(Date.now() / 1000) + 7 * 86400, // 7 days
     iat: Math.floor(Date.now() / 1000),
   });
@@ -17,7 +19,8 @@ export async function rotateJWT(
     value: {
       id: user.id,
       email: user.email,
-      token,
+      name: user.name,
+      image: user.image,
     },
     httpOnly: true,
     maxAge: 7 * 86400,

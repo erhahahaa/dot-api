@@ -25,6 +25,7 @@ const BUCKETS_NAME = [
   "exercises",
   "exams",
   "questions",
+  "tacticals",
 ];
 
 async function initalizeSupabase() {
@@ -48,6 +49,9 @@ export const app = new Elysia({
   serve: {
     maxRequestBodySize: Number.MAX_SAFE_INTEGER,
   },
+  websocket: {
+    perMessageDeflate: true,
+  },
 })
   .use(
     logixlysia({
@@ -60,13 +64,9 @@ export const app = new Elysia({
     BAD_REQUEST: BadRequestError,
     VALIDATION: ValidationError,
   })
-  // .onRequest(async ({ request }) => {
-  //   console.log("[BODY]\n", await request.json());
-  // })
-  .onError(({ error, code, set, request }) => {
+  .onError(({ error, code, set }) => {
+    console.log(error);
     if (code == "VALIDATION") {
-      console.log("BODY", error.value);
-      console.log(error.all);
       return { errors: error.all };
     }
     set.status = ERROR_CODE_STATUS_MAP.get(code);
@@ -91,15 +91,9 @@ export const app = new Elysia({
   .use(bearer());
 
 export type ServerType = typeof app;
-// export const fbApp = initializeFirebase();
+await initalizeSupabase();
+createRouter(app);
 
-async function main() {
-  await initalizeSupabase();
-  createRouter(app);
-
-  app.listen(3000, () => {
-    console.log(`Server started successfully 🚀`);
-  });
-}
-
-main();
+export const run = app.listen(3000, () => {
+  console.log(`Server started successfully 🚀`);
+});

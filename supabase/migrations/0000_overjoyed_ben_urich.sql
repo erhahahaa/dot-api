@@ -11,7 +11,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."media_parent" AS ENUM('club', 'program', 'exercise', 'exam', 'question', 'user');
+ CREATE TYPE "public"."media_parent" AS ENUM('club', 'program', 'exercise', 'exam', 'question', 'tactical', 'user');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS "exams" (
 	"media_id" integer,
 	"title" text NOT NULL,
 	"description" text,
-	"due_at" timestamp DEFAULT now() + interval '1 day',
+	"due_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -62,9 +62,10 @@ CREATE TABLE IF NOT EXISTS "exam_questions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"exam_id" integer,
 	"media_id" integer,
+	"order" integer,
 	"type" "question_type" NOT NULL,
-	"content" text NOT NULL,
-	"answer" text,
+	"question" text NOT NULL,
+	"options" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -113,9 +114,8 @@ CREATE TABLE IF NOT EXISTS "tacticals" (
 	"media_id" integer,
 	"name" text NOT NULL,
 	"description" text,
-	"board" jsonb,
-	"team" jsonb,
 	"strategic" jsonb,
+	"is_live" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );

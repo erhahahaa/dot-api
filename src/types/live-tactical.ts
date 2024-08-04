@@ -1,24 +1,22 @@
 import { Static, t } from "elysia";
-export enum WebSocketMessageType {
-  all = "all",
-  create = "create",
+import { StrategicSchema } from "~/schemas/clubs/tacticals";
+export enum WebSocketMessageEvent {
   join = "join",
   leave = "leave",
-  destroy = "destroy",
+  message = "message",
 }
 export const LiveTacticalParams = t.Object({
-  clubId: t.String(),
-  sessionName: t.String(),
-  roomId: t.Optional(t.String()),
-  userId: t.String(),
+  clubId: t.Number(),
+  channel: t.String(),
+  user: t.Any(),
 });
 
 export type LiveTacticalParamsType = Static<typeof LiveTacticalParams>;
 
 export const LiveTacticalSchema = t.Object({
-  type: t.Enum(WebSocketMessageType),
+  event: t.Enum(WebSocketMessageEvent),
   params: LiveTacticalParams,
-  data: t.Union([t.Object({}), t.Array(t.Object({}))]),
+  data: t.Union([t.Any(), StrategicSchema]),
 });
 
 export type LiveTacticalSchemaType = Static<typeof LiveTacticalSchema>;

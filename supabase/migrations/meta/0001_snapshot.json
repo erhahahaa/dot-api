@@ -1,6 +1,6 @@
 {
-  "id": "d19a424e-ba26-410b-8954-4691dec179aa",
-  "prevId": "7c8fe679-fdce-4c8b-b2fe-25aa58af175c",
+  "id": "e782e696-4fcd-4b4e-90f4-3b712f88f2ed",
+  "prevId": "2e286593-63cf-4ec8-9aaa-dd4d4a7fcf5d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -180,8 +180,7 @@
           "name": "due_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
-          "default": "now() + interval '1 day'"
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -252,6 +251,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "type": {
           "name": "type",
           "type": "question_type",
@@ -259,11 +264,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "content": {
-          "name": "content",
+        "question": {
+          "name": "question",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "options": {
+          "name": "options",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -646,17 +657,18 @@
           "primaryKey": false,
           "notNull": false
         },
-        "team": {
-          "name": "team",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
         "strategic": {
           "name": "strategic",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false
+        },
+        "is_live": {
+          "name": "is_live",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",
@@ -1061,6 +1073,7 @@
         "exercise",
         "exam",
         "question",
+        "tactical",
         "user"
       ]
     },

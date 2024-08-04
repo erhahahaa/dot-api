@@ -1,1 +1,0 @@
-ALTER TABLE "exam_questions" DROP COLUMN IF EXISTS "answer";

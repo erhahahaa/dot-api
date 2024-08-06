@@ -1,1 +1,0 @@
-ALTER TABLE "tacticals" ADD COLUMN "board" jsonb;

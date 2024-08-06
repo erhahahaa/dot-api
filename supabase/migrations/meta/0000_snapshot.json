@@ -1,11 +1,99 @@
 {
-  "id": "2e286593-63cf-4ec8-9aaa-dd4d4a7fcf5d",
+  "id": "45921078-5172-4d02-bdf9-ab8930e5358c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.exam_evaluations": {
-      "name": "exam_evaluations",
+    "public.clubs": {
+      "name": "clubs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "creator_id": {
+          "name": "creator_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "media_id": {
+          "name": "media_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "sport_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "clubs_creator_id_users_id_fk": {
+          "name": "clubs_creator_id_users_id_fk",
+          "tableFrom": "clubs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "creator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "clubs_media_id_medias_id_fk": {
+          "name": "clubs_media_id_medias_id_fk",
+          "tableFrom": "clubs",
+          "tableTo": "medias",
+          "columnsFrom": [
+            "media_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.evaluations": {
+      "name": "evaluations",
       "schema": "",
       "columns": {
         "id": {
@@ -73,9 +161,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "exam_evaluations_club_id_clubs_id_fk": {
-          "name": "exam_evaluations_club_id_clubs_id_fk",
-          "tableFrom": "exam_evaluations",
+        "evaluations_club_id_clubs_id_fk": {
+          "name": "evaluations_club_id_clubs_id_fk",
+          "tableFrom": "evaluations",
           "tableTo": "clubs",
           "columnsFrom": [
             "club_id"
@@ -86,9 +174,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "exam_evaluations_exam_id_exams_id_fk": {
-          "name": "exam_evaluations_exam_id_exams_id_fk",
-          "tableFrom": "exam_evaluations",
+        "evaluations_exam_id_exams_id_fk": {
+          "name": "evaluations_exam_id_exams_id_fk",
+          "tableFrom": "evaluations",
           "tableTo": "exams",
           "columnsFrom": [
             "exam_id"
@@ -99,10 +187,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "exam_evaluations_question_id_exam_questions_id_fk": {
-          "name": "exam_evaluations_question_id_exam_questions_id_fk",
-          "tableFrom": "exam_evaluations",
-          "tableTo": "exam_questions",
+        "evaluations_question_id_questions_id_fk": {
+          "name": "evaluations_question_id_questions_id_fk",
+          "tableFrom": "evaluations",
+          "tableTo": "questions",
           "columnsFrom": [
             "question_id"
           ],
@@ -112,9 +200,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "exam_evaluations_user_id_users_id_fk": {
-          "name": "exam_evaluations_user_id_users_id_fk",
-          "tableFrom": "exam_evaluations",
+        "evaluations_user_id_users_id_fk": {
+          "name": "evaluations_user_id_users_id_fk",
+          "tableFrom": "evaluations",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -125,9 +213,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "exam_evaluations_coach_id_users_id_fk": {
-          "name": "exam_evaluations_coach_id_users_id_fk",
-          "tableFrom": "exam_evaluations",
+        "evaluations_coach_id_users_id_fk": {
+          "name": "evaluations_coach_id_users_id_fk",
+          "tableFrom": "evaluations",
           "tableTo": "users",
           "columnsFrom": [
             "coach_id"
@@ -229,8 +317,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.exam_questions": {
-      "name": "exam_questions",
+    "public.questions": {
+      "name": "questions",
       "schema": "",
       "columns": {
         "id": {
@@ -293,9 +381,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "exam_questions_exam_id_exams_id_fk": {
-          "name": "exam_questions_exam_id_exams_id_fk",
-          "tableFrom": "exam_questions",
+        "questions_exam_id_exams_id_fk": {
+          "name": "questions_exam_id_exams_id_fk",
+          "tableFrom": "questions",
           "tableTo": "exams",
           "columnsFrom": [
             "exam_id"
@@ -306,9 +394,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "exam_questions_media_id_medias_id_fk": {
-          "name": "exam_questions_media_id_medias_id_fk",
-          "tableFrom": "exam_questions",
+        "questions_media_id_medias_id_fk": {
+          "name": "questions_media_id_medias_id_fk",
+          "tableFrom": "questions",
           "tableTo": "medias",
           "columnsFrom": [
             "media_id"
@@ -323,8 +411,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.clubs": {
-      "name": "clubs",
+    "public.medias": {
+      "name": "medias",
       "schema": "",
       "columns": {
         "id": {
@@ -339,8 +427,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "media_id": {
-          "name": "media_id",
+        "club_id": {
+          "name": "club_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -351,16 +439,35 @@
           "primaryKey": false,
           "notNull": true
         },
-        "description": {
-          "name": "description",
+        "file_size": {
+          "name": "file_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "path": {
+          "name": "path",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "type": {
           "name": "type",
-          "type": "sport_type",
+          "type": "media_type",
           "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent": {
+          "name": "parent",
+          "type": "media_parent",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -381,9 +488,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "clubs_creator_id_users_id_fk": {
-          "name": "clubs_creator_id_users_id_fk",
-          "tableFrom": "clubs",
+        "medias_creator_id_users_id_fk": {
+          "name": "medias_creator_id_users_id_fk",
+          "tableFrom": "medias",
           "tableTo": "users",
           "columnsFrom": [
             "creator_id"
@@ -394,134 +501,17 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "clubs_media_id_medias_id_fk": {
-          "name": "clubs_media_id_medias_id_fk",
-          "tableFrom": "clubs",
-          "tableTo": "medias",
+        "medias_club_id_clubs_id_fk": {
+          "name": "medias_club_id_clubs_id_fk",
+          "tableFrom": "medias",
+          "tableTo": "clubs",
           "columnsFrom": [
-            "media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.program_exercises": {
-      "name": "program_exercises",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "program_id": {
-          "name": "program_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "media_id": {
-          "name": "media_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "order": {
-          "name": "order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "repetition": {
-          "name": "repetition",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sets": {
-          "name": "sets",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "rest": {
-          "name": "rest",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "tempo": {
-          "name": "tempo",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "intensity": {
-          "name": "intensity",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "program_exercises_program_id_programs_id_fk": {
-          "name": "program_exercises_program_id_programs_id_fk",
-          "tableFrom": "program_exercises",
-          "tableTo": "programs",
-          "columnsFrom": [
-            "program_id"
+            "club_id"
           ],
           "columnsTo": [
             "id"
           ],
           "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "program_exercises_media_id_medias_id_fk": {
-          "name": "program_exercises_media_id_medias_id_fk",
-          "tableFrom": "program_exercises",
-          "tableTo": "medias",
-          "columnsFrom": [
-            "media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -617,6 +607,123 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.exercises": {
+      "name": "exercises",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "program_id": {
+          "name": "program_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "media_id": {
+          "name": "media_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repetition": {
+          "name": "repetition",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sets": {
+          "name": "sets",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rest": {
+          "name": "rest",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tempo": {
+          "name": "tempo",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "intensity": {
+          "name": "intensity",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "exercises_program_id_programs_id_fk": {
+          "name": "exercises_program_id_programs_id_fk",
+          "tableFrom": "exercises",
+          "tableTo": "programs",
+          "columnsFrom": [
+            "program_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "exercises_media_id_medias_id_fk": {
+          "name": "exercises_media_id_medias_id_fk",
+          "tableFrom": "exercises",
+          "tableTo": "medias",
+          "columnsFrom": [
+            "media_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.tacticals": {
       "name": "tacticals",
       "schema": "",
@@ -651,6 +758,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "board": {
+          "name": "board",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
         "strategic": {
           "name": "strategic",
           "type": "jsonb",
@@ -663,6 +776,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "host": {
+          "name": "host",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -705,119 +824,6 @@
             "id"
           ],
           "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.medias": {
-      "name": "medias",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "creator_id": {
-          "name": "creator_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "club_id": {
-          "name": "club_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "file_size": {
-          "name": "file_size",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "path": {
-          "name": "path",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "type": {
-          "name": "type",
-          "type": "media_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "parent": {
-          "name": "parent",
-          "type": "media_parent",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "url": {
-          "name": "url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "medias_creator_id_users_id_fk": {
-          "name": "medias_creator_id_users_id_fk",
-          "tableFrom": "medias",
-          "tableTo": "users",
-          "columnsFrom": [
-            "creator_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "medias_club_id_clubs_id_fk": {
-          "name": "medias_club_id_clubs_id_fk",
-          "tableFrom": "medias",
-          "tableTo": "clubs",
-          "columnsFrom": [
-            "club_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -1039,6 +1045,15 @@
     }
   },
   "enums": {
+    "public.sport_type": {
+      "name": "sport_type",
+      "schema": "public",
+      "values": [
+        "volleyBall",
+        "basketBall",
+        "soccer"
+      ]
+    },
     "public.question_type": {
       "name": "question_type",
       "schema": "public",
@@ -1047,15 +1062,6 @@
         "trueFalse",
         "shortAnswer",
         "essay"
-      ]
-    },
-    "public.sport_type": {
-      "name": "sport_type",
-      "schema": "public",
-      "values": [
-        "volleyBall",
-        "basketBall",
-        "soccer"
       ]
     },
     "public.media_parent": {

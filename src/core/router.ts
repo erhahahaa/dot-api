@@ -28,14 +28,7 @@ export const HTTPRouter = new Elysia()
     },
   })
   .group("/auth", (app) => app.use(AuthPlugin))
-  .group("/user", (app) =>
-    app
-      .onBeforeHandle(async ({ verifyJWT }) => {
-        const user = await verifyJWT();
-        if (!user) throw new AuthenticationError("Unauthorized");
-      })
-      .use(UserPlugin)
-  )
+  .group("/user", (app) => app.use(UserPlugin))
   .group("/club", (app) =>
     app
       .onBeforeHandle(async ({ verifyJWT }) => {

@@ -2,9 +2,9 @@ import Elysia, { t } from "elysia";
 import { AuthenticationError, BadRequestError } from "../../core/errors";
 import { APIResponseSchema } from "../../core/response";
 import { InsertUserSchema, SelectUserSchema } from "../user/user.schema";
+import { Dependency } from "./auth.dependency";
 import { AuthSignInSchema } from "./auth.schema";
 import { AuthService } from "./auth.service";
-import { Dependency } from "./auth.dependency";
 
 export const AuthPlugin = new Elysia()
   .use(Dependency)
@@ -40,7 +40,7 @@ export const AuthPlugin = new Elysia()
       body: AuthSignInSchema,
       response: APIResponseSchema(
         t.Composite([
-          t.Omit(SelectUserSchema, ["password"]),
+          t.Omit(SelectUserSchema, ["password", "fcmToken"]),
           t.Object({
             token: t.String(),
           }),
@@ -71,7 +71,9 @@ export const AuthPlugin = new Elysia()
         tags: ["AUTH"],
       },
       body: InsertUserSchema,
-      response: APIResponseSchema(t.Omit(SelectUserSchema, ["password"])),
+      response: APIResponseSchema(
+        t.Omit(SelectUserSchema, ["password", "fcmToken"])
+      ),
     }
   )
   .get(
@@ -94,7 +96,7 @@ export const AuthPlugin = new Elysia()
       },
       response: APIResponseSchema(
         t.Composite([
-          t.Omit(SelectUserSchema, ["password"]),
+          t.Omit(SelectUserSchema, ["password", "fcmToken"]),
           t.Object({
             token: t.String(),
           }),

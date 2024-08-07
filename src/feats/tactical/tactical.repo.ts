@@ -114,8 +114,8 @@ export class TacticalRepoImpl extends TacticalRepo {
     clubId,
     userId,
   }: {
-    clubId?: number;
-    userId?: number;
+    clubId?: number | null;
+    userId?: number | null;
   }): Promise<Tactical[]> {
     let tacticals: TacticalExtended[] = [];
     if (!clubId && userId) {

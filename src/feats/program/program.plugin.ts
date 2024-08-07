@@ -1,11 +1,15 @@
 import Elysia, { t } from "elysia";
+import { MessagingPayload } from "firebase-admin/messaging";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
+import { CacheService } from "../../core/services/cache";
+import { MessagingService } from "../../core/services/fb";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
 import { Dependency } from "./program.dependency";
 import {
   InsertProgramSchema,
+  ProgramExtended,
   SelectProgramExtendedSchema,
 } from "./program.schema";
 
@@ -13,10 +17,22 @@ export const ProgramPlugin = new Elysia()
   .use(Dependency)
   .use(AuthService)
   .use(BucketService)
+  .use(MessagingService)
+  .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
-    async ({ programRepo, query: { clubId } }) => {
+    async ({ programRepo, query: { clubId }, cache }) => {
+      const cached = cache.get<ProgramExtended[]>(`programs_${clubId}`);
+      if (cached) {
+        return {
+          message: "Found programs",
+          data: cached,
+        };
+      }
+
       const programs = await programRepo.list({ clubId });
+      cache.set(`programs_${clubId}`, programs);
+
       return {
         message: "Found programs",
         data: programs,
@@ -34,10 +50,22 @@ export const ProgramPlugin = new Elysia()
   )
   .post(
     "/",
-    async ({ programRepo, body, verifyJWT }) => {
-      const user = await verifyJWT();
-
+    async ({ programRepo, body, messenger }) => {
       const program = await programRepo.create(body);
+
+      const topic = `club_${program.clubId}`;
+      const msg: MessagingPayload = {
+        notification: {
+          title: "New program",
+          body: program.name,
+        },
+        data: {
+          id: program.id.toString(),
+          type: "PROGRAM",
+        },
+      };
+
+      await messenger.sendToTopic(topic, msg);
 
       return {
         message: "Program created",
@@ -50,12 +78,30 @@ export const ProgramPlugin = new Elysia()
       },
       body: InsertProgramSchema,
       response: APIResponseSchema(SelectProgramExtendedSchema),
+      afterHandle: async ({ programRepo, cache, body }) => {
+        const { clubId } = body;
+        if (clubId) {
+          cache.delete(`programs_${clubId}`);
+          const programs = await programRepo.list({ clubId });
+          cache.set(`programs_${clubId}`, programs);
+        }
+      },
     }
   )
   .get(
     "/:id",
-    async ({ programRepo, params: { id } }) => {
+    async ({ programRepo, params: { id }, cache }) => {
+      const cached = cache.get<ProgramExtended>(`program_${id}`);
+      if (cached) {
+        return {
+          message: "Program found",
+          data: cached,
+        };
+      }
+
       const program = await programRepo.find(id);
+      cache.set(`program_${id}`, program);
+
       return {
         message: "Program found",
         data: program,
@@ -75,6 +121,7 @@ export const ProgramPlugin = new Elysia()
     "/:id",
     async ({ programRepo, body, params: { id } }) => {
       const program = await programRepo.update({ id, ...body });
+
       return {
         message: "Program updated",
         data: program,
@@ -89,12 +136,25 @@ export const ProgramPlugin = new Elysia()
       }),
       body: InsertProgramSchema,
       response: APIResponseSchema(SelectProgramExtendedSchema),
+      afterHandle: async ({ programRepo, cache, params: { id } }) => {
+        cache.delete(`program_${id}`);
+        const program = await programRepo.find(id);
+        cache.set(`program_${id}`, program);
+
+        const { clubId } = program;
+        if (clubId) {
+          cache.delete(`programs_${clubId}`);
+          const programs = await programRepo.list({ clubId });
+          cache.set(`programs_${clubId}`, programs);
+        }
+      },
     }
   )
   .delete(
     "/:id",
     async ({ programRepo, params: { id } }) => {
       await programRepo.delete(id);
+
       return {
         message: "Program deleted",
       };
@@ -107,6 +167,18 @@ export const ProgramPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
+      afterResponse: async ({ programRepo, cache, params: { id } }) => {
+        cache.delete(`program_${id}`);
+        const program = await programRepo.find(id);
+        cache.set(`program_${id}`, program);
+
+        const { clubId } = program;
+        if (clubId) {
+          cache.delete(`programs_${clubId}`);
+          const programs = await programRepo.list({ clubId });
+          cache.set(`programs_${clubId}`, programs);
+        }
+      },
     }
   )
   .put(
@@ -169,5 +241,17 @@ export const ProgramPlugin = new Elysia()
         image: t.File(),
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
+      afterResponse: async ({ programRepo, cache, params: { id } }) => {
+        const program = await programRepo.find(id);
+        cache.delete(`program_${id}`);
+        cache.set(`program_${id}`, program);
+
+        const { clubId } = program;
+        if (clubId) {
+          cache.delete(`programs_${clubId}`);
+          const programs = await programRepo.list({ clubId });
+          cache.set(`programs_${clubId}`, programs);
+        }
+      },
     }
   );

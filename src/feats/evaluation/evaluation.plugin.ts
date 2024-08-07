@@ -1,8 +1,10 @@
 import Elysia, { t } from "elysia";
 import { APIResponseSchema } from "../../core/response";
+import { CacheService } from "../../core/services/cache";
 import { AuthService } from "../auth/auth.service";
 import { Dependency } from "./evaluation.dependency";
 import {
+  Evaluation,
   InsertEvaluationSchema,
   SelectEvaluationSchema,
 } from "./evaluation.schema";
@@ -10,13 +12,20 @@ import {
 export const EvaluationPlugin = new Elysia()
   .use(Dependency)
   .use(AuthService)
+  .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
-    async ({ evaluationRepo, query: { examId } }) => {
-      const evaluations = await evaluationRepo.list({
-        examId,
-      });
-      console.log(evaluations);
+    async ({ evaluationRepo, query: { examId }, cache }) => {
+      const cached = cache.get<Evaluation[]>(`evaluations_${examId}`);
+      if (cached) {
+        return {
+          message: "Found evaluations",
+          data: cached,
+        };
+      }
+
+      const evaluations = await evaluationRepo.list({ examId });
+      cache.set(`evaluations_${examId}`, evaluations);
 
       return {
         message: "Found evaluations",
@@ -54,12 +63,29 @@ export const EvaluationPlugin = new Elysia()
       },
       body: InsertEvaluationSchema,
       response: APIResponseSchema(SelectEvaluationSchema),
+      afterHandle: async ({ evaluationRepo, cache, body }) => {
+        const { examId } = body;
+        if (examId) {
+          cache.delete(`evaluations_${examId}`);
+          const evaluations = await evaluationRepo.list({ examId });
+          cache.set(`evaluations_${examId}`, evaluations);
+        }
+      },
     }
   )
   .get(
     "/:id",
-    async ({ evaluationRepo, params: { id } }) => {
+    async ({ evaluationRepo, params: { id }, cache }) => {
+      const cached = cache.get<Evaluation>(`evaluation_${id}`);
+      if (cached) {
+        return {
+          message: "Evaluation found",
+          data: cached,
+        };
+      }
+
       const evaluation = await evaluationRepo.find(id);
+      cache.set(`evaluation_${id}`, evaluation);
 
       return {
         message: "Evaluation found",
@@ -99,6 +125,14 @@ export const EvaluationPlugin = new Elysia()
       }),
       body: InsertEvaluationSchema,
       response: APIResponseSchema(SelectEvaluationSchema),
+      afterHandle: async ({ evaluationRepo, cache, body }) => {
+        const { examId } = body;
+        if (examId) {
+          cache.delete(`evaluations_${examId}`);
+          const evaluations = await evaluationRepo.list({ examId });
+          cache.set(`evaluations_${examId}`, evaluations);
+        }
+      },
     }
   )
   .delete(
@@ -119,5 +153,13 @@ export const EvaluationPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectEvaluationSchema),
+      afterHandle: async ({ evaluationRepo, cache, params: { id } }) => {
+        const { examId } = await evaluationRepo.find(id);
+        if (examId) {
+          cache.delete(`evaluations_${examId}`);
+          const evaluations = await evaluationRepo.list({ examId });
+          cache.set(`evaluations_${examId}`, evaluations);
+        }
+      },
     }
   );

@@ -14,6 +14,8 @@ abstract class UserRepo extends BaseRepo<User> {
   abstract search(query: string): Promise<User[]>;
   abstract findByUsername(username: string): Promise<User[]>;
   abstract findByManyUsername(username: string[]): Promise<User[]>;
+  abstract updateFcmToken(userId: number, fcmToken: string): Promise<User>;
+  abstract getFcmToken(email: string): Promise<string>;
 }
 
 export class UserRepoImpl extends UserRepo {
@@ -43,7 +45,7 @@ export class UserRepoImpl extends UserRepo {
       throw new ServerError("Failed to create user");
     }
 
-    return sanitize(users[0], ["password"]);
+    return sanitize(users[0], ["password", "fcmToken"]);
   }
 
   async update(data: UpdateUser): Promise<User> {
@@ -84,7 +86,7 @@ export class UserRepoImpl extends UserRepo {
       throw new ServerError("Failed to update user");
     }
 
-    return sanitize(users[0], ["password"]);
+    return sanitize(users[0], ["password", "fcmToken"]);
   }
 
   async delete(id: number): Promise<User> {
@@ -97,7 +99,7 @@ export class UserRepoImpl extends UserRepo {
       throw new ServerError("Failed to delete user");
     }
 
-    return sanitize(users[0], ["password"]);
+    return sanitize(users[0], ["password", "fcmToken"]);
   }
 
   async find(id: number): Promise<User> {
@@ -110,7 +112,7 @@ export class UserRepoImpl extends UserRepo {
       throw new NoContentError("User not found");
     }
 
-    return sanitize(users[0], ["password"]);
+    return sanitize(users[0], ["password", "fcmToken"]);
   }
 
   async list(): Promise<User[]> {
@@ -120,7 +122,7 @@ export class UserRepoImpl extends UserRepo {
       throw new NoContentError("No user found");
     }
 
-    return users.map((user) => sanitize(user, ["password"]));
+    return users.map((user) => sanitize(user, ["password", "fcmToken"]));
   }
 
   async search(query: string): Promise<User[]> {
@@ -138,7 +140,7 @@ export class UserRepoImpl extends UserRepo {
       throw new NoContentError("No user found");
     }
 
-    return users.map((user) => sanitize(user, ["password"]));
+    return users.map((user) => sanitize(user, ["password", "fcmToken"]));
   }
   async findByUsername(username: string): Promise<User[]> {
     const users = await this.db
@@ -146,7 +148,7 @@ export class UserRepoImpl extends UserRepo {
       .from(UserModel)
       .where(eq(UserModel.username, username));
 
-    return users.map((user) => sanitize(user, ["password"]));
+    return users.map((user) => sanitize(user, ["password", "fcmToken"]));
   }
 
   async findByManyUsername(username: string[]): Promise<User[]> {
@@ -155,6 +157,37 @@ export class UserRepoImpl extends UserRepo {
       .from(UserModel)
       .where(inArray(UserModel.username, username));
 
-    return users.map((user) => sanitize(user, ["password"]));
+    return users.map((user) => sanitize(user, ["password", "fcmToken"]));
+  }
+
+  async updateFcmToken(userId: number, fcmToken: string): Promise<User> {
+    const users = await this.db
+      .update(UserModel)
+      .set({ fcmToken })
+      .where(eq(UserModel.id, userId))
+      .returning();
+
+    if (users.length === 0) {
+      throw new ServerError("Failed to update fcm token");
+    }
+
+    return sanitize(users[0], ["password", "fcmToken"]);
+  }
+
+  async getFcmToken(email: string): Promise<string> {
+    const users = await this.db
+      .select()
+      .from(UserModel)
+      .where(eq(UserModel.email, email));
+
+    if (users.length === 0) {
+      throw new NoContentError("User not found");
+    }
+
+    if (!users[0].fcmToken) {
+      throw new NoContentError("FCM token not found");
+    }
+
+    return users[0].fcmToken;
   }
 }

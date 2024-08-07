@@ -26,7 +26,9 @@ export const UserPlugin = new Elysia()
         tags: ["USER"],
       },
       body: t.Partial(InsertUserSchema),
-      response: APIResponseSchema(SelectUserSchema),
+      response: APIResponseSchema(
+        t.Omit(SelectUserSchema, ["password", "fcmToken"])
+      ),
     }
   )
   .put(
@@ -79,7 +81,9 @@ export const UserPlugin = new Elysia()
       body: t.Object({
         image: t.File(),
       }),
-      response: APIResponseSchema(SelectUserSchema),
+      response: APIResponseSchema(
+        t.Omit(SelectUserSchema, ["password", "fcmToken"])
+      ),
     }
   )
   .get(
@@ -153,5 +157,28 @@ export const UserPlugin = new Elysia()
         email: t.Optional(t.String()),
       }),
       response: APIResponseSchema(t.Array(t.String())),
+    }
+  )
+  .put(
+    "/update-fcm-token",
+    async ({ userRepo, body, verifyJWT }) => {
+      const user = await verifyJWT();
+      const updated = await userRepo.updateFcmToken(user.id, body.fcmToken);
+
+      return {
+        message: "FCM token updated",
+        data: updated,
+      };
+    },
+    {
+      detail: {
+        tags: ["USER"],
+      },
+      body: t.Object({
+        fcmToken: t.String(),
+      }),
+      response: APIResponseSchema(
+        t.Omit(SelectUserSchema, ["password", "fcmToken"])
+      ),
     }
   );

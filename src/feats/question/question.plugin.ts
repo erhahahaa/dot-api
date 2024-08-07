@@ -1,19 +1,31 @@
 import Elysia, { t } from "elysia";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
+import { CacheService } from "../../core/services/cache";
 import { Dependency } from "./question.dependency";
 import {
   InsertQuestionSchema,
+  Question,
   SelectQuestionExtendedSchema,
 } from "./question.schema";
 
 export const QuestionPlugin = new Elysia()
   .use(Dependency)
   .use(BucketService)
+  .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
-    async ({ questionRepo, query: { examId } }) => {
+    async ({ questionRepo, query: { examId }, cache }) => {
+      const cached = cache.get<Question[]>(`questions_${examId}`);
+      if (cached) {
+        return {
+          message: "Found questions",
+          data: cached,
+        };
+      }
+
       const questions = await questionRepo.list({ examId });
+      cache.set(`questions_${examId}`, questions);
 
       return {
         message: "Found questions",
@@ -45,12 +57,29 @@ export const QuestionPlugin = new Elysia()
       },
       body: InsertQuestionSchema,
       response: APIResponseSchema(SelectQuestionExtendedSchema),
+      afterHandle: async ({ questionRepo, cache, body }) => {
+        const { examId } = body;
+        if (examId) {
+          cache.delete(`questions_${examId}`);
+          const questions = await questionRepo.list({ examId });
+          cache.set(`questions_${examId}`, questions);
+        }
+      },
     }
   )
   .get(
     "/:id",
-    async ({ questionRepo, params: { id } }) => {
+    async ({ questionRepo, params: { id }, cache }) => {
+      const cached = cache.get<Question>(`question_${id}`);
+      if (cached) {
+        return {
+          message: "Question found",
+          data: cached,
+        };
+      }
+
       const question = await questionRepo.find(id);
+      cache.set(`question_${id}`, question);
       return {
         message: "Question found",
         data: question,
@@ -64,6 +93,18 @@ export const QuestionPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectQuestionExtendedSchema),
+      afterHandle: async ({ questionRepo, cache, params: { id } }) => {
+        cache.delete(`question_${id}`);
+        const question = await questionRepo.find(id);
+        cache.set(`question_${id}`, question);
+
+        const { examId } = question;
+        if (examId) {
+          cache.delete(`questions_${examId}`);
+          const questions = await questionRepo.list({ examId });
+          cache.set(`questions_${examId}`, questions);
+        }
+      },
     }
   )
   .put(
@@ -88,6 +129,18 @@ export const QuestionPlugin = new Elysia()
       }),
       body: InsertQuestionSchema,
       response: APIResponseSchema(SelectQuestionExtendedSchema),
+      afterHandle: async ({ questionRepo, cache, body, params: { id } }) => {
+        cache.delete(`question_${id}`);
+        const question = await questionRepo.find(id);
+        cache.set(`question_${id}`, question);
+
+        const { examId } = body;
+        if (examId) {
+          cache.delete(`questions_${examId}`);
+          const questions = await questionRepo.list({ examId });
+          cache.set(`questions_${examId}`, questions);
+        }
+      },
     }
   )
   .delete(
@@ -106,6 +159,15 @@ export const QuestionPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectQuestionExtendedSchema),
+      afterHandle: async ({ questionRepo, cache, params: { id } }) => {
+        const question = await questionRepo.find(id);
+        const { examId } = question;
+        if (examId) {
+          cache.delete(`questions_${examId}`);
+          const questions = await questionRepo.list({ examId });
+          cache.set(`questions_${examId}`, questions);
+        }
+      },
     }
   )
   .post(
@@ -123,6 +185,20 @@ export const QuestionPlugin = new Elysia()
       },
       body: t.Array(InsertQuestionSchema),
       response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
+      afterHandle: async ({ questionRepo, cache, body }) => {
+        body.forEach(async ({ id, examId }) => {
+          if (!id) return;
+          cache.delete(`question_${id}`);
+          const question = await questionRepo.find(id);
+          cache.set(`question_${id}`, question);
+
+          if (examId) {
+            cache.delete(`questions_${examId}`);
+            const questions = await questionRepo.list({ examId });
+            cache.set(`questions_${examId}`, questions);
+          }
+        });
+      },
     }
   )
   .put(
@@ -140,5 +216,19 @@ export const QuestionPlugin = new Elysia()
       },
       body: t.Array(InsertQuestionSchema),
       response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
+      afterHandle: async ({ questionRepo, cache, body }) => {
+        body.forEach(async ({ id, examId }) => {
+          if (!id) return;
+          cache.delete(`question_${id}`);
+          const question = await questionRepo.find(id);
+          cache.set(`question_${id}`, question);
+
+          if (examId) {
+            cache.delete(`questions_${examId}`);
+            const questions = await questionRepo.list({ examId });
+            cache.set(`questions_${examId}`, questions);
+          }
+        });
+      },
     }
   );

@@ -72,8 +72,6 @@ export class ClubRepoImpl extends ClubRepo {
       )
       .then((clubs) => this.select(eq(ClubModel.id, clubs[0].clubId)));
 
-    console.log(clubs);
-
     if (clubs.length === 0) throw new NoContentError("Failed to create club");
 
     return clubs[0];

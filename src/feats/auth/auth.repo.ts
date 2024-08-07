@@ -51,7 +51,7 @@ export class AuthRepoImpl extends AuthRepo {
       throw new AuthenticationError("Invalid credentials");
     }
 
-    return sanitize(user[0], ["password"]);
+    return sanitize(user[0], ["password", "fcmToken"]);
   }
 
   async signUp(data: AuthSignUp): Promise<User> {
@@ -86,6 +86,6 @@ export class AuthRepoImpl extends AuthRepo {
       throw new ServerError("Failed to sign up");
     }
 
-    return sanitize(result[0], ["password"]);
+    return sanitize(result[0], ["password", "fcmToken"]);
   }
 }

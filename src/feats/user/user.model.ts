@@ -32,6 +32,7 @@ export const UserModel = pgTable(
     religion: text("religion"),
     address: text("address"),
     expertise: text("expertise"),
+    fcmToken: text("fcm_token"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },

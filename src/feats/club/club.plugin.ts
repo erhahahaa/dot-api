@@ -18,17 +18,20 @@ export const ClubPlugin = new Elysia()
   .use(AuthService)
   .use(BucketService)
   .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
+  
   .get(
     "/",
-    async ({ verifyJWT, clubRepo, cache }) => {
+    async ({ verifyJWT, clubRepo, cache, query: { useCache = false } }) => {
       const user = await verifyJWT();
 
-      const cached = cache.get<ClubExtended[]>(`clubs_${user.id}`);
-      if (cached) {
-        return {
-          message: "Found clubs",
-          data: cached,
-        };
+      if (useCache) {
+        const cached = cache.get<ClubExtended[]>(`clubs_${user.id}`);
+        if (cached) {
+          return {
+            message: "Found clubs",
+            data: cached,
+          };
+        }
       }
 
       const clubs = await clubRepo.list({ userId: user.id });
@@ -43,6 +46,9 @@ export const ClubPlugin = new Elysia()
       detail: {
         tags: ["CLUB"],
       },
+      query: t.Object({
+        useCache: t.Optional(t.Boolean()),
+      }),
       response: APIResponseSchema(t.Array(SelectClubExtendedSchema)),
     }
   )

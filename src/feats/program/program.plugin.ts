@@ -1,5 +1,5 @@
 import Elysia, { t } from "elysia";
-import { MessagingPayload } from "firebase-admin/messaging";
+import { Message } from "firebase-admin/messaging";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { CacheService } from "../../core/services/cache";
@@ -50,22 +50,8 @@ export const ProgramPlugin = new Elysia()
   )
   .post(
     "/",
-    async ({ programRepo, body, messenger }) => {
+    async ({ programRepo, body }) => {
       const program = await programRepo.create(body);
-
-      const topic = `club_${program.clubId}`;
-      const msg: MessagingPayload = {
-        notification: {
-          title: "New program",
-          body: program.name,
-        },
-        data: {
-          id: program.id.toString(),
-          type: "PROGRAM",
-        },
-      };
-
-      await messenger.sendToTopic(topic, msg);
 
       return {
         message: "Program created",
@@ -78,12 +64,53 @@ export const ProgramPlugin = new Elysia()
       },
       body: InsertProgramSchema,
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterHandle: async ({ programRepo, cache, body }) => {
+      afterHandle: async ({
+        programRepo,
+        clubRepo,
+        cache,
+        body,
+        response,
+        messenger,
+      }) => {
         const { clubId } = body;
         if (clubId) {
           cache.delete(`programs_${clubId}`);
           const programs = await programRepo.list({ clubId });
           cache.set(`programs_${clubId}`, programs);
+
+          const program = (response as any).data as ProgramExtended;
+          const club = await clubRepo.find(clubId);
+          const topic = `club_${program.clubId}`;
+          const msg: Message = {
+            notification: {
+              title: "New program just dropped! 🎉",
+              body:
+                program.name + " is now available in " + club.name + " club !",
+              imageUrl: "https://i.imgur.com/KDza0Bz.png",
+            },
+            data: {
+              id: `club_${program.clubId}_program_${program.id}`,
+              type: "PROGRAM",
+              title: "New program just dropped!",
+              body: program.name,
+            },
+            android: {
+              notification: {
+                title: "New program just dropped! 🎉",
+                body:
+                  program.name +
+                  " is now available in " +
+                  club.name +
+                  " club !",
+                imageUrl: "https://i.imgur.com/KDza0Bz.png",
+                sound: "default",
+                priority: "high",
+              },
+            },
+            topic,
+          };
+
+          await messenger.send(msg);
         }
       },
     }

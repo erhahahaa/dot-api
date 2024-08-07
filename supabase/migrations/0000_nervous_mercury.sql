@@ -5,12 +5,6 @@ EXCEPTION
 END $$;
 
 DO $$ BEGIN
- CREATE TYPE "public"."question_type" AS ENUM('multipleChoice', 'trueFalse', 'shortAnswer', 'essay');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
  CREATE TYPE "public"."media_parent" AS ENUM('club', 'program', 'exercise', 'exam', 'question', 'tactical', 'user');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -34,6 +28,12 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 
+DO $$ BEGIN
+ CREATE TYPE "public"."question_type" AS ENUM('multipleChoice', 'trueFalse', 'shortAnswer', 'essay');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+
 CREATE TABLE IF NOT EXISTS "clubs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"creator_id" integer,
@@ -45,19 +45,6 @@ CREATE TABLE IF NOT EXISTS "clubs" (
 	"updated_at" timestamp DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS "evaluations" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"club_id" integer,
-	"exam_id" integer,
-	"question_id" integer,
-	"user_id" integer,
-	"coach_id" integer,
-	"answer" text,
-	"score" integer,
-	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now()
-);
-
 CREATE TABLE IF NOT EXISTS "exams" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"club_id" integer,
@@ -65,18 +52,6 @@ CREATE TABLE IF NOT EXISTS "exams" (
 	"title" text NOT NULL,
 	"description" text,
 	"due_at" timestamp,
-	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS "questions" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"exam_id" integer,
-	"media_id" integer,
-	"order" integer,
-	"type" "question_type" NOT NULL,
-	"question" text NOT NULL,
-	"options" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -151,6 +126,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"religion" text,
 	"address" text,
 	"expertise" text,
+	"fcm_token" text,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -161,6 +137,31 @@ CREATE TABLE IF NOT EXISTS "users_to_clubs" (
 	"club_id" integer NOT NULL,
 	"role" "user_role" DEFAULT 'athlete' NOT NULL,
 	"created_at" timestamp DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS "evaluations" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"club_id" integer,
+	"exam_id" integer,
+	"question_id" integer,
+	"user_id" integer,
+	"coach_id" integer,
+	"answer" text,
+	"score" integer,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS "questions" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"exam_id" integer,
+	"media_id" integer,
+	"order" integer,
+	"type" "question_type" NOT NULL,
+	"question" text NOT NULL,
+	"options" jsonb,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
 );
 
 DO $$ BEGIN
@@ -176,36 +177,6 @@ EXCEPTION
 END $$;
 
 DO $$ BEGIN
- ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_club_id_clubs_id_fk" FOREIGN KEY ("club_id") REFERENCES "public"."clubs"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
- ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_exam_id_exams_id_fk" FOREIGN KEY ("exam_id") REFERENCES "public"."exams"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
- ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_question_id_questions_id_fk" FOREIGN KEY ("question_id") REFERENCES "public"."questions"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
- ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
- ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_coach_id_users_id_fk" FOREIGN KEY ("coach_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
  ALTER TABLE "exams" ADD CONSTRAINT "exams_club_id_clubs_id_fk" FOREIGN KEY ("club_id") REFERENCES "public"."clubs"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -213,18 +184,6 @@ END $$;
 
 DO $$ BEGIN
  ALTER TABLE "exams" ADD CONSTRAINT "exams_media_id_medias_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
- ALTER TABLE "questions" ADD CONSTRAINT "questions_exam_id_exams_id_fk" FOREIGN KEY ("exam_id") REFERENCES "public"."exams"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
- ALTER TABLE "questions" ADD CONSTRAINT "questions_media_id_medias_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -285,6 +244,48 @@ END $$;
 
 DO $$ BEGIN
  ALTER TABLE "users_to_clubs" ADD CONSTRAINT "users_to_clubs_club_id_clubs_id_fk" FOREIGN KEY ("club_id") REFERENCES "public"."clubs"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+ ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_club_id_clubs_id_fk" FOREIGN KEY ("club_id") REFERENCES "public"."clubs"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+ ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_exam_id_exams_id_fk" FOREIGN KEY ("exam_id") REFERENCES "public"."exams"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+ ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_question_id_questions_id_fk" FOREIGN KEY ("question_id") REFERENCES "public"."questions"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+ ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+ ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_coach_id_users_id_fk" FOREIGN KEY ("coach_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+ ALTER TABLE "questions" ADD CONSTRAINT "questions_exam_id_exams_id_fk" FOREIGN KEY ("exam_id") REFERENCES "public"."exams"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+ ALTER TABLE "questions" ADD CONSTRAINT "questions_media_id_medias_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."medias"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

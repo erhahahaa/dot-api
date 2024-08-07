@@ -36,19 +36,19 @@ export class ClubRepoImpl extends ClubRepo {
         createdAt: ClubModel.createdAt,
         updatedAt: ClubModel.updatedAt,
         media: MediaModel,
-        memberCount: count(UserToClubModel.id),
+        memberCount: count(UserToClubModel.userId),
         programCount: count(ProgramModel.id),
         examCount: count(ExamModel.id),
         tacticalCount: count(TacticalModel.id),
       })
       .from(UserToClubModel)
-      .innerJoin(ClubModel, eq(UserToClubModel.clubId, ClubModel.id))
-      .leftJoin(MediaModel, eq(ClubModel.mediaId, MediaModel.id))
-      .leftJoin(ProgramModel, eq(UserToClubModel.clubId, ProgramModel.clubId))
-      .leftJoin(ExamModel, eq(UserToClubModel.clubId, ExamModel.clubId))
-      .leftJoin(TacticalModel, eq(UserToClubModel.clubId, TacticalModel.clubId))
+      .innerJoin(ClubModel, eq(ClubModel.id, UserToClubModel.clubId))
+      .leftJoin(MediaModel, eq(MediaModel.id, ClubModel.mediaId))
+      .leftJoin(ProgramModel, eq(ProgramModel.clubId, ClubModel.id))
+      .leftJoin(ExamModel, eq(ExamModel.clubId, ClubModel.id))
+      .leftJoin(TacticalModel, eq(TacticalModel.clubId, ClubModel.id))
       .where(where)
-      .groupBy(ClubModel.id, MediaModel.id);
+      .groupBy(ClubModel.id, MediaModel.id, UserToClubModel.clubId);
   }
 
   async create(data: InsertClub): Promise<Club> {

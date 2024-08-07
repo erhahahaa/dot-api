@@ -57,4 +57,15 @@ export const HTTPRouter = new Elysia()
       })
       .use(MediaPlugin)
   )
-  .group("/health", (app) => app.use(HealthRouter));
+  .group("/health", (app) => app.use(HealthRouter))
+  .group("/playground", (app) => {
+    app.get("/", async ({}) => {
+      try {
+        return {};
+      } catch (error) {
+        console.log("PLAYGROUND ERROR", error);
+        return error;
+      }
+    });
+    return app;
+  });

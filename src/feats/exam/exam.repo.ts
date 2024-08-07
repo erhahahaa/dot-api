@@ -20,7 +20,7 @@ export class ExamRepoImpl extends ExamRepo {
     this.db = db;
   }
 
-  private select(where: any) {
+  private select(where: any): Promise<ExamExtended[]> {
     return this.db
       .select({
         id: ExamModel.id,
@@ -34,7 +34,7 @@ export class ExamRepoImpl extends ExamRepo {
         media: MediaModel,
       })
       .from(ExamModel)
-      .innerJoin(MediaModel, eq(ExamModel.mediaId, MediaModel.id))
+      .leftJoin(MediaModel, eq(ExamModel.mediaId, MediaModel.id))
       .where(where);
   }
 

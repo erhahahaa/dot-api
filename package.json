@@ -6,7 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
     "build": "bun build --target=bun ./src/index.ts --outfile=./dist/server.js",
+    "compile": "bun build --target=bun --compile ./src/index.ts --outfile=./dist/server",
     "start": "bun --bun run dist/server.js",
+    "start-bin": "bun --bun run ./dist/server",
     "db:gen": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"

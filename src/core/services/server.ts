@@ -3,6 +3,8 @@ import { swagger } from "@elysiajs/swagger";
 import { Elysia, ValidationError } from "elysia";
 import logixlysia from "logixlysia";
 
+import fs from "fs";
+import path from "path";
 import { description, version } from "../../../package.json";
 import {
   AuthenticationError,
@@ -16,6 +18,10 @@ import {
 import { HTTPRouter, WebSocketRouter } from "../router";
 
 export function createApp() {
+  const logFilePath = path.join(__dirname, "..", "../..", "logs", "app.log");
+  if (!fs.existsSync(logFilePath)) {
+    fs.writeFileSync(logFilePath, "");
+  }
   const app = new Elysia({
     name: "DOT Coaching API",
     precompile: true,
@@ -30,7 +36,7 @@ export function createApp() {
       logixlysia({
         config: {
           ip: true,
-          logFilePath: "logs/app.log",
+          logFilePath,
           customLogFormat:
             "🦊 {now} {level} {duration} {method} {pathname} {status} {message} {ip}",
         },
@@ -48,10 +54,12 @@ export function createApp() {
     })
     .onError(({ error, code, set }) => {
       try {
-        // console.error(
-        //   `\n\nError: ${error.message} | Code: ${code} | Stack: ${error.stack}\n\n`
-        // );
-        console.error(error);
+        console.error("<=============== ERROR ===============>");
+        console.log("[NAME] : ", error.name);
+        console.log("[CAUSE] : ", error.cause);
+        console.log("[MESSAGE] : ", error.message);
+        console.log("[STACK] : ", error.stack);
+        console.error("<=============== ERROR ===============>");
         if (code == "VALIDATION") {
           return { errors: error.all };
         }

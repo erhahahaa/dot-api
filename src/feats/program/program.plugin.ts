@@ -71,6 +71,7 @@ export const ProgramPlugin = new Elysia()
         response,
         messenger,
       }) => {
+        if (!response) return;
         const { id, name, clubId } = (response as any).data as ProgramExtended;
         if (!clubId) return;
 
@@ -153,6 +154,7 @@ export const ProgramPlugin = new Elysia()
       body: InsertProgramSchema,
       response: APIResponseSchema(SelectProgramExtendedSchema),
       afterHandle: async ({ programRepo, cache, response }) => {
+        if (!response) return;
         const { clubId } = (response as any).data as ProgramExtended;
         if (!clubId) return;
         cache.delete(`programs_${clubId}`);
@@ -164,10 +166,11 @@ export const ProgramPlugin = new Elysia()
   .delete(
     "/:id",
     async ({ programRepo, params: { id } }) => {
-      await programRepo.delete(id);
+      const program = await programRepo.delete(id);
 
       return {
         message: "Program deleted",
+        data: program,
       };
     },
     {
@@ -179,6 +182,7 @@ export const ProgramPlugin = new Elysia()
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
       afterResponse: async ({ programRepo, cache, response }) => {
+        if (!response) return;
         const { clubId } = (response as any).data as ProgramExtended;
         if (!clubId) return;
         cache.delete(`programs_${clubId}`);
@@ -248,6 +252,7 @@ export const ProgramPlugin = new Elysia()
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
       afterResponse: async ({ programRepo, cache, response }) => {
+        if (!response) return;
         const { clubId } = (response as any).data as ProgramExtended;
         if (!clubId) return;
         cache.delete(`programs_${clubId}`);

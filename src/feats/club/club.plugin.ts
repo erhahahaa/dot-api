@@ -4,6 +4,7 @@ import { BucketService } from "../../core/services/bucket";
 import { CacheService } from "../../core/services/cache";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
+import { SelectUserToClubSchema } from "../user/user.schema";
 import { Dependency } from "./club.dependency";
 import {
   ClubExtended,
@@ -301,7 +302,7 @@ export const ClubPlugin = new Elysia()
         id: t.Number(),
         userId: t.Number(),
       }),
-      response: APIResponseSchema(ClubMemberSchema),
+      response: APIResponseSchema(SelectUserToClubSchema),
       afterHandle: async ({ clubRepo, cache, params: { id } }) => {
         cache.delete(`club_members_${id}`);
         const members = await clubRepo.getMembers(id);
@@ -351,7 +352,7 @@ export const ClubPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(ClubMemberSchema),
+      response: APIResponseSchema(SelectUserToClubSchema),
       afterHandle: async ({ clubRepo, cache, params: { id } }) => {
         cache.delete(`club_members_${id}`);
         const members = await clubRepo.getMembers(id);

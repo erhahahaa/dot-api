@@ -7,14 +7,15 @@ import { MediaModel } from "../media/media.model";
 import { ProgramModel } from "../program/program.model";
 import { TacticalModel } from "../tactical/tactical.model";
 import { UserModel, UserToClubModel } from "../user/user.model";
+import { UserToClub } from "../user/user.schema";
 import { ClubModel } from "./club.model";
 import { Club, ClubExtended, ClubMember, InsertClub } from "./club.schema";
 
 abstract class ClubRepo extends BaseRepo<ClubExtended> {
   abstract getMembers(id: number): Promise<ClubMember[]>;
   abstract addMember(clubId: number, userId: number): Promise<ClubMember>;
-  abstract kickMember(clubId: number, userId: number): Promise<ClubMember>;
-  abstract leave(clubId: number, userId: number): Promise<ClubMember>;
+  abstract kickMember(clubId: number, userId: number): Promise<UserToClub>;
+  abstract leave(clubId: number, userId: number): Promise<UserToClub>;
 }
 
 export class ClubRepoImpl extends ClubRepo {
@@ -81,17 +82,19 @@ export class ClubRepoImpl extends ClubRepo {
 
   async update(data: InsertClub): Promise<ClubExtended> {
     if (!data.id) throw new BadRequestError("Club id is required");
-    const clubs = await this.db
+    const updateClub = await this.db
       .update(ClubModel)
       .set({
         ...data,
         updatedAt: new Date(),
       })
       .where(eq(ClubModel.id, data.id))
-      .returning()
-      .then(async (rows) => await this.select(eq(ClubModel.id, rows[0].id)));
+      .returning();
 
-    if (clubs.length === 0) throw new NoContentError("Failed to update club");
+    if (updateClub.length === 0)
+      throw new NoContentError("Failed to update club");
+
+    const clubs = await this.select(eq(ClubModel.id, data.id));
 
     return clubs[0];
   }
@@ -163,7 +166,7 @@ export class ClubRepoImpl extends ClubRepo {
     return clubs[0] as ClubMember;
   }
 
-  async kickMember(clubId: number, userId: number): Promise<ClubMember> {
+  async kickMember(clubId: number, userId: number): Promise<UserToClub> {
     const clubs = await this.db
       .delete(UserToClubModel)
       .where(
@@ -172,18 +175,14 @@ export class ClubRepoImpl extends ClubRepo {
           eq(UserToClubModel.userId, userId)
         )
       )
-      .returning()
-      .then(
-        async (rows) =>
-          await this.selectMember(eq(UserToClubModel.clubId, rows[0].clubId))
-      );
+      .returning();
 
     if (clubs.length === 0) throw new NoContentError("Failed to kick member");
 
-    return clubs[0] as ClubMember;
+    return clubs[0] as UserToClub;
   }
 
-  async leave(clubId: number, userId: number): Promise<ClubMember> {
+  async leave(clubId: number, userId: number): Promise<UserToClub> {
     const clubs = await this.db
       .delete(UserToClubModel)
       .where(
@@ -192,14 +191,9 @@ export class ClubRepoImpl extends ClubRepo {
           eq(UserToClubModel.userId, userId)
         )
       )
-      .returning()
-      .then(
-        async (rows) =>
-          await this.selectMember(eq(UserToClubModel.clubId, rows[0].clubId))
-      );
-
+      .returning();
     if (clubs.length === 0) throw new NoContentError("Failed to leave club");
 
-    return clubs[0] as ClubMember;
+    return clubs[0] as UserToClub;
   }
 }

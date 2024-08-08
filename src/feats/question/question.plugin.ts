@@ -59,6 +59,7 @@ export const QuestionPlugin = new Elysia()
       body: InsertQuestionSchema,
       response: APIResponseSchema(SelectQuestionExtendedSchema),
       afterHandle: async ({ questionRepo, cache, response }) => {
+        if (!response) return;
         const { examId } = (response as any).data as QuestionExtended;
         if (!examId) return;
         cache.delete(`questions_${examId}`);
@@ -86,6 +87,7 @@ export const QuestionPlugin = new Elysia()
       }),
       response: APIResponseSchema(SelectQuestionExtendedSchema),
       afterHandle: async ({ questionRepo, cache, response }) => {
+        if (!response) return;
         const { examId } = (response as any).data as QuestionExtended;
         if (!examId) return;
         cache.delete(`questions_${examId}`);
@@ -117,6 +119,7 @@ export const QuestionPlugin = new Elysia()
       body: InsertQuestionSchema,
       response: APIResponseSchema(SelectQuestionExtendedSchema),
       afterHandle: async ({ questionRepo, cache, response }) => {
+        if (!response) return;
         const { examId } = (response as any).data as QuestionExtended;
         if (!examId) return;
         cache.delete(`questions_${examId}`);
@@ -142,6 +145,7 @@ export const QuestionPlugin = new Elysia()
       }),
       response: APIResponseSchema(SelectQuestionExtendedSchema),
       afterHandle: async ({ questionRepo, cache, response }) => {
+        if (!response) return;
         const { examId } = (response as any).data as QuestionExtended;
         if (!examId) return;
         cache.delete(`questions_${examId}`);
@@ -166,6 +170,7 @@ export const QuestionPlugin = new Elysia()
       body: t.Array(InsertQuestionSchema),
       response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
       afterHandle: async ({ questionRepo, cache, response }) => {
+        if (!response) return;
         const questions = (response as any).data as QuestionExtended[];
         questions.forEach(async ({ examId }) => {
           if (examId) {
@@ -193,6 +198,7 @@ export const QuestionPlugin = new Elysia()
       body: t.Array(InsertQuestionSchema),
       response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
       afterHandle: async ({ questionRepo, cache, response }) => {
+        if (!response) return;
         const questions = (response as any).data as QuestionExtended[];
         questions.forEach(async ({ examId }) => {
           if (examId) {

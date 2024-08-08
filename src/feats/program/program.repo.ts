@@ -58,7 +58,7 @@ export class ProgramRepoImpl extends ProgramRepo {
   async update(data: InsertProgram): Promise<ProgramExtended> {
     if (!data.id) throw new BadRequestError("Program id is required");
 
-    const programs = await this.db
+    const updateProgram = await this.db
       .update(ProgramModel)
       .set({
         ...data,
@@ -66,11 +66,12 @@ export class ProgramRepoImpl extends ProgramRepo {
         endDate: new Date(data.endDate || new Date()),
       })
       .where(eq(ProgramModel.id, data.id))
-      .returning()
-      .then((rows) => this.select(eq(ProgramModel.id, rows[0].id)));
+      .returning();
 
-    if (programs.length === 0)
+    if (updateProgram.length === 0)
       throw new ServerError("Failed to update program");
+
+    const programs = await this.select(eq(ProgramModel.id, data.id));
 
     return programs[0];
   }

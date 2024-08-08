@@ -81,15 +81,16 @@ export class QuestionRepoImpl extends QuestionRepo {
   async update(data: InsertQuestion): Promise<QuestionExtended> {
     if (!data.id) throw new BadRequestError("Question id is required");
 
-    const questions = await this.db
+    const updateQuestion = await this.db
       .update(QuestionModel)
       .set(data)
       .where(eq(QuestionModel.id, data.id))
-      .returning()
-      .then((rows) => this.select(eq(QuestionModel.id, rows[0].id)));
+      .returning();
 
-    if (questions.length === 0)
+    if (updateQuestion.length === 0)
       throw new ServerError("Failed to update question");
+
+    const questions = await this.select(eq(QuestionModel.id, data.id));
 
     return questions[0];
   }
@@ -140,8 +141,7 @@ export class QuestionRepoImpl extends QuestionRepo {
     const questions = await this.db
       .delete(QuestionModel)
       .where(eq(QuestionModel.id, id))
-      .returning()
-      .then((rows) => this.select(eq(QuestionModel.id, rows[0].id)));
+      .returning();
 
     if (questions.length === 0)
       throw new ServerError("Failed to delete question");

@@ -28,7 +28,7 @@ export const TacticalPlugin = new Elysia()
   .get(
     "/",
     async ({ tacticalRepo, query: { clubId }, verifyJWT, cache }) => {
-      const user = await verifyJWT(); 
+      const user = await verifyJWT();
 
       console.log("USER", user);
 
@@ -85,6 +85,7 @@ export const TacticalPlugin = new Elysia()
         response,
         messenger,
       }) => {
+        if (!response) return;
         const { id, clubId, name } = (response as any).data as TacticalExtended;
         if (!clubId) return;
         const user = await verifyJWT();
@@ -176,6 +177,7 @@ export const TacticalPlugin = new Elysia()
       body: InsertTacticalSchema,
       response: APIResponseSchema(SelectTacticalExtendedSchema),
       afterHandle: async ({ tacticalRepo, cache, response, verifyJWT }) => {
+        if (!response) return;
         const { clubId } = (response as any).data as TacticalExtended;
         if (!clubId) return;
         const user = await verifyJWT();
@@ -209,6 +211,7 @@ export const TacticalPlugin = new Elysia()
       }),
       response: APIResponseSchema(SelectTacticalExtendedSchema),
       afterHandle: async ({ tacticalRepo, cache, response, verifyJWT }) => {
+        if (!response) return;
         const { clubId } = (response as any).data as TacticalExtended;
         if (!clubId) return;
         const user = await verifyJWT();
@@ -303,6 +306,13 @@ export const TacticalWebSocketPlugin = new Elysia()
           close();
           throw new BadRequestError("Tactical not found");
         }
+
+        await tacticalRepo.update({
+          id,
+          name,
+          isLive: false,
+          host: null,
+        });
 
         const channelName = `club:${clubId}:tactical:${id}`;
 

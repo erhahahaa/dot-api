@@ -70,6 +70,7 @@ export const ExamPlugin = new Elysia()
         response,
         messenger,
       }) => {
+        if (!response) return;
         const { id, title, clubId } = (response as any).data as ExamExtended;
         if (!clubId) return;
 
@@ -155,7 +156,8 @@ export const ExamPlugin = new Elysia()
       }),
       body: InsertExamSchema,
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({ examRepo, cache, params: { id }, response }) => {
+      afterHandle: async ({ examRepo, cache, response }) => {
+        if (!response) return;
         const { clubId } = (response as any).data as ExamExtended;
         if (!clubId) return;
 
@@ -244,6 +246,7 @@ export const ExamPlugin = new Elysia()
       }),
       response: APIResponseSchema(t.Object({})),
       afterHandle: async ({ examRepo, cache, response }) => {
+        if (!response) return;
         const { clubId } = (response as any).data as ExamExtended;
         if (!clubId) return;
 

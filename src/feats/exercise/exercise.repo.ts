@@ -87,15 +87,16 @@ export class ExerciseRepoImpl extends ExerciseRepo {
   async update(data: InsertExercise): Promise<ExerciseExtended> {
     if (!data.id) throw new BadRequestError("Exercise id is required");
 
-    const exercises = await this.db
+    const updateExercise = await this.db
       .update(ExerciseModel)
       .set(data)
       .where(eq(ExerciseModel.id, data.id))
-      .returning()
-      .then((rows) => this.select(eq(ExerciseModel.id, rows[0].id)));
+      .returning();
 
-    if (exercises.length === 0)
+    if (updateExercise.length === 0)
       throw new ServerError("Failed to update exercise");
+
+    const exercises = await this.select(eq(ExerciseModel.id, data.id));
 
     return exercises[0];
   }

@@ -60,6 +60,7 @@ export const ExercisePlugin = new Elysia()
       body: InsertExerciseSchema,
       response: APIResponseSchema(SelectExerciseExtendedSchema),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
+        if (!response) return;
         const { programId } = (response as any).data as ExerciseExtended;
         if (!programId) return;
         cache.delete(`exercises_${programId}`);
@@ -110,6 +111,7 @@ export const ExercisePlugin = new Elysia()
       body: InsertExerciseSchema,
       response: APIResponseSchema(SelectExerciseExtendedSchema),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
+        if (!response) return;
         const { programId } = (response as any).data as ExerciseExtended;
         if (!programId) return;
         cache.delete(`exercises_${programId}`);
@@ -136,6 +138,7 @@ export const ExercisePlugin = new Elysia()
       }),
       response: APIResponseSchema(SelectExerciseExtendedSchema),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
+        if (!response) return;
         const { programId } = (response as any).data as ExerciseExtended;
         if (!programId) return;
         cache.delete(`exercises_${programId}`);
@@ -160,6 +163,7 @@ export const ExercisePlugin = new Elysia()
       body: t.Array(InsertExerciseSchema),
       response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
+        if (!response) return;
         const exercises = (response as any).data as ExerciseExtended[];
         exercises.forEach(async ({ programId }) => {
           if (programId) {
@@ -187,6 +191,7 @@ export const ExercisePlugin = new Elysia()
       body: t.Array(InsertExerciseSchema),
       response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
+        if (!response) return;
         const exercises = (response as any).data as ExerciseExtended[];
         exercises.forEach(async ({ programId }) => {
           if (programId) {

@@ -56,17 +56,18 @@ export class ExamRepoImpl extends ExamRepo {
   async update(data: InsertExam): Promise<ExamExtended> {
     if (!data.id) throw new BadRequestError("Exam id is required");
 
-    const exams = await this.db
+    const updateExam = await this.db
       .update(ExamModel)
       .set({
         ...data,
         dueAt: new Date(data.dueAt || new Date()),
       })
       .where(eq(ExamModel.id, data.id))
-      .returning()
-      .then(async (rows) => await this.select(eq(ExamModel.id, rows[0].id)));
+      .returning();
 
-    if (exams.length === 0) throw new ServerError("Failed to update exam");
+    if (updateExam.length === 0) throw new ServerError("Failed to update exam");
+
+    const exams = await this.select(eq(ExamModel.id, data.id));
 
     return exams[0];
   }

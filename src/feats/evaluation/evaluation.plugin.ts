@@ -64,6 +64,7 @@ export const EvaluationPlugin = new Elysia()
       body: InsertEvaluationSchema,
       response: APIResponseSchema(SelectEvaluationSchema),
       afterHandle: async ({ evaluationRepo, cache, response }) => {
+        if (!response) return;
         const { examId } = response as any as Evaluation;
         if (!examId) return;
         cache.delete(`evaluations_${examId}`);
@@ -116,6 +117,7 @@ export const EvaluationPlugin = new Elysia()
       body: InsertEvaluationSchema,
       response: APIResponseSchema(SelectEvaluationSchema),
       afterHandle: async ({ evaluationRepo, cache, response }) => {
+        if (!response) return;
         const { examId } = response as any as Evaluation;
         if (!examId) return;
         cache.delete(`evaluations_${examId}`);
@@ -143,6 +145,7 @@ export const EvaluationPlugin = new Elysia()
       }),
       response: APIResponseSchema(SelectEvaluationSchema),
       afterHandle: async ({ evaluationRepo, cache, response }) => {
+        if (!response) return;
         const { examId } = response as any as Evaluation;
         if (!examId) return;
         cache.delete(`evaluations_${examId}`);

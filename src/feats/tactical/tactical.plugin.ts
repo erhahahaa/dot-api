@@ -225,13 +225,13 @@ export const TacticalPlugin = new Elysia()
         const user = await verifyJWT();
         cache.delete(`tacticals_${clubId}`);
         cache.delete(`tacticals_${clubId}_${user.id}`);
-        const tacticals = await tacticalRepo.list({ clubId });
-        const userTactical = await tacticalRepo.list({
-          clubId,
-          userId: user.id,
-        });
-        cache.set(`tacticals_${clubId}`, tacticals);
-        cache.set(`tacticals_${clubId}_${user.id}`, userTactical);
+        // const tacticals = await tacticalRepo.list({ clubId });
+        // const userTactical = await tacticalRepo.list({
+        //   clubId,
+        //   userId: user.id,
+        // });
+        // cache.set(`tacticals_${clubId}`, tacticals);
+        // cache.set(`tacticals_${clubId}_${user.id}`, userTactical);
       },
     }
   );

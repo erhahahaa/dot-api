@@ -89,6 +89,7 @@ export const UserPlugin = new Elysia()
   .get(
     "/search",
     async ({ userRepo, query: { query } }) => {
+      console.log("QUERY", query);
       if (!query || query.length === 0) {
         const random = await userRepo.list();
 
@@ -112,7 +113,9 @@ export const UserPlugin = new Elysia()
       query: t.Object({
         query: t.Optional(t.String()),
       }),
-      response: APIResponseSchema(t.Array(SelectUserSchema)),
+      response: APIResponseSchema(
+        t.Array(t.Omit(SelectUserSchema, ["password", "fcmToken"]))
+      ),
     }
   )
   .get(

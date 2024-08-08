@@ -68,6 +68,7 @@ export class ClubRepoImpl extends ClubRepo {
           .values({
             userId: creatorId,
             clubId: clubs[0].id,
+            role: "coach",
           })
           .returning()
       )

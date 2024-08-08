@@ -256,7 +256,7 @@ export const ClubPlugin = new Elysia()
     }
   )
   .get(
-    "/:id/add/:userId",
+    "/:id/add/:userId/:role",
     async ({ clubRepo, params: { id, userId, role } }) => {
       if (!role) role = "athlete";
       const club = await clubRepo.addMember(id, userId, role);
@@ -311,7 +311,7 @@ export const ClubPlugin = new Elysia()
     "/:id/join",
     async ({ clubRepo, params: { id }, verifyJWT }) => {
       const user = await verifyJWT();
-      const club = await clubRepo.addMember(id, user.id);
+      const club = await clubRepo.addMember(id, user.id, "athlete");
       return {
         message: "Joined club",
         data: club,

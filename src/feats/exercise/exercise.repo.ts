@@ -8,9 +8,9 @@ import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { MediaModel } from "../media/media.model";
 import { ExerciseModel } from "./exercise.model";
-import { Exercise, ExerciseExtended, InsertExercise } from "./exercise.schema";
+import { ExerciseExtended, InsertExercise } from "./exercise.schema";
 
-abstract class ExerciseRepo extends BaseRepo<Exercise> {
+abstract class ExerciseRepo extends BaseRepo<ExerciseExtended> {
   abstract createBulk(data: InsertExercise[]): Promise<ExerciseExtended[]>;
   abstract updateBulk(data: InsertExercise[]): Promise<ExerciseExtended[]>;
 }

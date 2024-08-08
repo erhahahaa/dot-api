@@ -7,7 +7,7 @@ import { Dependency } from "./exercise.dependency";
 import {
   ExerciseExtended,
   InsertExerciseSchema,
-  SelectExerciseSchema,
+  SelectExerciseExtendedSchema,
 } from "./exercise.schema";
 
 export const ExercisePlugin = new Elysia()
@@ -41,7 +41,7 @@ export const ExercisePlugin = new Elysia()
       query: t.Object({
         programId: t.Number(),
       }),
-      response: APIResponseSchema(t.Array(SelectExerciseSchema)),
+      response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
     }
   )
   .post(
@@ -58,7 +58,7 @@ export const ExercisePlugin = new Elysia()
         tags: ["EXERCISE"],
       },
       body: InsertExerciseSchema,
-      response: APIResponseSchema(SelectExerciseSchema),
+      response: APIResponseSchema(SelectExerciseExtendedSchema),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
         const { programId } = (response as any).data as ExerciseExtended;
         if (!programId) return;
@@ -85,7 +85,7 @@ export const ExercisePlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectExerciseSchema),
+      response: APIResponseSchema(SelectExerciseExtendedSchema),
     }
   )
   .put(
@@ -108,7 +108,7 @@ export const ExercisePlugin = new Elysia()
         id: t.Number(),
       }),
       body: InsertExerciseSchema,
-      response: APIResponseSchema(SelectExerciseSchema),
+      response: APIResponseSchema(SelectExerciseExtendedSchema),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
         const { programId } = (response as any).data as ExerciseExtended;
         if (!programId) return;
@@ -134,7 +134,7 @@ export const ExercisePlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectExerciseSchema),
+      response: APIResponseSchema(SelectExerciseExtendedSchema),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
         const { programId } = (response as any).data as ExerciseExtended;
         if (!programId) return;
@@ -158,7 +158,7 @@ export const ExercisePlugin = new Elysia()
         tags: ["EXERCISE"],
       },
       body: t.Array(InsertExerciseSchema),
-      response: APIResponseSchema(t.Array(SelectExerciseSchema)),
+      response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
         const exercises = (response as any).data as ExerciseExtended[];
         exercises.forEach(async ({ programId }) => {
@@ -185,7 +185,7 @@ export const ExercisePlugin = new Elysia()
         tags: ["EXERCISE"],
       },
       body: t.Array(InsertExerciseSchema),
-      response: APIResponseSchema(t.Array(SelectExerciseSchema)),
+      response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
       afterHandle: async ({ exerciseRepo, cache, response }) => {
         const exercises = (response as any).data as ExerciseExtended[];
         exercises.forEach(async ({ programId }) => {

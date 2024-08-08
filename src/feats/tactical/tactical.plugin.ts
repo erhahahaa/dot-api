@@ -78,7 +78,6 @@ export const TacticalPlugin = new Elysia()
       body: InsertTacticalSchema,
       response: APIResponseSchema(SelectTacticalExtendedSchema),
       afterHandle: async ({
-        tacticalRepo,
         clubRepo,
         cache,
         verifyJWT,

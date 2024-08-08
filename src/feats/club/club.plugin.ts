@@ -1,4 +1,5 @@
 import Elysia, { t } from "elysia";
+import { AuthorizationError } from "../../core/errors";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { CacheService } from "../../core/services/cache";
@@ -276,7 +277,11 @@ export const ClubPlugin = new Elysia()
   )
   .get(
     "/:id/kick/:userId",
-    async ({ clubRepo, params: { id, userId } }) => {
+    async ({ clubRepo, params: { id, userId }, verifyJWT }) => {
+      const user = await verifyJWT();
+      const me = await clubRepo.findMember(id, user.id);
+      if (me.role !== "coach")
+        throw new AuthorizationError("You are not allowed to kick members");
       const club = await clubRepo.kickMember(id, userId);
       return {
         message: "Kicked member",
@@ -336,6 +341,60 @@ export const ClubPlugin = new Elysia()
       },
       params: t.Object({
         id: t.Number(),
+      }),
+      response: APIResponseSchema(SelectUserToClubSchema),
+      afterHandle: async ({ cache, params: { id } }) => {
+        cache.delete(`club_members_${id}`);
+      },
+    }
+  )
+  .get(
+    "/:id/promote/:userId",
+    async ({ clubRepo, params: { id, userId }, verifyJWT }) => {
+      const user = await verifyJWT();
+      const me = await clubRepo.findMember(id, user.id);
+      if (me.role !== "coach")
+        throw new AuthorizationError("You are not allowed to promote members");
+      const club = await clubRepo.promoteMember(id, userId);
+      return {
+        message: "Promoted member",
+        data: club,
+      };
+    },
+    {
+      detail: {
+        tags: ["CLUB"],
+      },
+      params: t.Object({
+        id: t.Number(),
+        userId: t.Number(),
+      }),
+      response: APIResponseSchema(SelectUserToClubSchema),
+      afterHandle: async ({ cache, params: { id } }) => {
+        cache.delete(`club_members_${id}`);
+      },
+    }
+  )
+  .get(
+    "/:id/demote/:userId",
+    async ({ clubRepo, params: { id, userId }, verifyJWT }) => {
+      const user = await verifyJWT();
+      const me = await clubRepo.findMember(id, user.id);
+      if (me.role !== "coach")
+        throw new AuthorizationError("You are not allowed to demote members");
+      const club = await clubRepo.demoteMember(id, userId);
+      return {
+        message: "Demoted member",
+        data: club,
+      };
+    },
+    {
+      detail: {
+        tags: ["CLUB"],
+      },
+      params: t.Object({
+        id: t.Number(),
+        userId: t.Number(),
       }),
       response: APIResponseSchema(SelectUserToClubSchema),
       afterHandle: async ({ cache, params: { id } }) => {

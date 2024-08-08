@@ -166,6 +166,22 @@ export class ClubRepoImpl extends ClubRepo {
     return clubs[0] as ClubMember;
   }
 
+  async findMember(clubId: number, userId: number): Promise<UserToClub> {
+    const clubs = await this.db
+      .select()
+      .from(UserToClubModel)
+      .where(
+        and(
+          eq(UserToClubModel.clubId, clubId),
+          eq(UserToClubModel.userId, userId)
+        )
+      );
+
+    if (clubs.length === 0) throw new NoContentError("Member not found");
+
+    return clubs[0] as UserToClub;
+  }
+
   async kickMember(clubId: number, userId: number): Promise<UserToClub> {
     const clubs = await this.db
       .delete(UserToClubModel)
@@ -193,6 +209,41 @@ export class ClubRepoImpl extends ClubRepo {
       )
       .returning();
     if (clubs.length === 0) throw new NoContentError("Failed to leave club");
+
+    return clubs[0] as UserToClub;
+  }
+
+  async promoteMember(clubId: number, userId: number): Promise<UserToClub> {
+    const clubs = await this.db
+      .update(UserToClubModel)
+      .set({ role: "coach" })
+      .where(
+        and(
+          eq(UserToClubModel.clubId, clubId),
+          eq(UserToClubModel.userId, userId)
+        )
+      )
+      .returning();
+
+    if (clubs.length === 0)
+      throw new NoContentError("Failed to promote member");
+
+    return clubs[0] as UserToClub;
+  }
+
+  async demoteMember(clubId: number, userId: number): Promise<UserToClub> {
+    const clubs = await this.db
+      .update(UserToClubModel)
+      .set({ role: "athlete" })
+      .where(
+        and(
+          eq(UserToClubModel.clubId, clubId),
+          eq(UserToClubModel.userId, userId)
+        )
+      )
+      .returning();
+
+    if (clubs.length === 0) throw new NoContentError("Failed to demote member");
 
     return clubs[0] as UserToClub;
   }

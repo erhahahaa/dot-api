@@ -52,9 +52,11 @@ export function createApp() {
       UNKNOWN: ServerError,
       NO_CONTENT: NoContentError,
     })
-    .onError(({ error, code, set }) => {
+    .onError(({ error, code, set, route, path }) => {
       try {
         console.error("<=============== ERROR ===============>");
+        console.log("[ROUTE] : ", route);
+        console.log("[PATH] : ", path);
         console.log("[NAME] : ", error.name);
         console.log("[CAUSE] : ", error.cause);
         console.log("[MESSAGE] : ", error.message);

@@ -1,5 +1,5 @@
 import Elysia, { t } from "elysia";
-import { AuthorizationError } from "../../core/errors";
+import { AuthorizationError, BadRequestError } from "../../core/errors";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { CacheService } from "../../core/services/cache";
@@ -259,6 +259,8 @@ export const ClubPlugin = new Elysia()
     "/:id/add/:userId/:role",
     async ({ clubRepo, params: { id, userId, role } }) => {
       if (!role) role = "athlete";
+      const find = await clubRepo.findMember(id, userId);
+      if (find) throw new BadRequestError("User already in club");
       const club = await clubRepo.addMember(id, userId, role);
       return {
         message: "Added member",

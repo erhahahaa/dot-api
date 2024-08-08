@@ -9,7 +9,7 @@ export const InsertClubSchema = t.Composite([
   _InsertClubSchema,
   t.Partial(
     t.Object({
-      image: t.File(),
+      image: t.Optional(t.File()),
     })
   ),
 ]);

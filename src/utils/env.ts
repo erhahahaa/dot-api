@@ -51,15 +51,15 @@ const createEnv = (payload: Record<string, string | undefined>) => {
 };
 
 const env = createEnv({
-  APP_PORT: Bun.env.APP_PORT ?? "3000",
-  SALT_ROUND: Bun.env.SALT_ROUND ?? "10",
-  JWT_SECRET: Bun.env.JWT_SECRET ?? "secret",
-  DATABASE_URL: Bun.env.DATABASE_URL,
-  SUPABASE_URL: Bun.env.SUPABASE_URL,
-  SUPABASE_ANON_KEY: Bun.env.SUPABASE_ANON_KEY,
-  FIREBASE_PROJECT_ID: Bun.env.FIREBASE_PROJECT_ID,
-  FIREBASAE_CLIENT_EMAIL: Bun.env.FIREBASAE_CLIENT_EMAIL,
-  FIREBASE_PRIVATE_KEY: Bun.env.FIREBASE_PRIVATE_KEY,
+  APP_PORT: process.env.APP_PORT ?? "3000",
+  SALT_ROUND: process.env.SALT_ROUND ?? "10",
+  JWT_SECRET: process.env.JWT_SECRET ?? "secret",
+  DATABASE_URL: process.env.DATABASE_URL,
+  SUPABASE_URL: process.env.SUPABASE_URL,
+  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+  FIREBASAE_CLIENT_EMAIL: process.env.FIREBASAE_CLIENT_EMAIL,
+  FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
 });
 
 export { env };

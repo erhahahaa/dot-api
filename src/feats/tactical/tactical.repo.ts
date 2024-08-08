@@ -1,4 +1,4 @@
-import { SQL, and, eq } from "drizzle-orm";
+import { SQL, eq, or } from "drizzle-orm";
 import {
   BadRequestError,
   NoContentError,
@@ -38,11 +38,11 @@ export class TacticalRepoImpl extends TacticalRepo {
         media: MediaModel,
       })
       .from(TacticalModel)
-      .leftJoin(MediaModel, eq(TacticalModel.mediaId, MediaModel.id))
       .leftJoin(
         UserToClubModel,
-        eq(TacticalModel.clubId, UserToClubModel.clubId)
+        eq(UserToClubModel.clubId, TacticalModel.clubId)
       )
+      .leftJoin(MediaModel, eq(TacticalModel.mediaId, MediaModel.id))
       .where(where);
   }
 
@@ -112,10 +112,7 @@ export class TacticalRepoImpl extends TacticalRepo {
       tacticals = await this.select(eq(TacticalModel.clubId, clubId));
     } else if (clubId && userId) {
       tacticals = await this.select(
-        and(
-          eq(UserToClubModel.userId, userId),
-          eq(TacticalModel.clubId, clubId)
-        )
+        or(eq(UserToClubModel.userId, userId), eq(TacticalModel.clubId, clubId))
       );
     } else {
       throw new BadRequestError("Club id or user id is required");

@@ -14,7 +14,6 @@ import {
   LiveTacticalSchema,
   LiveTacticalSchemaType,
   SelectTacticalExtendedSchema,
-  Tactical,
   TacticalExtended,
   TacticalStrategicSchema,
   WebSocketMessageEvent,
@@ -29,19 +28,9 @@ export const TacticalPlugin = new Elysia()
   .get(
     "/",
     async ({ tacticalRepo, query: { clubId }, verifyJWT, cache }) => {
-      const user = await verifyJWT();
-      let cached = undefined;
-      if (clubId) {
-        cached = cache.get<Tactical[]>(`tacticals_${clubId}`);
-      } else {
-        cached = cache.get<Tactical[]>(`tacticals_${clubId}_${user.id}`);
-      }
-      if (cached) {
-        return {
-          message: "Found tacticals",
-          data: cached,
-        };
-      }
+      const user = await verifyJWT(); 
+
+      console.log("USER", user);
 
       const tacticals = await tacticalRepo.list({ clubId, userId: user.id });
       if (clubId) {

@@ -5,7 +5,10 @@ import { BucketService } from "../../core/services/bucket";
 import { CacheService } from "../../core/services/cache";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
-import { SelectUserToClubSchema } from "../user/user.schema";
+import {
+  InsertUserToClubSchema,
+  SelectUserToClubSchema,
+} from "../user/user.schema";
 import { Dependency } from "./club.dependency";
 import {
   ClubExtended,
@@ -254,8 +257,9 @@ export const ClubPlugin = new Elysia()
   )
   .get(
     "/:id/add/:userId",
-    async ({ clubRepo, params: { id, userId } }) => {
-      const club = await clubRepo.addMember(id, userId);
+    async ({ clubRepo, params: { id, userId, role } }) => {
+      if (!role) role = "athlete";
+      const club = await clubRepo.addMember(id, userId, role);
       return {
         message: "Added member",
         data: club,
@@ -268,6 +272,7 @@ export const ClubPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
         userId: t.Number(),
+        role: InsertUserToClubSchema.properties.role,
       }),
       response: APIResponseSchema(ClubMemberSchema),
       afterHandle: async ({ cache, params: { id } }) => {

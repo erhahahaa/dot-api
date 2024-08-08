@@ -13,7 +13,11 @@ import { Club, ClubExtended, ClubMember, InsertClub } from "./club.schema";
 
 abstract class ClubRepo extends BaseRepo<ClubExtended> {
   abstract getMembers(id: number): Promise<ClubMember[]>;
-  abstract addMember(clubId: number, userId: number): Promise<ClubMember>;
+  abstract addMember(
+    clubId: number,
+    userId: number,
+    role: UserToClub["role"]
+  ): Promise<ClubMember>;
   abstract kickMember(clubId: number, userId: number): Promise<UserToClub>;
   abstract leave(clubId: number, userId: number): Promise<UserToClub>;
 }
@@ -149,12 +153,17 @@ export class ClubRepoImpl extends ClubRepo {
     return clubs as ClubMember[];
   }
 
-  async addMember(clubId: number, userId: number): Promise<ClubMember> {
+  async addMember(
+    clubId: number,
+    userId: number,
+    role: UserToClub["role"]
+  ): Promise<ClubMember> {
     const clubs = await this.db
       .insert(UserToClubModel)
       .values({
         userId,
         clubId,
+        role,
       })
       .returning()
       .then(

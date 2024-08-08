@@ -24,9 +24,7 @@ export class MediaRepoImpl extends MediaRepo {
   async create(data: InsertMedia): Promise<Media> {
     const medias = await this.db.insert(MediaModel).values(data).returning();
 
-    if (medias.length === 0) {
-      throw new ServerError("Failed to create media");
-    }
+    if (medias.length === 0) throw new ServerError("Failed to create media");
 
     return medias[0];
   }
@@ -40,9 +38,7 @@ export class MediaRepoImpl extends MediaRepo {
       .where(eq(MediaModel.id, data.id))
       .returning();
 
-    if (medias.length === 0) {
-      throw new ServerError("Failed to update media");
-    }
+    if (medias.length === 0) throw new ServerError("Failed to update media");
 
     return medias[0];
   }
@@ -53,9 +49,7 @@ export class MediaRepoImpl extends MediaRepo {
       .where(eq(MediaModel.id, id))
       .returning();
 
-    if (medias.length === 0) {
-      throw new ServerError("Failed to delete media");
-    }
+    if (medias.length === 0) throw new ServerError("Failed to delete media");
 
     return medias[0];
   }
@@ -66,9 +60,7 @@ export class MediaRepoImpl extends MediaRepo {
       .from(MediaModel)
       .where(eq(MediaModel.id, id));
 
-    if (medias.length === 0) {
-      throw new NoContentError("Media not found");
-    }
+    if (medias.length === 0) throw new NoContentError("Media not found");
 
     return medias[0];
   }
@@ -85,9 +77,7 @@ export class MediaRepoImpl extends MediaRepo {
       .from(MediaModel)
       .where(and(eq(MediaModel.clubId, clubId), eq(MediaModel.parent, parent)));
 
-    if (medias.length === 0) {
-      throw new NoContentError("No media found");
-    }
+    if (medias.length === 0) throw new NoContentError("No media found");
 
     return medias;
   }
@@ -98,9 +88,7 @@ export class MediaRepoImpl extends MediaRepo {
       .from(MediaModel)
       .where(eq(MediaModel.url, url));
 
-    if (medias.length === 0) {
-      throw new NoContentError("Media not found");
-    }
+    if (medias.length === 0) throw new NoContentError("Media not found");
 
     return medias[0];
   }

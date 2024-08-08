@@ -1,9 +1,11 @@
 import Elysia, { t } from "elysia";
+import { Message } from "firebase-admin/messaging";
 import { app } from "../..";
 import { BadRequestError } from "../../core/errors";
 import { APIResponseSchema, TypeOfNullish } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { CacheService } from "../../core/services/cache";
+import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthJWT } from "../auth/auth.schema";
 import { AuthService } from "../auth/auth.service";
 import { Dependency } from "./tactical.dependency";
@@ -13,6 +15,7 @@ import {
   LiveTacticalSchemaType,
   SelectTacticalExtendedSchema,
   Tactical,
+  TacticalExtended,
   TacticalStrategicSchema,
   WebSocketMessageEvent,
 } from "./tactical.schema";
@@ -21,6 +24,7 @@ export const TacticalPlugin = new Elysia()
   .use(Dependency)
   .use(AuthService)
   .use(BucketService)
+  .use(MessagingService)
   .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
@@ -40,7 +44,11 @@ export const TacticalPlugin = new Elysia()
       }
 
       const tacticals = await tacticalRepo.list({ clubId, userId: user.id });
-      cache.set(`tacticals_${clubId}_${user.id}`, tacticals);
+      if (clubId) {
+        cache.set(`tacticals_${clubId}`, tacticals);
+      } else {
+        cache.set(`tacticals_${clubId}_${user.id}`, tacticals);
+      }
 
       return {
         message: "Found tacticals",
@@ -80,40 +88,67 @@ export const TacticalPlugin = new Elysia()
       },
       body: InsertTacticalSchema,
       response: APIResponseSchema(SelectTacticalExtendedSchema),
-      afterHandle: async ({ tacticalRepo, cache, body, verifyJWT }) => {
+      afterHandle: async ({
+        tacticalRepo,
+        clubRepo,
+        cache,
+        verifyJWT,
+        response,
+        messenger,
+      }) => {
+        const { id, clubId, name } = (response as any).data as TacticalExtended;
+        if (!clubId) return;
         const user = await verifyJWT();
-        const { clubId } = body;
-        if (clubId) {
-          cache.delete(`tacticals_${clubId}_${user.id}`);
-          const tacticals = await tacticalRepo.list({
-            clubId,
-            userId: user.id,
-          });
-          cache.set(`tacticals_${clubId}_${user.id}`, tacticals);
-        } else {
-          cache.delete(`tacticals_${clubId}`);
-          const tacticals = await tacticalRepo.list({
-            clubId,
-            userId: user.id,
-          });
-          cache.set(`tacticals_${clubId}`, tacticals);
-        }
+        cache.delete(`tacticals_${clubId}`);
+        cache.delete(`tacticals_${clubId}_${user.id}`);
+        const tacticals = await tacticalRepo.list({ clubId });
+        const userTactical = await tacticalRepo.list({
+          clubId,
+          userId: user.id,
+        });
+        cache.set(`tacticals_${clubId}`, tacticals);
+        cache.set(`tacticals_${clubId}_${user.id}`, userTactical);
+
+        const { name: clubName } = await clubRepo.find(clubId);
+        const topic = `club_${clubId}`;
+
+        const messageBody = `${name} tactical is now available in ${clubName} club !`;
+        const title = "New tactical just dropped! 🎉";
+        const data = {
+          id: `club_${clubId}_tactical_${id}`,
+          type: "TACTICAL",
+          title,
+          body: title,
+        };
+
+        const msg: Message = {
+          notification: {
+            title,
+            body: messageBody,
+            imageUrl: DEFAULT_IMAGE,
+          },
+          data,
+          android: {
+            notification: {
+              title,
+              body: messageBody,
+              imageUrl: DEFAULT_IMAGE,
+              sound: "default",
+              priority: "high",
+            },
+            data,
+          },
+          topic,
+        };
+
+        await messenger.send(msg);
       },
     }
   )
   .get(
     "/:id",
-    async ({ tacticalRepo, params: { id }, cache }) => {
-      const cached = cache.get<Tactical>(`tactical_${id}`);
-      if (cached) {
-        return {
-          message: "Tactical found",
-          data: cached,
-        };
-      }
-
+    async ({ tacticalRepo, params: { id } }) => {
       const tactical = await tacticalRepo.find(id);
-      cache.set(`tactical_${id}`, tactical);
 
       return {
         message: "Tactical found",
@@ -151,38 +186,29 @@ export const TacticalPlugin = new Elysia()
       }),
       body: InsertTacticalSchema,
       response: APIResponseSchema(SelectTacticalExtendedSchema),
-      afterHandle: async ({
-        tacticalRepo,
-        cache,
-        params: { id },
-        verifyJWT,
-      }) => {
+      afterHandle: async ({ tacticalRepo, cache, response, verifyJWT }) => {
+        const { clubId } = (response as any).data as TacticalExtended;
+        if (!clubId) return;
         const user = await verifyJWT();
-        cache.delete(`tactical_${id}`);
-        const tactical = await tacticalRepo.find(id);
-        cache.set(`tactical_${id}`, tactical);
-
-        const { clubId } = tactical;
-        if (clubId) {
-          cache.delete(`tacticals_${clubId}`);
-          const tacticals = await tacticalRepo.list({ clubId });
-          cache.set(`tacticals_${clubId}`, tacticals);
-          cache.delete(`tacticals_${clubId}_${user.id}`);
-          const tacticalsUser = await tacticalRepo.list({
-            clubId,
-            userId: user.id,
-          });
-          cache.set(`tacticals_${clubId}_${user.id}`, tacticalsUser);
-        }
+        cache.delete(`tacticals_${clubId}`);
+        cache.delete(`tacticals_${clubId}_${user.id}`);
+        const tacticals = await tacticalRepo.list({ clubId });
+        const userTactical = await tacticalRepo.list({
+          clubId,
+          userId: user.id,
+        });
+        cache.set(`tacticals_${clubId}`, tacticals);
+        cache.set(`tacticals_${clubId}_${user.id}`, userTactical);
       },
     }
   )
   .delete(
     "/:id",
     async ({ tacticalRepo, params: { id } }) => {
-      await tacticalRepo.delete(id);
+      const data = await tacticalRepo.delete(id);
       return {
         message: "Tactical deleted",
+        data,
       };
     },
     {
@@ -193,30 +219,19 @@ export const TacticalPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectTacticalExtendedSchema),
-      afterHandle: async ({
-        tacticalRepo,
-        cache,
-        params: { id },
-        verifyJWT,
-      }) => {
+      afterHandle: async ({ tacticalRepo, cache, response, verifyJWT }) => {
+        const { clubId } = (response as any).data as TacticalExtended;
+        if (!clubId) return;
         const user = await verifyJWT();
-
-        cache.delete(`tactical_${id}`);
-        const tactical = await tacticalRepo.find(id);
-        cache.set(`tactical_${id}`, tactical);
-
-        const { clubId } = tactical;
-        if (clubId) {
-          cache.delete(`tacticals_${clubId}`);
-          const tacticals = await tacticalRepo.list({ clubId });
-          cache.set(`tacticals_${clubId}`, tacticals);
-          cache.delete(`tacticals_${clubId}_${user.id}`);
-          const tacticalsUser = await tacticalRepo.list({
-            clubId,
-            userId: user.id,
-          });
-          cache.set(`tacticals_${clubId}_${user.id}`, tacticalsUser);
-        }
+        cache.delete(`tacticals_${clubId}`);
+        cache.delete(`tacticals_${clubId}_${user.id}`);
+        const tacticals = await tacticalRepo.list({ clubId });
+        const userTactical = await tacticalRepo.list({
+          clubId,
+          userId: user.id,
+        });
+        cache.set(`tacticals_${clubId}`, tacticals);
+        cache.set(`tacticals_${clubId}_${user.id}`, userTactical);
       },
     }
   );

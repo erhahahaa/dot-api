@@ -1,5 +1,9 @@
 import { SQL, eq } from "drizzle-orm";
-import { BadRequestError, ServerError } from "../../core/errors";
+import {
+  BadRequestError,
+  NoContentError,
+  ServerError,
+} from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { MediaModel } from "../media/media.model";
@@ -45,9 +49,8 @@ export class ProgramRepoImpl extends ProgramRepo {
       .returning()
       .then((rows) => this.select(eq(ProgramModel.id, rows[0].id)));
 
-    if (programs.length === 0) {
+    if (programs.length === 0)
       throw new ServerError("Failed to create program");
-    }
 
     return programs[0];
   }
@@ -66,9 +69,8 @@ export class ProgramRepoImpl extends ProgramRepo {
       .returning()
       .then((rows) => this.select(eq(ProgramModel.id, rows[0].id)));
 
-    if (programs.length === 0) {
+    if (programs.length === 0)
       throw new ServerError("Failed to update program");
-    }
 
     return programs[0];
   }
@@ -77,12 +79,10 @@ export class ProgramRepoImpl extends ProgramRepo {
     const programs = await this.db
       .delete(ProgramModel)
       .where(eq(ProgramModel.id, id))
-      .returning()
-      .then((rows) => this.select(eq(ProgramModel.id, rows[0].id)));
+      .returning();
 
-    if (programs.length === 0) {
+    if (programs.length === 0)
       throw new ServerError("Failed to delete program");
-    }
 
     return programs[0];
   }
@@ -90,9 +90,7 @@ export class ProgramRepoImpl extends ProgramRepo {
   async find(id: number): Promise<ProgramExtended> {
     const programs = await this.select(eq(ProgramModel.id, id));
 
-    if (programs.length === 0) {
-      throw new ServerError("Program not found");
-    }
+    if (programs.length === 0) throw new NoContentError("Program not found");
 
     return programs[0];
   }
@@ -100,9 +98,7 @@ export class ProgramRepoImpl extends ProgramRepo {
   async list({ clubId }: { clubId: number }): Promise<ProgramExtended[]> {
     const programs = await this.select(eq(ProgramModel.clubId, clubId));
 
-    if (programs.length === 0) {
-      throw new ServerError("No program found");
-    }
+    if (programs.length === 0) throw new NoContentError("No program found");
 
     return programs;
   }

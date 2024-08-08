@@ -70,7 +70,9 @@ export class ClubRepoImpl extends ClubRepo {
           })
           .returning()
       )
-      .then((clubs) => this.select(eq(ClubModel.id, clubs[0].clubId)));
+      .then(
+        async (rows) => await this.select(eq(ClubModel.id, rows[0].clubId))
+      );
 
     if (clubs.length === 0) throw new NoContentError("Failed to create club");
 
@@ -86,7 +88,8 @@ export class ClubRepoImpl extends ClubRepo {
         updatedAt: new Date(),
       })
       .where(eq(ClubModel.id, data.id))
-      .returning();
+      .returning()
+      .then(async (rows) => await this.select(eq(ClubModel.id, rows[0].id)));
 
     if (clubs.length === 0) throw new NoContentError("Failed to update club");
 
@@ -150,8 +153,9 @@ export class ClubRepoImpl extends ClubRepo {
         clubId,
       })
       .returning()
-      .then((rows) =>
-        this.selectMember(eq(UserToClubModel.clubId, rows[0].clubId))
+      .then(
+        async (rows) =>
+          await this.selectMember(eq(UserToClubModel.clubId, rows[0].clubId))
       );
 
     if (clubs.length === 0) throw new NoContentError("Failed to add member");
@@ -169,8 +173,9 @@ export class ClubRepoImpl extends ClubRepo {
         )
       )
       .returning()
-      .then((rows) =>
-        this.selectMember(eq(UserToClubModel.clubId, rows[0].clubId))
+      .then(
+        async (rows) =>
+          await this.selectMember(eq(UserToClubModel.clubId, rows[0].clubId))
       );
 
     if (clubs.length === 0) throw new NoContentError("Failed to kick member");
@@ -188,8 +193,9 @@ export class ClubRepoImpl extends ClubRepo {
         )
       )
       .returning()
-      .then((rows) =>
-        this.selectMember(eq(UserToClubModel.clubId, rows[0].clubId))
+      .then(
+        async (rows) =>
+          await this.selectMember(eq(UserToClubModel.clubId, rows[0].clubId))
       );
 
     if (clubs.length === 0) throw new NoContentError("Failed to leave club");

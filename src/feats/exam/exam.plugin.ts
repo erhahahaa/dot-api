@@ -1,7 +1,9 @@
 import Elysia, { t } from "elysia";
+import { Message } from "firebase-admin/messaging";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { CacheService } from "../../core/services/cache";
+import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
 import { Dependency } from "./exam.dependency";
@@ -15,6 +17,7 @@ export const ExamPlugin = new Elysia()
   .use(Dependency)
   .use(AuthService)
   .use(BucketService)
+  .use(MessagingService)
   .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
@@ -60,29 +63,60 @@ export const ExamPlugin = new Elysia()
       },
       body: InsertExamSchema,
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({ examRepo, cache, body }) => {
-        const { clubId } = body;
-        if (clubId) {
-          cache.delete(`exams_${clubId}`);
-          const evaluations = await examRepo.list({ clubId });
-          cache.set(`exams_${clubId}`, evaluations);
-        }
+      afterHandle: async ({
+        examRepo,
+        clubRepo,
+        cache,
+        response,
+        messenger,
+      }) => {
+        const { id, title, clubId } = (response as any).data as ExamExtended;
+        if (!clubId) return;
+
+        cache.delete(`exams_${clubId}`);
+        const evaluations = await examRepo.list({ clubId });
+        cache.set(`exams_${clubId}`, evaluations);
+
+        const club = await clubRepo.find(clubId);
+        const topic = `clubs_${club.id}`;
+        const body = `${title} exam is now available in ${club.name} club !`;
+        const examTitle = "New Exam just dropped! 🎉";
+
+        const data = {
+          id: `club_${club.id}_exam_${id}`,
+          type: "EXAM",
+          title: examTitle,
+          body: title,
+        };
+
+        const msg: Message = {
+          notification: {
+            title: examTitle,
+            body: body,
+            imageUrl: DEFAULT_IMAGE,
+          },
+          data,
+          android: {
+            notification: {
+              title: examTitle,
+              body: body,
+              imageUrl: DEFAULT_IMAGE,
+              sound: "default",
+              priority: "high",
+            },
+            data,
+          },
+          topic,
+        };
+
+        await messenger.send(msg);
       },
     }
   )
   .get(
     "/:id",
-    async ({ examRepo, params: { id }, cache }) => {
-      const cached = cache.get<ExamExtended>(`exam_${id}`);
-      if (cached) {
-        return {
-          message: "Evaluation found",
-          data: cached,
-        };
-      }
-
+    async ({ examRepo, params: { id } }) => {
       const evaluation = await examRepo.find(id);
-      cache.set(`exam_${id}`, evaluation);
 
       return {
         message: "Evaluation found",
@@ -121,17 +155,13 @@ export const ExamPlugin = new Elysia()
       }),
       body: InsertExamSchema,
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({ examRepo, cache, params: { id } }) => {
-        cache.delete(`exam_${id}`);
-        const program = await examRepo.find(id);
-        cache.set(`exam_${id}`, program);
+      afterHandle: async ({ examRepo, cache, params: { id }, response }) => {
+        const { clubId } = (response as any).data as ExamExtended;
+        if (!clubId) return;
 
-        const { clubId } = program;
-        if (clubId) {
-          cache.delete(`exams_${clubId}`);
-          const evaluations = await examRepo.list({ clubId });
-          cache.set(`exams_${clubId}`, evaluations);
-        }
+        cache.delete(`exams_${clubId}`);
+        const evaluations = await examRepo.list({ clubId });
+        cache.set(`exams_${clubId}`, evaluations);
       },
     }
   )
@@ -152,17 +182,13 @@ export const ExamPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({ examRepo, cache, params: { id } }) => {
-        cache.delete(`exam_${id}`);
-        const program = await examRepo.find(id);
-        cache.set(`exam_${id}`, program);
+      afterHandle: async ({ examRepo, cache, response }) => {
+        const { clubId } = (response as any).data as ExamExtended;
+        if (!clubId) return;
 
-        const { clubId } = program;
-        if (clubId) {
-          cache.delete(`exams_${clubId}`);
-          const evaluations = await examRepo.list({ clubId });
-          cache.set(`exams_${clubId}`, evaluations);
-        }
+        cache.delete(`exams_${clubId}`);
+        const evaluations = await examRepo.list({ clubId });
+        cache.set(`exams_${clubId}`, evaluations);
       },
     }
   )
@@ -217,17 +243,13 @@ export const ExamPlugin = new Elysia()
         image: t.File(),
       }),
       response: APIResponseSchema(t.Object({})),
-      afterHandle: async ({ examRepo, cache, params: { id } }) => {
-        cache.delete(`exam_${id}`);
-        const program = await examRepo.find(id);
-        cache.set(`exam_${id}`, program);
+      afterHandle: async ({ examRepo, cache, response }) => {
+        const { clubId } = (response as any).data as ExamExtended;
+        if (!clubId) return;
 
-        const { clubId } = program;
-        if (clubId) {
-          cache.delete(`exams_${clubId}`);
-          const evaluations = await examRepo.list({ clubId });
-          cache.set(`exams_${clubId}`, evaluations);
-        }
+        cache.delete(`exams_${clubId}`);
+        const evaluations = await examRepo.list({ clubId });
+        cache.set(`exams_${clubId}`, evaluations);
       },
     }
   );

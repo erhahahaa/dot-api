@@ -46,11 +46,9 @@ export class ExamRepoImpl extends ExamRepo {
         dueAt: new Date(data.dueAt || new Date()),
       })
       .returning()
-      .then((rows) => this.select(eq(ExamModel.id, rows[0].id)));
+      .then(async (rows) => await this.select(eq(ExamModel.id, rows[0].id)));
 
-    if (exams.length === 0) {
-      throw new ServerError("Failed to create exam");
-    }
+    if (exams.length === 0) throw new ServerError("Failed to create exam");
 
     return exams[0];
   }
@@ -66,11 +64,9 @@ export class ExamRepoImpl extends ExamRepo {
       })
       .where(eq(ExamModel.id, data.id))
       .returning()
-      .then((rows) => this.select(eq(ExamModel.id, rows[0].id)));
+      .then(async (rows) => await this.select(eq(ExamModel.id, rows[0].id)));
 
-    if (exams.length === 0) {
-      throw new ServerError("Failed to update exam");
-    }
+    if (exams.length === 0) throw new ServerError("Failed to update exam");
 
     return exams[0];
   }
@@ -79,12 +75,9 @@ export class ExamRepoImpl extends ExamRepo {
     const exams = await this.db
       .delete(ExamModel)
       .where(eq(ExamModel.id, id))
-      .returning()
-      .then((rows) => this.select(eq(ExamModel.id, rows[0].id)));
+      .returning();
 
-    if (exams.length === 0) {
-      throw new ServerError("Failed to delete exam");
-    }
+    if (exams.length === 0) throw new ServerError("Failed to delete exam");
 
     return exams[0];
   }
@@ -92,9 +85,7 @@ export class ExamRepoImpl extends ExamRepo {
   async find(id: number): Promise<ExamExtended> {
     const exams = await this.select(eq(ExamModel.id, id));
 
-    if (exams.length === 0) {
-      throw new NoContentError("Exam not found");
-    }
+    if (exams.length === 0) throw new NoContentError("Exam not found");
 
     return exams[0];
   }
@@ -102,9 +93,7 @@ export class ExamRepoImpl extends ExamRepo {
   async list({ clubId }: { clubId: number }): Promise<ExamExtended[]> {
     const exams = await this.select(eq(ExamModel.clubId, clubId));
 
-    if (exams.length === 0) {
-      throw new NoContentError("No exam found");
-    }
+    if (exams.length === 0) throw new NoContentError("No exam found");
 
     return exams;
   }

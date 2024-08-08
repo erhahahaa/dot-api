@@ -1,5 +1,9 @@
 import { SQL, eq, inArray } from "drizzle-orm";
-import { BadRequestError, ServerError } from "../../core/errors";
+import {
+  BadRequestError,
+  NoContentError,
+  ServerError,
+} from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { MediaModel } from "../media/media.model";
@@ -45,9 +49,8 @@ export class QuestionRepoImpl extends QuestionRepo {
       .returning()
       .then((rows) => this.select(eq(QuestionModel.id, rows[0].id)));
 
-    if (questions.length === 0) {
+    if (questions.length === 0)
       throw new ServerError("Failed to create question");
-    }
 
     return questions[0];
   }
@@ -65,9 +68,8 @@ export class QuestionRepoImpl extends QuestionRepo {
       .values(data)
       .returning();
 
-    if (_questions.length === 0) {
+    if (_questions.length === 0)
       throw new ServerError("Failed to create questions");
-    }
 
     const questionIds: number[] = _questions.map((q) => q.id);
 
@@ -86,9 +88,8 @@ export class QuestionRepoImpl extends QuestionRepo {
       .returning()
       .then((rows) => this.select(eq(QuestionModel.id, rows[0].id)));
 
-    if (questions.length === 0) {
+    if (questions.length === 0)
       throw new ServerError("Failed to update question");
-    }
 
     return questions[0];
   }
@@ -129,9 +130,8 @@ export class QuestionRepoImpl extends QuestionRepo {
 
     const questions = await Promise.all(updatePromises);
 
-    if (questions.length === 0) {
+    if (questions.length === 0)
       throw new ServerError("Failed to update questions");
-    }
 
     return questions;
   }
@@ -143,9 +143,8 @@ export class QuestionRepoImpl extends QuestionRepo {
       .returning()
       .then((rows) => this.select(eq(QuestionModel.id, rows[0].id)));
 
-    if (questions.length === 0) {
+    if (questions.length === 0)
       throw new ServerError("Failed to delete question");
-    }
 
     return questions[0];
   }
@@ -153,9 +152,7 @@ export class QuestionRepoImpl extends QuestionRepo {
   async find(id: number): Promise<QuestionExtended> {
     const questions = await this.select(eq(QuestionModel.id, id));
 
-    if (questions.length === 0) {
-      throw new ServerError("Question not found");
-    }
+    if (questions.length === 0) throw new NoContentError("Question not found");
 
     return questions[0];
   }
@@ -163,9 +160,7 @@ export class QuestionRepoImpl extends QuestionRepo {
   async list({ examId }: { examId: number }): Promise<Question[]> {
     const questions = await this.select(eq(QuestionModel.examId, examId));
 
-    if (questions.length === 0) {
-      throw new ServerError("No question found");
-    }
+    if (questions.length === 0) throw new NoContentError("No question found");
 
     return questions;
   }

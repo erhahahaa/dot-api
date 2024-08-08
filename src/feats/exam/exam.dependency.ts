@@ -1,6 +1,7 @@
 import Elysia from "elysia";
 import { ExamRepoImpl } from ".";
 import { db } from "../../core/services/db";
+import { ClubRepoImpl } from "../club/club.repo";
 import { MediaRepoImpl } from "../media/media.repo";
 
 export const Dependency = () => {
@@ -11,6 +12,9 @@ export const Dependency = () => {
       },
       get mediaRepo() {
         return new MediaRepoImpl(db);
+      },
+      get clubRepo() {
+        return new ClubRepoImpl(db);
       },
     };
   });

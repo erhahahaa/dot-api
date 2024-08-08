@@ -53,9 +53,8 @@ export class ExerciseRepoImpl extends ExerciseRepo {
       .returning()
       .then((rows) => this.select(eq(ExerciseModel.id, rows[0].id)));
 
-    if (exercises.length === 0) {
+    if (exercises.length === 0)
       throw new ServerError("Failed to create exercise");
-    }
 
     return exercises[0];
   }
@@ -75,11 +74,10 @@ export class ExerciseRepoImpl extends ExerciseRepo {
       .values(data)
       .returning();
 
-    if (_exercises.length === 0) {
+    if (_exercises.length === 0)
       throw new ServerError("Failed to create exercise");
-    }
 
-    const  exerciseIds: number[] = _exercises.map((e) => e.id);
+    const exerciseIds: number[] = _exercises.map((e) => e.id);
 
     const exercises = await this.select(inArray(ExerciseModel.id, exerciseIds));
 
@@ -96,9 +94,8 @@ export class ExerciseRepoImpl extends ExerciseRepo {
       .returning()
       .then((rows) => this.select(eq(ExerciseModel.id, rows[0].id)));
 
-    if (exercises.length === 0) {
+    if (exercises.length === 0)
       throw new ServerError("Failed to update exercise");
-    }
 
     return exercises[0];
   }
@@ -134,9 +131,8 @@ export class ExerciseRepoImpl extends ExerciseRepo {
 
     const exercises = await Promise.all(updatePromises);
 
-    if (exercises.length === 0) {
+    if (exercises.length === 0)
       throw new ServerError("Failed to update exercise");
-    }
 
     return exercises;
   }
@@ -145,12 +141,10 @@ export class ExerciseRepoImpl extends ExerciseRepo {
     const exercises = await this.db
       .delete(ExerciseModel)
       .where(eq(ExerciseModel.id, id))
-      .returning()
-      .then((rows) => this.select(eq(ExerciseModel.id, rows[0].id)));
+      .returning();
 
-    if (exercises.length === 0) {
+    if (exercises.length === 0)
       throw new ServerError("Failed to delete exercise");
-    }
 
     return exercises[0];
   }
@@ -158,9 +152,7 @@ export class ExerciseRepoImpl extends ExerciseRepo {
   async find(id: number): Promise<ExerciseExtended> {
     const exercises = await this.select(eq(ExerciseModel.id, id));
 
-    if (exercises.length === 0) {
-      throw new NoContentError("Exercise not found");
-    }
+    if (exercises.length === 0) throw new NoContentError("Exercise not found");
 
     return exercises[0];
   }
@@ -172,9 +164,7 @@ export class ExerciseRepoImpl extends ExerciseRepo {
   }): Promise<ExerciseExtended[]> {
     const exercises = await this.select(eq(ExerciseModel.programId, programId));
 
-    if (exercises.length === 0) {
-      throw new NoContentError("No exercise found");
-    }
+    if (exercises.length === 0) throw new NoContentError("No exercise found");
 
     return exercises;
   }

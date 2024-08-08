@@ -59,29 +59,19 @@ export const ExercisePlugin = new Elysia()
       },
       body: InsertExerciseSchema,
       response: APIResponseSchema(SelectExerciseSchema),
-      afterHandle: async ({ exerciseRepo, cache, body }) => {
-        const { programId } = body;
-        if (programId) {
-          cache.delete(`exercises_${programId}`);
-          const exercises = await exerciseRepo.list({ programId });
-          cache.set(`exercises_${programId}`, exercises);
-        }
+      afterHandle: async ({ exerciseRepo, cache, response }) => {
+        const { programId } = (response as any).data as ExerciseExtended;
+        if (!programId) return;
+        cache.delete(`exercises_${programId}`);
+        const exercises = await exerciseRepo.list({ programId });
+        cache.set(`exercises_${programId}`, exercises);
       },
     }
   )
   .get(
     "/:id",
-    async ({ exerciseRepo, params: { id }, cache }) => {
-      const cached = cache.get<ExerciseExtended>(`exercise_${id}`);
-      if (cached) {
-        return {
-          message: "Exercise found",
-          data: cached,
-        };
-      }
-
+    async ({ exerciseRepo, params: { id } }) => {
       const exercise = await exerciseRepo.find(id);
-      cache.set(`exercise_${id}`, exercise);
 
       return {
         message: "Exercise found",
@@ -119,17 +109,12 @@ export const ExercisePlugin = new Elysia()
       }),
       body: InsertExerciseSchema,
       response: APIResponseSchema(SelectExerciseSchema),
-      afterHandle: async ({ exerciseRepo, cache, params: { id } }) => {
-        cache.delete(`exercise_${id}`);
-        const exercise = await exerciseRepo.find(id);
-        cache.set(`exercise_${id}`, exercise);
-
-        const { programId } = exercise;
-        if (programId) {
-          cache.delete(`exercises_${programId}`);
-          const exercises = await exerciseRepo.list({ programId });
-          cache.set(`exercises_${programId}`, exercises);
-        }
+      afterHandle: async ({ exerciseRepo, cache, response }) => {
+        const { programId } = (response as any).data as ExerciseExtended;
+        if (!programId) return;
+        cache.delete(`exercises_${programId}`);
+        const exercises = await exerciseRepo.list({ programId });
+        cache.set(`exercises_${programId}`, exercises);
       },
     }
   )
@@ -150,17 +135,12 @@ export const ExercisePlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectExerciseSchema),
-      afterHandle: async ({ exerciseRepo, cache, params: { id } }) => {
-        cache.delete(`exercise_${id}`);
-        const exercise = await exerciseRepo.find(id);
-        cache.set(`exercise_${id}`, exercise);
-
-        const { programId } = exercise;
-        if (programId) {
-          cache.delete(`exercises_${programId}`);
-          const exercises = await exerciseRepo.list({ programId });
-          cache.set(`exercises_${programId}`, exercises);
-        }
+      afterHandle: async ({ exerciseRepo, cache, response }) => {
+        const { programId } = (response as any).data as ExerciseExtended;
+        if (!programId) return;
+        cache.delete(`exercises_${programId}`);
+        const exercises = await exerciseRepo.list({ programId });
+        cache.set(`exercises_${programId}`, exercises);
       },
     }
   )
@@ -179,14 +159,9 @@ export const ExercisePlugin = new Elysia()
       },
       body: t.Array(InsertExerciseSchema),
       response: APIResponseSchema(t.Array(SelectExerciseSchema)),
-      afterHandle: async ({ exerciseRepo, cache, body }) => {
-        body.forEach(async ({ id }) => {
-          if (!id) return;
-          cache.delete(`exercise_${id}`);
-          const exercise = await exerciseRepo.find(id);
-          cache.set(`exercise_${id}`, exercise);
-
-          const { programId } = exercise;
+      afterHandle: async ({ exerciseRepo, cache, response }) => {
+        const exercises = (response as any).data as ExerciseExtended[];
+        exercises.forEach(async ({ programId }) => {
           if (programId) {
             cache.delete(`exercises_${programId}`);
             const exercises = await exerciseRepo.list({ programId });
@@ -211,14 +186,9 @@ export const ExercisePlugin = new Elysia()
       },
       body: t.Array(InsertExerciseSchema),
       response: APIResponseSchema(t.Array(SelectExerciseSchema)),
-      afterHandle: async ({ exerciseRepo, cache, body }) => {
-        body.forEach(async ({ id }) => {
-          if (!id) return;
-          cache.delete(`exercise_${id}`);
-          const exercise = await exerciseRepo.find(id);
-          cache.set(`exercise_${id}`, exercise);
-
-          const { programId } = exercise;
+      afterHandle: async ({ exerciseRepo, cache, response }) => {
+        const exercises = (response as any).data as ExerciseExtended[];
+        exercises.forEach(async ({ programId }) => {
           if (programId) {
             cache.delete(`exercises_${programId}`);
             const exercises = await exerciseRepo.list({ programId });

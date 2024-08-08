@@ -25,9 +25,8 @@ export class EvaluationRepoImpl extends EvaluationRepo {
       .values(data)
       .returning();
 
-    if (evaluations.length === 0) {
+    if (evaluations.length === 0)
       throw new ServerError("Failed to create evaluation");
-    }
 
     return evaluations[0];
   }
@@ -41,9 +40,8 @@ export class EvaluationRepoImpl extends EvaluationRepo {
       .where(eq(EvaluationModel.id, data.id))
       .returning();
 
-    if (evaluations.length === 0) {
+    if (evaluations.length === 0)
       throw new ServerError("Failed to update evaluation");
-    }
 
     return evaluations[0];
   }
@@ -54,9 +52,8 @@ export class EvaluationRepoImpl extends EvaluationRepo {
       .where(eq(EvaluationModel.id, id))
       .returning();
 
-    if (evaluations.length === 0) {
+    if (evaluations.length === 0)
       throw new ServerError("Failed to delete evaluation");
-    }
 
     return evaluations[0];
   }
@@ -67,9 +64,8 @@ export class EvaluationRepoImpl extends EvaluationRepo {
       .from(EvaluationModel)
       .where(eq(EvaluationModel.id, id));
 
-    if (evaluations.length === 0) {
+    if (evaluations.length === 0)
       throw new NoContentError("Evaluation not found");
-    }
 
     return evaluations[0];
   }
@@ -80,9 +76,8 @@ export class EvaluationRepoImpl extends EvaluationRepo {
       .from(EvaluationModel)
       .where(eq(EvaluationModel.examId, examId));
 
-    if (evaluations.length === 0) {
+    if (evaluations.length === 0)
       throw new NoContentError("No evaluation found");
-    }
 
     return evaluations;
   }

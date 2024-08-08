@@ -22,34 +22,28 @@ export class TacticalRepoImpl extends TacticalRepo {
   }
 
   private select(where: SQL<unknown> | undefined): Promise<TacticalExtended[]> {
-    return (
-      this.db
-        .select({
-          id: TacticalModel.id,
-          clubId: TacticalModel.clubId,
-          mediaId: TacticalModel.mediaId,
-          name: TacticalModel.name,
-          description: TacticalModel.description,
-          board: TacticalModel.board,
-          strategic: TacticalModel.strategic,
-          isLive: TacticalModel.isLive,
-          host: TacticalModel.host,
-          createdAt: TacticalModel.createdAt,
-          updatedAt: TacticalModel.updatedAt,
-          media: MediaModel,
-        })
-        .from(TacticalModel)
-        .leftJoin(MediaModel, eq(TacticalModel.mediaId, MediaModel.id))
-        // join with user to club to get clubId
-        // while query statement doesnt had clubId
-        // so we need find tactical by their clubId in user to club table relation
-
-        .leftJoin(
-          UserToClubModel,
-          eq(TacticalModel.clubId, UserToClubModel.clubId)
-        )
-        .where(where)
-    );
+    return this.db
+      .select({
+        id: TacticalModel.id,
+        clubId: TacticalModel.clubId,
+        mediaId: TacticalModel.mediaId,
+        name: TacticalModel.name,
+        description: TacticalModel.description,
+        board: TacticalModel.board,
+        strategic: TacticalModel.strategic,
+        isLive: TacticalModel.isLive,
+        host: TacticalModel.host,
+        createdAt: TacticalModel.createdAt,
+        updatedAt: TacticalModel.updatedAt,
+        media: MediaModel,
+      })
+      .from(TacticalModel)
+      .leftJoin(MediaModel, eq(TacticalModel.mediaId, MediaModel.id))
+      .leftJoin(
+        UserToClubModel,
+        eq(TacticalModel.clubId, UserToClubModel.clubId)
+      )
+      .where(where);
   }
 
   async create(data: InsertTactical): Promise<TacticalExtended> {
@@ -59,9 +53,8 @@ export class TacticalRepoImpl extends TacticalRepo {
       .returning()
       .then((rows) => this.select(eq(TacticalModel.id, rows[0].id)));
 
-    if (tacticals.length === 0) {
+    if (tacticals.length === 0)
       throw new ServerError("Failed to create tactical");
-    }
 
     return tacticals[0];
   }
@@ -79,9 +72,8 @@ export class TacticalRepoImpl extends TacticalRepo {
       .returning()
       .then((rows) => this.select(eq(TacticalModel.id, rows[0].id)));
 
-    if (tacticals.length === 0) {
+    if (tacticals.length === 0)
       throw new ServerError("Failed to update tactical");
-    }
 
     return tacticals[0];
   }
@@ -90,12 +82,10 @@ export class TacticalRepoImpl extends TacticalRepo {
     const tacticals = await this.db
       .delete(TacticalModel)
       .where(eq(TacticalModel.id, id))
-      .returning()
-      .then((rows) => this.select(eq(TacticalModel.id, rows[0].id)));
+      .returning();
 
-    if (tacticals.length === 0) {
+    if (tacticals.length === 0)
       throw new ServerError("Failed to delete tactical");
-    }
 
     return tacticals[0];
   }
@@ -103,9 +93,7 @@ export class TacticalRepoImpl extends TacticalRepo {
   async find(id: number): Promise<TacticalExtended> {
     const tacticals = await this.select(eq(TacticalModel.id, id));
 
-    if (tacticals.length === 0) {
-      throw new NoContentError("Tactical not found");
-    }
+    if (tacticals.length === 0) throw new NoContentError("Tactical not found");
 
     return tacticals[0];
   }
@@ -133,9 +121,7 @@ export class TacticalRepoImpl extends TacticalRepo {
       throw new BadRequestError("Club id or user id is required");
     }
 
-    if (tacticals.length === 0) {
-      throw new NoContentError("No tactical found");
-    }
+    if (tacticals.length === 0) throw new NoContentError("No tactical found");
 
     return tacticals;
   }

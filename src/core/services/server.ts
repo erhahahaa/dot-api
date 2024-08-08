@@ -48,6 +48,10 @@ export function createApp() {
     })
     .onError(({ error, code, set }) => {
       try {
+        // console.error(
+        //   `\n\nError: ${error.message} | Code: ${code} | Stack: ${error.stack}\n\n`
+        // );
+        console.error(error);
         if (code == "VALIDATION") {
           return { errors: error.all };
         }

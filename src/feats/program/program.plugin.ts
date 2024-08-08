@@ -3,7 +3,7 @@ import { Message } from "firebase-admin/messaging";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { CacheService } from "../../core/services/cache";
-import { MessagingService } from "../../core/services/fb";
+import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
 import { Dependency } from "./program.dependency";
@@ -68,66 +68,55 @@ export const ProgramPlugin = new Elysia()
         programRepo,
         clubRepo,
         cache,
-        body,
         response,
         messenger,
       }) => {
-        const { clubId } = body;
-        if (clubId) {
-          cache.delete(`programs_${clubId}`);
-          const programs = await programRepo.list({ clubId });
-          cache.set(`programs_${clubId}`, programs);
+        const { id, name, clubId } = (response as any).data as ProgramExtended;
+        if (!clubId) return;
 
-          const program = (response as any).data as ProgramExtended;
-          const club = await clubRepo.find(clubId);
-          const topic = `club_${program.clubId}`;
-          const msg: Message = {
+        cache.delete(`programs_${clubId}`);
+        const programs = await programRepo.list({ clubId });
+        cache.set(`programs_${clubId}`, programs);
+
+        const { name: clubName } = await clubRepo.find(clubId);
+        const topic = `club_${clubId}`;
+
+        const messageBody = `${name} program is now available in ${clubName} club !`;
+        const title = "New program just dropped! 🎉";
+        const data = {
+          id: `club_${clubId}_program_${id}`,
+          type: "EXAM",
+          title,
+          body: title,
+        };
+        const msg: Message = {
+          notification: {
+            title,
+            body: messageBody,
+            imageUrl: DEFAULT_IMAGE,
+          },
+          data,
+          android: {
             notification: {
-              title: "New program just dropped! 🎉",
-              body:
-                program.name + " is now available in " + club.name + " club !",
-              imageUrl: "https://i.imgur.com/KDza0Bz.png",
+              title,
+              body: messageBody,
+              imageUrl: DEFAULT_IMAGE,
+              sound: "default",
+              priority: "high",
             },
-            data: {
-              id: `club_${program.clubId}_program_${program.id}`,
-              type: "PROGRAM",
-              title: "New program just dropped!",
-              body: program.name,
-            },
-            android: {
-              notification: {
-                title: "New program just dropped! 🎉",
-                body:
-                  program.name +
-                  " is now available in " +
-                  club.name +
-                  " club !",
-                imageUrl: "https://i.imgur.com/KDza0Bz.png",
-                sound: "default",
-                priority: "high",
-              },
-            },
-            topic,
-          };
+            data,
+          },
+          topic,
+        };
 
-          await messenger.send(msg);
-        }
+        await messenger.send(msg);
       },
     }
   )
   .get(
     "/:id",
     async ({ programRepo, params: { id }, cache }) => {
-      const cached = cache.get<ProgramExtended>(`program_${id}`);
-      if (cached) {
-        return {
-          message: "Program found",
-          data: cached,
-        };
-      }
-
       const program = await programRepo.find(id);
-      cache.set(`program_${id}`, program);
 
       return {
         message: "Program found",
@@ -163,17 +152,12 @@ export const ProgramPlugin = new Elysia()
       }),
       body: InsertProgramSchema,
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterHandle: async ({ programRepo, cache, params: { id } }) => {
-        cache.delete(`program_${id}`);
-        const program = await programRepo.find(id);
-        cache.set(`program_${id}`, program);
-
-        const { clubId } = program;
-        if (clubId) {
-          cache.delete(`programs_${clubId}`);
-          const programs = await programRepo.list({ clubId });
-          cache.set(`programs_${clubId}`, programs);
-        }
+      afterHandle: async ({ programRepo, cache, response }) => {
+        const { clubId } = (response as any).data as ProgramExtended;
+        if (!clubId) return;
+        cache.delete(`programs_${clubId}`);
+        const programs = await programRepo.list({ clubId });
+        cache.set(`programs_${clubId}`, programs);
       },
     }
   )
@@ -194,17 +178,12 @@ export const ProgramPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterResponse: async ({ programRepo, cache, params: { id } }) => {
-        cache.delete(`program_${id}`);
-        const program = await programRepo.find(id);
-        cache.set(`program_${id}`, program);
-
-        const { clubId } = program;
-        if (clubId) {
-          cache.delete(`programs_${clubId}`);
-          const programs = await programRepo.list({ clubId });
-          cache.set(`programs_${clubId}`, programs);
-        }
+      afterResponse: async ({ programRepo, cache, response }) => {
+        const { clubId } = (response as any).data as ProgramExtended;
+        if (!clubId) return;
+        cache.delete(`programs_${clubId}`);
+        const programs = await programRepo.list({ clubId });
+        cache.set(`programs_${clubId}`, programs);
       },
     }
   )
@@ -268,17 +247,12 @@ export const ProgramPlugin = new Elysia()
         image: t.File(),
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterResponse: async ({ programRepo, cache, params: { id } }) => {
-        const program = await programRepo.find(id);
-        cache.delete(`program_${id}`);
-        cache.set(`program_${id}`, program);
-
-        const { clubId } = program;
-        if (clubId) {
-          cache.delete(`programs_${clubId}`);
-          const programs = await programRepo.list({ clubId });
-          cache.set(`programs_${clubId}`, programs);
-        }
+      afterResponse: async ({ programRepo, cache, response }) => {
+        const { clubId } = (response as any).data as ProgramExtended;
+        if (!clubId) return;
+        cache.delete(`programs_${clubId}`);
+        const programs = await programRepo.list({ clubId });
+        cache.set(`programs_${clubId}`, programs);
       },
     }
   );

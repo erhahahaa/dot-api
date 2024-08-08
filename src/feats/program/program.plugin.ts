@@ -64,20 +64,11 @@ export const ProgramPlugin = new Elysia()
       },
       body: InsertProgramSchema,
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterHandle: async ({
-        programRepo,
-        clubRepo,
-        cache,
-        response,
-        messenger,
-      }) => {
+      afterHandle: async ({ clubRepo, cache, response, messenger }) => {
         if (!response) return;
         const { id, name, clubId } = (response as any).data as ProgramExtended;
         if (!clubId) return;
-
         cache.delete(`programs_${clubId}`);
-        const programs = await programRepo.list({ clubId });
-        cache.set(`programs_${clubId}`, programs);
 
         const { name: clubName } = await clubRepo.find(clubId);
         const topic = `club_${clubId}`;
@@ -153,13 +144,11 @@ export const ProgramPlugin = new Elysia()
       }),
       body: InsertProgramSchema,
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterHandle: async ({ programRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const { clubId } = (response as any).data as ProgramExtended;
         if (!clubId) return;
         cache.delete(`programs_${clubId}`);
-        const programs = await programRepo.list({ clubId });
-        cache.set(`programs_${clubId}`, programs);
       },
     }
   )
@@ -181,13 +170,11 @@ export const ProgramPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterResponse: async ({ programRepo, cache, response }) => {
+      afterResponse: async ({ cache, response }) => {
         if (!response) return;
         const { clubId } = (response as any).data as ProgramExtended;
         if (!clubId) return;
         cache.delete(`programs_${clubId}`);
-        const programs = await programRepo.list({ clubId });
-        cache.set(`programs_${clubId}`, programs);
       },
     }
   )
@@ -251,13 +238,11 @@ export const ProgramPlugin = new Elysia()
         image: t.File(),
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterResponse: async ({ programRepo, cache, response }) => {
+      afterResponse: async ({ cache, response }) => {
         if (!response) return;
         const { clubId } = (response as any).data as ProgramExtended;
         if (!clubId) return;
         cache.delete(`programs_${clubId}`);
-        const programs = await programRepo.list({ clubId });
-        cache.set(`programs_${clubId}`, programs);
       },
     }
   );

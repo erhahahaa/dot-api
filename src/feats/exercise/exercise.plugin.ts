@@ -59,13 +59,11 @@ export const ExercisePlugin = new Elysia()
       },
       body: InsertExerciseSchema,
       response: APIResponseSchema(SelectExerciseExtendedSchema),
-      afterHandle: async ({ exerciseRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const { programId } = (response as any).data as ExerciseExtended;
         if (!programId) return;
         cache.delete(`exercises_${programId}`);
-        const exercises = await exerciseRepo.list({ programId });
-        cache.set(`exercises_${programId}`, exercises);
       },
     }
   )
@@ -110,13 +108,11 @@ export const ExercisePlugin = new Elysia()
       }),
       body: InsertExerciseSchema,
       response: APIResponseSchema(SelectExerciseExtendedSchema),
-      afterHandle: async ({ exerciseRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const { programId } = (response as any).data as ExerciseExtended;
         if (!programId) return;
         cache.delete(`exercises_${programId}`);
-        const exercises = await exerciseRepo.list({ programId });
-        cache.set(`exercises_${programId}`, exercises);
       },
     }
   )
@@ -137,13 +133,11 @@ export const ExercisePlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectExerciseExtendedSchema),
-      afterHandle: async ({ exerciseRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const { programId } = (response as any).data as ExerciseExtended;
         if (!programId) return;
         cache.delete(`exercises_${programId}`);
-        const exercises = await exerciseRepo.list({ programId });
-        cache.set(`exercises_${programId}`, exercises);
       },
     }
   )
@@ -162,15 +156,11 @@ export const ExercisePlugin = new Elysia()
       },
       body: t.Array(InsertExerciseSchema),
       response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
-      afterHandle: async ({ exerciseRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const exercises = (response as any).data as ExerciseExtended[];
         exercises.forEach(async ({ programId }) => {
-          if (programId) {
-            cache.delete(`exercises_${programId}`);
-            const exercises = await exerciseRepo.list({ programId });
-            cache.set(`exercises_${programId}`, exercises);
-          }
+          if (programId) cache.delete(`exercises_${programId}`);
         });
       },
     }
@@ -190,15 +180,11 @@ export const ExercisePlugin = new Elysia()
       },
       body: t.Array(InsertExerciseSchema),
       response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
-      afterHandle: async ({ exerciseRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const exercises = (response as any).data as ExerciseExtended[];
         exercises.forEach(async ({ programId }) => {
-          if (programId) {
-            cache.delete(`exercises_${programId}`);
-            const exercises = await exerciseRepo.list({ programId });
-            cache.set(`exercises_${programId}`, exercises);
-          }
+          if (programId) cache.delete(`exercises_${programId}`);
         });
       },
     }

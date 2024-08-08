@@ -63,13 +63,11 @@ export const EvaluationPlugin = new Elysia()
       },
       body: InsertEvaluationSchema,
       response: APIResponseSchema(SelectEvaluationSchema),
-      afterHandle: async ({ evaluationRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const { examId } = response as any as Evaluation;
         if (!examId) return;
         cache.delete(`evaluations_${examId}`);
-        const evaluations = await evaluationRepo.list({ examId });
-        cache.set(`evaluations_${examId}`, evaluations);
       },
     }
   )
@@ -116,13 +114,11 @@ export const EvaluationPlugin = new Elysia()
       }),
       body: InsertEvaluationSchema,
       response: APIResponseSchema(SelectEvaluationSchema),
-      afterHandle: async ({ evaluationRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const { examId } = response as any as Evaluation;
         if (!examId) return;
         cache.delete(`evaluations_${examId}`);
-        const evaluations = await evaluationRepo.list({ examId });
-        cache.set(`evaluations_${examId}`, evaluations);
       },
     }
   )
@@ -144,13 +140,11 @@ export const EvaluationPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectEvaluationSchema),
-      afterHandle: async ({ evaluationRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const { examId } = response as any as Evaluation;
         if (!examId) return;
         cache.delete(`evaluations_${examId}`);
-        const evaluations = await evaluationRepo.list({ examId });
-        cache.set(`evaluations_${examId}`, evaluations);
       },
     }
   );

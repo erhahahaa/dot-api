@@ -63,20 +63,11 @@ export const ExamPlugin = new Elysia()
       },
       body: InsertExamSchema,
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({
-        examRepo,
-        clubRepo,
-        cache,
-        response,
-        messenger,
-      }) => {
+      afterHandle: async ({ clubRepo, cache, response, messenger }) => {
         if (!response) return;
         const { id, title, clubId } = (response as any).data as ExamExtended;
         if (!clubId) return;
-
         cache.delete(`exams_${clubId}`);
-        const evaluations = await examRepo.list({ clubId });
-        cache.set(`exams_${clubId}`, evaluations);
 
         const club = await clubRepo.find(clubId);
         const topic = `clubs_${club.id}`;
@@ -156,14 +147,11 @@ export const ExamPlugin = new Elysia()
       }),
       body: InsertExamSchema,
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({ examRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const { clubId } = (response as any).data as ExamExtended;
         if (!clubId) return;
-
         cache.delete(`exams_${clubId}`);
-        const evaluations = await examRepo.list({ clubId });
-        cache.set(`exams_${clubId}`, evaluations);
       },
     }
   )
@@ -184,13 +172,11 @@ export const ExamPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({ examRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
+        if (!response) return;
         const { clubId } = (response as any).data as ExamExtended;
         if (!clubId) return;
-
         cache.delete(`exams_${clubId}`);
-        const evaluations = await examRepo.list({ clubId });
-        cache.set(`exams_${clubId}`, evaluations);
       },
     }
   )
@@ -245,14 +231,11 @@ export const ExamPlugin = new Elysia()
         image: t.File(),
       }),
       response: APIResponseSchema(t.Object({})),
-      afterHandle: async ({ examRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const { clubId } = (response as any).data as ExamExtended;
         if (!clubId) return;
-
         cache.delete(`exams_${clubId}`);
-        const evaluations = await examRepo.list({ clubId });
-        cache.set(`exams_${clubId}`, evaluations);
       },
     }
   );

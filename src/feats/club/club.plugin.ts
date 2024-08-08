@@ -24,16 +24,13 @@ export const ClubPlugin = new Elysia()
     async ({ verifyJWT, clubRepo, cache, query: { useCache = false } }) => {
       const user = await verifyJWT();
 
-      if (useCache) {
-        const cached = cache.get<ClubExtended[]>(`clubs_${user.id}`);
-        if (cached) {
-          return {
-            message: "Found clubs",
-            data: cached,
-          };
-        }
+      const cached = cache.get<ClubExtended[]>(`clubs_${user.id}`);
+      if (cached) {
+        return {
+          message: "Found clubs",
+          data: cached,
+        };
       }
-
       const clubs = await clubRepo.list({ userId: user.id });
       cache.set(`clubs_${user.id}`, clubs);
 
@@ -92,11 +89,9 @@ export const ClubPlugin = new Elysia()
       },
       body: InsertClubSchema,
       response: APIResponseSchema(SelectClubExtendedSchema),
-      afterHandle: async ({ clubRepo, cache, verifyJWT }) => {
+      afterHandle: async ({ cache, verifyJWT }) => {
         const user = await verifyJWT();
         cache.delete(`clubs_${user.id}`);
-        const clubs = await clubRepo.list({ userId: user.id });
-        cache.set(`clubs_${user.id}`, clubs);
       },
     }
   )
@@ -183,11 +178,9 @@ export const ClubPlugin = new Elysia()
       }),
       body: InsertClubSchema,
       response: APIResponseSchema(SelectClubExtendedSchema),
-      afterHandle: async ({ clubRepo, cache, verifyJWT }) => {
+      afterHandle: async ({ cache, verifyJWT }) => {
         const user = await verifyJWT();
         cache.delete(`clubs_${user.id}`);
-        const clubs = await clubRepo.list({ userId: user.id });
-        cache.set(`clubs_${user.id}`, clubs);
       },
     }
   )
@@ -224,11 +217,9 @@ export const ClubPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectClubExtendedSchema),
-      afterHandle: async ({ clubRepo, cache, verifyJWT }) => {
+      afterHandle: async ({ cache, verifyJWT }) => {
         const user = await verifyJWT();
         cache.delete(`clubs_${user.id}`);
-        const clubs = await clubRepo.list({ userId: user.id });
-        cache.set(`clubs_${user.id}`, clubs);
       },
     }
   )
@@ -278,10 +269,8 @@ export const ClubPlugin = new Elysia()
         userId: t.Number(),
       }),
       response: APIResponseSchema(ClubMemberSchema),
-      afterHandle: async ({ clubRepo, cache, params: { id } }) => {
+      afterHandle: async ({ cache, params: { id } }) => {
         cache.delete(`club_members_${id}`);
-        const members = await clubRepo.getMembers(id);
-        cache.set(`club_members_${id}`, members);
       },
     }
   )
@@ -303,10 +292,8 @@ export const ClubPlugin = new Elysia()
         userId: t.Number(),
       }),
       response: APIResponseSchema(SelectUserToClubSchema),
-      afterHandle: async ({ clubRepo, cache, params: { id } }) => {
+      afterHandle: async ({ cache, params: { id } }) => {
         cache.delete(`club_members_${id}`);
-        const members = await clubRepo.getMembers(id);
-        cache.set(`club_members_${id}`, members);
       },
     }
   )
@@ -328,10 +315,8 @@ export const ClubPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(ClubMemberSchema),
-      afterHandle: async ({ clubRepo, cache, params: { id } }) => {
+      afterHandle: async ({ cache, params: { id } }) => {
         cache.delete(`club_members_${id}`);
-        const members = await clubRepo.getMembers(id);
-        cache.set(`club_members_${id}`, members);
       },
     }
   )
@@ -353,10 +338,8 @@ export const ClubPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectUserToClubSchema),
-      afterHandle: async ({ clubRepo, cache, params: { id } }) => {
+      afterHandle: async ({ cache, params: { id } }) => {
         cache.delete(`club_members_${id}`);
-        const members = await clubRepo.getMembers(id);
-        cache.set(`club_members_${id}`, members);
       },
     }
   );

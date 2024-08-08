@@ -63,8 +63,6 @@ export const QuestionPlugin = new Elysia()
         const { examId } = (response as any).data as QuestionExtended;
         if (!examId) return;
         cache.delete(`questions_${examId}`);
-        const questions = await questionRepo.list({ examId });
-        cache.set(`questions_${examId}`, questions);
       },
     }
   )
@@ -91,8 +89,6 @@ export const QuestionPlugin = new Elysia()
         const { examId } = (response as any).data as QuestionExtended;
         if (!examId) return;
         cache.delete(`questions_${examId}`);
-        const questions = await questionRepo.list({ examId });
-        cache.set(`questions_${examId}`, questions);
       },
     }
   )
@@ -123,8 +119,6 @@ export const QuestionPlugin = new Elysia()
         const { examId } = (response as any).data as QuestionExtended;
         if (!examId) return;
         cache.delete(`questions_${examId}`);
-        const questions = await questionRepo.list({ examId });
-        cache.set(`questions_${examId}`, questions);
       },
     }
   )
@@ -149,8 +143,6 @@ export const QuestionPlugin = new Elysia()
         const { examId } = (response as any).data as QuestionExtended;
         if (!examId) return;
         cache.delete(`questions_${examId}`);
-        const questions = await questionRepo.list({ examId });
-        cache.set(`questions_${examId}`, questions);
       },
     }
   )
@@ -173,11 +165,7 @@ export const QuestionPlugin = new Elysia()
         if (!response) return;
         const questions = (response as any).data as QuestionExtended[];
         questions.forEach(async ({ examId }) => {
-          if (examId) {
-            cache.delete(`questions_${examId}`);
-            const questions = await questionRepo.list({ examId });
-            cache.set(`questions_${examId}`, questions);
-          }
+          if (examId) cache.delete(`questions_${examId}`);
         });
       },
     }
@@ -201,11 +189,7 @@ export const QuestionPlugin = new Elysia()
         if (!response) return;
         const questions = (response as any).data as QuestionExtended[];
         questions.forEach(async ({ examId }) => {
-          if (examId) {
-            cache.delete(`questions_${examId}`);
-            const questions = await questionRepo.list({ examId });
-            cache.set(`questions_${examId}`, questions);
-          }
+          if (examId) cache.delete(`questions_${examId}`);
         });
       },
     }

@@ -51,9 +51,9 @@ const createEnv = (payload: Record<string, string | undefined>) => {
 };
 
 const env = createEnv({
-  APP_PORT: Bun.env.APP_PORT,
-  SALT_ROUND: Bun.env.SALT_ROUND,
-  JWT_SECRET: Bun.env.JWT_SECRET,
+  APP_PORT: Bun.env.APP_PORT ?? "3000",
+  SALT_ROUND: Bun.env.SALT_ROUND ?? "10",
+  JWT_SECRET: Bun.env.JWT_SECRET ?? "secret",
   DATABASE_URL: Bun.env.DATABASE_URL,
   SUPABASE_URL: Bun.env.SUPABASE_URL,
   SUPABASE_ANON_KEY: Bun.env.SUPABASE_ANON_KEY,

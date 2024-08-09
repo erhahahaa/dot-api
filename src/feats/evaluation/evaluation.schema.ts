@@ -4,8 +4,8 @@ import { EvaluationModel } from "./evaluation.model";
 
 export const QuestionEvaluationSchema = t.Object({
   questionId: t.Number(),
-  answer: t.String(),
-  score: t.Number(),
+  answer: t.Optional(t.String()),
+  score: t.Optional(t.Number()),
 });
 
 export type QuestionEvaluation = Static<typeof QuestionEvaluationSchema>;

@@ -1,11 +1,14 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static, t } from "elysia";
+import { SelectClubSchema } from "../club/club.schema";
+import { SelectExamSchema } from "../exam";
+import { SelectUserSchema } from "../user/user.schema";
 import { EvaluationModel } from "./evaluation.model";
 
 export const QuestionEvaluationSchema = t.Object({
   questionId: t.Optional(t.Number()),
   answer: t.Optional(t.String()),
-  score: t.Null(t.Number()),
+  score: t.Optional(t.Number()),
 });
 
 export type QuestionEvaluation = Static<typeof QuestionEvaluationSchema>;
@@ -19,3 +22,15 @@ export const SelectEvaluationSchema = createSelectSchema(EvaluationModel, {
 
 export type Evaluation = Static<typeof SelectEvaluationSchema>;
 export type InsertEvaluation = Static<typeof InsertEvaluationSchema>;
+
+export const SelectEvaluationExtendedSchema = t.Composite([
+  SelectEvaluationSchema,
+  t.Object({
+    club: SelectClubSchema,
+    exam: SelectExamSchema,
+    athlete: SelectUserSchema,
+    coach: SelectUserSchema,
+  }),
+]);
+
+export type EvaluationExtended = Static<typeof SelectEvaluationExtendedSchema>;

@@ -39,7 +39,7 @@ export const EvaluationPlugin = new Elysia()
       query: t.Object({
         examId: t.Number(),
       }),
-      response: APIResponseSchema(t.Array(SelectEvaluationSchema)),
+      // response: APIResponseSchema(t.Array(SelectEvaluationSchema)),
     }
   )
   .post(
@@ -61,7 +61,8 @@ export const EvaluationPlugin = new Elysia()
       detail: {
         tags: ["EVALUATION"],
       },
-      body: InsertEvaluationSchema,
+      body: t.Any(),
+      // body: InsertEvaluationSchema,
       // response: APIResponseSchema(SelectEvaluationSchema),
       // afterHandle: async ({ cache, response }) => {
       //   if (!response) return;

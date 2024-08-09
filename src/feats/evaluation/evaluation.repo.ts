@@ -1,4 +1,5 @@
-import { eq } from "drizzle-orm";
+import { eq, SQL } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import {
   BadRequestError,
   NoContentError,
@@ -6,8 +7,14 @@ import {
 } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
+import { ExamModel } from "../exam";
+import { UserModel } from "../user/user.model";
 import { EvaluationModel } from "./evaluation.model";
-import { Evaluation, InsertEvaluation } from "./evaluation.schema";
+import {
+  Evaluation,
+  EvaluationExtended,
+  InsertEvaluation,
+} from "./evaluation.schema";
 
 abstract class EvaluationRepo extends BaseRepo<Evaluation> {}
 
@@ -17,6 +24,40 @@ export class EvaluationRepoImpl extends EvaluationRepo {
   constructor(db: DrizzlePostgres) {
     super();
     this.db = db;
+  }
+
+  private select(where: SQL<unknown>) {
+    const Coach = alias(UserModel, "coach");
+    const Athlete = alias(UserModel, "athlete");
+    return (
+      this.db
+        .select({
+          id: EvaluationModel.id,
+          clubId: EvaluationModel.clubId,
+          examId: EvaluationModel.examId,
+          athleteId: EvaluationModel.athleteId,
+          coachId: EvaluationModel.coachId,
+          evaluations: EvaluationModel.evaluations,
+          createdAt: EvaluationModel.createdAt,
+          updatedAt: EvaluationModel.updatedAt,
+          // club: ClubModel,
+          exam: {
+            title: ExamModel.title,
+          },
+          athlete: {
+            name: Athlete.name,
+          },
+          coach: {
+            name: Coach.name,
+          },
+        })
+        .from(EvaluationModel)
+        // .leftJoin(ClubModel, eq(EvaluationModel.clubId, ClubModel.id))
+        .leftJoin(ExamModel, eq(EvaluationModel.examId, ExamModel.id))
+        .leftJoin(Coach, eq(EvaluationModel.athleteId, Coach.id))
+        .leftJoin(Athlete, eq(EvaluationModel.coachId, Athlete.id))
+        .where(where)
+    );
   }
 
   async create(data: InsertEvaluation): Promise<Evaluation> {
@@ -70,11 +111,8 @@ export class EvaluationRepoImpl extends EvaluationRepo {
     return evaluations[0];
   }
 
-  async list({ examId }: { examId: number }): Promise<Evaluation[]> {
-    const evaluations = await this.db
-      .select()
-      .from(EvaluationModel)
-      .where(eq(EvaluationModel.examId, examId));
+  async list({ examId }: { examId: number }): Promise<EvaluationExtended[]> {
+    const evaluations = await this.select(eq(EvaluationModel.examId, examId));
 
     if (evaluations.length === 0)
       throw new NoContentError("No evaluation found");

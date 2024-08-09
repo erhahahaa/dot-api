@@ -220,7 +220,7 @@ export class ClubRepoImpl extends ClubRepo {
       .returning();
     if (clubs.length === 0) throw new NoContentError("Failed to leave club");
 
-    const members = await this.getMembers(clubId);
+    const members = await this.selectMember(eq(UserToClubModel.clubId, clubId));
     if (members.length === 0) {
       await this.db
         .delete(ClubModel)

@@ -35,7 +35,7 @@ export const UserModel = pgTable(
     fcmToken: text("fcm_token"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
-  },
+},
   (model) => {
     return {
       emailIdx: uniqueIndex("email_idx").on(model.email),

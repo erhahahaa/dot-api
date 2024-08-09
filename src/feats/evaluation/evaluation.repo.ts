@@ -42,13 +42,24 @@ export class EvaluationRepoImpl extends EvaluationRepo {
           updatedAt: EvaluationModel.updatedAt,
           // club: ClubModel,
           exam: {
+            id: ExamModel.id,
+            clubId: ExamModel.clubId,
+            mediaId: ExamModel.mediaId,
             title: ExamModel.title,
+            description: ExamModel.description,
+            dueAt: ExamModel.dueAt,
           },
           athlete: {
+            id: Athlete.id,
             name: Athlete.name,
+            email: Athlete.email,
+            bornDate: Athlete.bornDate,
           },
           coach: {
+            id: Coach.id,
             name: Coach.name,
+            email: Coach.email,
+            bornDate: Coach.bornDate,
           },
         })
         .from(EvaluationModel)

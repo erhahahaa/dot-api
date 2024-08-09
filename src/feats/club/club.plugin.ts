@@ -11,7 +11,6 @@ import {
 } from "../user/user.schema";
 import { Dependency } from "./club.dependency";
 import {
-  ClubExtended,
   ClubMember,
   ClubMemberSchema,
   InsertClubSchema,
@@ -28,15 +27,15 @@ export const ClubPlugin = new Elysia()
     async ({ verifyJWT, clubRepo, cache, query: { useCache = false } }) => {
       const user = await verifyJWT();
 
-      const cached = cache.get<ClubExtended[]>(`clubs_${user.id}`);
-      if (cached) {
-        return {
-          message: "Found clubs",
-          data: cached,
-        };
-      }
+      // const cached = cache.get<ClubExtended[]>(`clubs_${user.id}`);
+      // if (cached) {
+      //   return {
+      //     message: "Found clubs",
+      //     data: cached,
+      //   };
+      // }
       const clubs = await clubRepo.list({ userId: user.id });
-      cache.set(`clubs_${user.id}`, clubs);
+      // cache.set(`clubs_${user.id}`, clubs);
 
       return {
         message: "Found clubs",

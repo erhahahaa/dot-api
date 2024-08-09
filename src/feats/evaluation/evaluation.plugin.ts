@@ -62,13 +62,13 @@ export const EvaluationPlugin = new Elysia()
         tags: ["EVALUATION"],
       },
       body: InsertEvaluationSchema,
-      response: APIResponseSchema(SelectEvaluationSchema),
-      afterHandle: async ({ cache, response }) => {
-        if (!response) return;
-        const { examId } = response as any as Evaluation;
-        if (!examId) return;
-        cache.delete(`evaluations_${examId}`);
-      },
+      // response: APIResponseSchema(SelectEvaluationSchema),
+      // afterHandle: async ({ cache, response }) => {
+      //   if (!response) return;
+      //   const { examId } = response as any as Evaluation;
+      //   if (!examId) return;
+      //   cache.delete(`evaluations_${examId}`);
+      // },
     }
   )
   .get(

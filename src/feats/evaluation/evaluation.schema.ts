@@ -11,10 +11,10 @@ export const QuestionEvaluationSchema = t.Object({
 export type QuestionEvaluation = Static<typeof QuestionEvaluationSchema>;
 
 export const InsertEvaluationSchema = createInsertSchema(EvaluationModel, {
-  evaluations: t.Array(QuestionEvaluationSchema),
+  evaluations: t.Array(t.Partial(QuestionEvaluationSchema)),
 });
 export const SelectEvaluationSchema = createSelectSchema(EvaluationModel, {
-  evaluations: t.Array(QuestionEvaluationSchema),
+  evaluations: t.Array(t.Partial(QuestionEvaluationSchema)),
 });
 
 export type Evaluation = Static<typeof SelectEvaluationSchema>;

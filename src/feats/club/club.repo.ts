@@ -138,6 +138,7 @@ export class ClubRepoImpl extends ClubRepo {
         name: UserModel.name,
         image: UserModel.image,
         role: UserToClubModel.role,
+        email: UserModel.email,
         age: sql`extract(year from age(${UserModel.bornDate}))::int`,
       })
       .from(UserToClubModel)

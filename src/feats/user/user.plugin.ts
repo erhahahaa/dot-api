@@ -47,8 +47,10 @@ export const UserPlugin = new Elysia()
       const findUser = await userRepo.find(user.id);
 
       if (findUser.image) {
-        const { path } = await mediaRepo.findByURL(findUser.image);
-        if (path) await deleteFile({ parent: "user", path });
+        try {
+          const { path } = await mediaRepo.findByURL(findUser.image);
+          if (path) await deleteFile({ parent: "user", path });
+        } catch (error) {}
       }
 
       const upload = await uploadFile({ parent: "user", blob: image });

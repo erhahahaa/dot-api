@@ -80,7 +80,7 @@ export class ExerciseRepoImpl extends ExerciseRepo {
     const exerciseIds: number[] = _exercises.map((e) => e.id);
 
     const exercises = await this.select(inArray(ExerciseModel.id, exerciseIds));
-
+    console.log(exercises);
     return exercises;
   }
 
@@ -135,7 +135,7 @@ export class ExerciseRepoImpl extends ExerciseRepo {
     if (exercises.length === 0)
       throw new ServerError("Failed to update exercise");
 
-    return exercises;
+    return exercises.map((e) => e[0]);
   }
 
   async delete(id: number): Promise<ExerciseExtended> {

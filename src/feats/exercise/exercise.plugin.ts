@@ -168,6 +168,7 @@ export const ExercisePlugin = new Elysia()
   .put(
     "/bulk",
     async ({ exerciseRepo, body }) => {
+      console.log(body);
       const exercises = await exerciseRepo.updateBulk(body);
       return {
         message: "Exercises updated",

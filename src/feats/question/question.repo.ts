@@ -6,6 +6,7 @@ import {
 } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
+import { ExamModel } from "../exam";
 import { MediaModel } from "../media/media.model";
 import { QuestionModel } from "./question.model";
 import { InsertQuestion, Question, QuestionExtended } from "./question.schema";
@@ -105,8 +106,8 @@ export class QuestionRepoImpl extends QuestionRepo {
 
     const finds = await this.db
       .select()
-      .from(QuestionModel)
-      .where(inArray(QuestionModel.id, examIds));
+      .from(ExamModel)
+      .where(inArray(ExamModel.id, examIds));
 
     examIds.forEach((examId) => {
       const find = finds.find((f) => f.id === examId);
@@ -134,7 +135,7 @@ export class QuestionRepoImpl extends QuestionRepo {
     if (questions.length === 0)
       throw new ServerError("Failed to update questions");
 
-    return questions;
+    return questions.map((q) => q[0]);
   }
 
   async delete(id: number): Promise<QuestionExtended> {

@@ -161,7 +161,7 @@ export const QuestionPlugin = new Elysia()
       },
       body: t.Array(InsertQuestionSchema),
       response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
-      afterHandle: async ({ questionRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const questions = (response as any).data as QuestionExtended[];
         questions.forEach(async ({ examId }) => {
@@ -185,7 +185,7 @@ export const QuestionPlugin = new Elysia()
       },
       body: t.Array(InsertQuestionSchema),
       response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
-      afterHandle: async ({ questionRepo, cache, response }) => {
+      afterHandle: async ({ cache, response }) => {
         if (!response) return;
         const questions = (response as any).data as QuestionExtended[];
         questions.forEach(async ({ examId }) => {

@@ -258,8 +258,12 @@ export const ClubPlugin = new Elysia()
     "/:id/add/:userId/:role",
     async ({ clubRepo, params: { id, userId, role } }) => {
       if (!role) role = "athlete";
-      const find = await clubRepo.findMember(id, userId);
-      if (find) throw new BadRequestError("User already in club");
+      try {
+        const find = await clubRepo.findMember(id, userId);
+        if (find) throw new BadRequestError("User already in club");
+      } catch (error) {
+        if (error instanceof BadRequestError) throw error;
+      }
       const club = await clubRepo.addMember(id, userId, role);
       return {
         message: "Added member",

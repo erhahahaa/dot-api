@@ -131,7 +131,7 @@ export class ClubRepoImpl extends ClubRepo {
     return clubs as unknown as ClubExtended[];
   }
 
-  private selectMember(where: SQL<unknown>) {
+  private selectMember(where: SQL<unknown> | undefined) {
     return this.db
       .select({
         id: UserModel.id,
@@ -169,7 +169,12 @@ export class ClubRepoImpl extends ClubRepo {
       .returning()
       .then(
         async (rows) =>
-          await this.selectMember(eq(UserToClubModel.clubId, rows[0].clubId))
+          await this.selectMember(
+            and(
+              eq(UserToClubModel.clubId, rows[0].clubId),
+              eq(UserToClubModel.userId, rows[0].userId)
+            )
+          )
       );
 
     if (clubs.length === 0) throw new NoContentError("Failed to add member");

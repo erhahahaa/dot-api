@@ -147,7 +147,7 @@ export const UserPlugin = new Elysia()
       });
 
       return {
-        message: "User found",
+        message: "Username not available",
         data: finalSuggestions,
       };
     },

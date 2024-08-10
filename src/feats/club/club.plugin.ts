@@ -11,7 +11,6 @@ import {
 } from "../user/user.schema";
 import { Dependency } from "./club.dependency";
 import {
-  ClubMember,
   ClubMemberSchema,
   InsertClubSchema,
   SelectClubExtendedSchema,
@@ -229,14 +228,14 @@ export const ClubPlugin = new Elysia()
   .get(
     "/:id/members",
     async ({ clubRepo, params: { id }, cache }) => {
-      const cached = cache.get<ClubMember[]>(`club_members_${id}`);
+      // const cached = cache.get<ClubMember[]>(`club_members_${id}`);
 
-      if (cached) {
-        return {
-          message: "Found members",
-          data: cached,
-        };
-      }
+      // if (cached) {
+      //   return {
+      //     message: "Found members",
+      //     data: cached,
+      //   };
+      // }
 
       const members = await clubRepo.getMembers(id);
       return {

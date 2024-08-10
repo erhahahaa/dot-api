@@ -1,4 +1,4 @@
-import { eq, SQL } from "drizzle-orm";
+import { and, eq, SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import {
   BadRequestError,
@@ -26,7 +26,7 @@ export class EvaluationRepoImpl extends EvaluationRepo {
     this.db = db;
   }
 
-  private select(where: SQL<unknown>) {
+  private select(where: SQL<unknown> | undefined) {
     const Coach = alias(UserModel, "coach");
     const Athlete = alias(UserModel, "athlete");
     return (
@@ -122,8 +122,21 @@ export class EvaluationRepoImpl extends EvaluationRepo {
     return evaluations[0];
   }
 
-  async list({ examId }: { examId: number }): Promise<EvaluationExtended[]> {
-    const evaluations = await this.select(eq(EvaluationModel.examId, examId));
+  async list({
+    examId,
+    userId,
+  }: {
+    examId: number;
+    userId?: number;
+  }): Promise<EvaluationExtended[]> {
+    const evaluations = await this.select(
+      userId
+        ? and(
+            eq(EvaluationModel.athleteId, userId),
+            eq(EvaluationModel.examId, examId)
+          )
+        : eq(EvaluationModel.examId, examId)
+    );
 
     if (evaluations.length === 0)
       throw new NoContentError("No evaluation found");

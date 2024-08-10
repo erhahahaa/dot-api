@@ -12,10 +12,8 @@ import { MediaModel } from "../media/media.model";
 import { QuestionOption } from "./question.schema";
 
 export const QuestionTypeEnumModel = pgEnum("question_type", [
-  "multipleChoice",
-  "trueFalse",
-  "shortAnswer",
-  "essay",
+  "text",
+  "numeric",
 ]);
 
 export const QuestionModel = pgTable("questions", {

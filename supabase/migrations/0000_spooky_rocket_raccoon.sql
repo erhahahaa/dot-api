@@ -29,7 +29,7 @@ EXCEPTION
 END $$;
 
 DO $$ BEGIN
- CREATE TYPE "public"."question_type" AS ENUM('multipleChoice', 'trueFalse', 'shortAnswer', 'essay');
+ CREATE TYPE "public"."question_type" AS ENUM('text', 'numeric');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -143,11 +143,9 @@ CREATE TABLE IF NOT EXISTS "evaluations" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"club_id" integer,
 	"exam_id" integer,
-	"question_id" integer,
 	"user_id" integer,
 	"coach_id" integer,
-	"answer" text,
-	"score" integer,
+	"evaluations" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -256,12 +254,6 @@ END $$;
 
 DO $$ BEGIN
  ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_exam_id_exams_id_fk" FOREIGN KEY ("exam_id") REFERENCES "public"."exams"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
- ALTER TABLE "evaluations" ADD CONSTRAINT "evaluations_question_id_questions_id_fk" FOREIGN KEY ("question_id") REFERENCES "public"."questions"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

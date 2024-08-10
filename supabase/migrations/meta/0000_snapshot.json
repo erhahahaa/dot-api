@@ -1,5 +1,5 @@
 {
-  "id": "d7762b6f-39a1-4ccb-a01e-12f649675aea",
+  "id": "d723be62-85dc-4541-95f7-700951e5711d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -839,12 +839,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "question_id": {
-          "name": "question_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
         "user_id": {
           "name": "user_id",
           "type": "integer",
@@ -857,15 +851,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "answer": {
-          "name": "answer",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "score": {
-          "name": "score",
-          "type": "integer",
+        "evaluations": {
+          "name": "evaluations",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
@@ -905,19 +893,6 @@
           "tableTo": "exams",
           "columnsFrom": [
             "exam_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "evaluations_question_id_questions_id_fk": {
-          "name": "evaluations_question_id_questions_id_fk",
-          "tableFrom": "evaluations",
-          "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
           ],
           "columnsTo": [
             "id"
@@ -1120,10 +1095,8 @@
       "name": "question_type",
       "schema": "public",
       "values": [
-        "multipleChoice",
-        "trueFalse",
-        "shortAnswer",
-        "essay"
+        "text",
+        "numeric"
       ]
     }
   },

@@ -15,7 +15,7 @@ export const EvaluationPlugin = new Elysia()
   .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
-    async ({ evaluationRepo, query: { examId }, cache }) => {
+    async ({ evaluationRepo, query: { examId, userId }, cache }) => {
       const cached = cache.get<Evaluation[]>(`evaluations_${examId}`);
       if (cached) {
         return {
@@ -24,7 +24,7 @@ export const EvaluationPlugin = new Elysia()
         };
       }
 
-      const evaluations = await evaluationRepo.list({ examId });
+      const evaluations = await evaluationRepo.list({ examId, userId });
       cache.set(`evaluations_${examId}`, evaluations);
 
       return {
@@ -37,6 +37,7 @@ export const EvaluationPlugin = new Elysia()
         tags: ["EVALUATION"],
       },
       query: t.Object({
+        userId: t.Optional(t.Number()),
         examId: t.Number(),
       }),
       // response: APIResponseSchema(t.Array(SelectEvaluationSchema)),

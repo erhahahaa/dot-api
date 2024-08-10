@@ -3,9 +3,15 @@ import { Static, t } from "elysia";
 import { SelectMediaSchema } from "../media/media.schema";
 import { QuestionModel } from "./question.model";
 
+// enum QuestionOptionTypeEnum {
+//   text = "text",
+//   number = "number",
+// }
+
 export const QuestionOptionSchema = t.Object({
   order: t.Number(),
   text: t.String(),
+  // type: t.Enum(QuestionOptionTypeEnum),
 });
 
 export const InsertQuestionSchema = createInsertSchema(QuestionModel, {

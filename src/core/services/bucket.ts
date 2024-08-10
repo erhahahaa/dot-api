@@ -4,9 +4,20 @@ import { BadRequestError, UnsupportedMediaTypeError } from "../errors";
 import { sb } from "./sb";
 
 const BucketService = new Elysia().derive({ as: "global" }, () => ({
-  async uploadFile({ parent, blob }: { parent: MediaParent; blob: Blob }) {
-    const unique = Math.floor(Math.random() * 900000) + 100000;
-    const name = `${unique}_${blob.name}`;
+  async uploadFile({
+    parent,
+    blob,
+    withUniqueName = true,
+  }: {
+    parent: MediaParent;
+    blob: Blob;
+    withUniqueName?: boolean;
+  }) {
+    let name = blob.name;
+    if (withUniqueName) {
+      const unique = Math.floor(Math.random() * 900000) + 100000;
+      name = `${unique}_${blob.name}`;
+    }
 
     const check = getSchemaValidator(InsertMediaSchema.properties.type).Check(
       blob.type

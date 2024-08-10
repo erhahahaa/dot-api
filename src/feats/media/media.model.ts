@@ -64,6 +64,8 @@ export const MediaModel = pgTable("medias", {
   type: MediaTypeEnumModel("type").notNull(),
   parent: MediaParentEnumModel("parent").notNull(),
   url: text("url").notNull(),
+  thumbPath: text("thumb_path"),
+  thumbUrl: text("thumb_url"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

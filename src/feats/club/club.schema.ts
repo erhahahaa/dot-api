@@ -34,7 +34,7 @@ export const SelectClubExtendedSchema = t.Composite([
 ]);
 export const ClubMemberSchema = t.Union([
   t.Composite([
-    t.Pick(InsertUserSchema, ["id", "name", "image", "role"]),
+    t.Pick(InsertUserSchema, ["id", "name", "image", "role", "email"]),
     t.Object({
       age: t.Number(),
     }),

@@ -94,17 +94,19 @@ export const MediaPlugin = new Elysia()
               return;
             }
 
-            const duration = metadata.format.duration;
-            const time = duration / 2;
-            const size =
-              metadata.streams[0].width + "x" + metadata.streams[0].height;
-            console.log(size);
+            const width = metadata.streams[0].width ?? 0;
+            const height = metadata.streams[0].height ?? 0;
+            let size = "640x360";
+            if (width > 640) {
+              const ratio = width / height;
+              size = `640x${Math.floor(640 / ratio)}`;
+            }
             ffmpeg(upload.url)
               .screenshots({
                 count: 1,
                 folder: "tmp",
                 filename: `${upload.name}.png`,
-                timestamps: [time],
+                timestamps: ["00:00:01"],
                 size: size,
               })
               .on("end", async () => {

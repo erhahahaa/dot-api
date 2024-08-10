@@ -8,13 +8,10 @@ import {
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { ExamModel } from "../exam";
+import { QuestionModel } from "../question/question.model";
 import { UserModel } from "../user/user.model";
 import { EvaluationModel } from "./evaluation.model";
-import {
-  Evaluation,
-  EvaluationExtended,
-  InsertEvaluation,
-} from "./evaluation.schema";
+import { Evaluation, InsertEvaluation } from "./evaluation.schema";
 
 abstract class EvaluationRepo extends BaseRepo<Evaluation> {}
 
@@ -29,46 +26,43 @@ export class EvaluationRepoImpl extends EvaluationRepo {
   private select(where: SQL<unknown> | undefined) {
     const Coach = alias(UserModel, "coach");
     const Athlete = alias(UserModel, "athlete");
-    return (
-      this.db
-        .select({
-          id: EvaluationModel.id,
-          clubId: EvaluationModel.clubId,
-          examId: EvaluationModel.examId,
-          athleteId: EvaluationModel.athleteId,
-          coachId: EvaluationModel.coachId,
-          evaluations: EvaluationModel.evaluations,
-          createdAt: EvaluationModel.createdAt,
-          updatedAt: EvaluationModel.updatedAt,
-          // club: ClubModel,
-          exam: {
-            id: ExamModel.id,
-            clubId: ExamModel.clubId,
-            mediaId: ExamModel.mediaId,
-            title: ExamModel.title,
-            description: ExamModel.description,
-            dueAt: ExamModel.dueAt,
-          },
-          athlete: {
-            id: Athlete.id,
-            name: Athlete.name,
-            email: Athlete.email,
-            bornDate: Athlete.bornDate,
-          },
-          coach: {
-            id: Coach.id,
-            name: Coach.name,
-            email: Coach.email,
-            bornDate: Coach.bornDate,
-          },
-        })
-        .from(EvaluationModel)
-        // .leftJoin(ClubModel, eq(EvaluationModel.clubId, ClubModel.id))
-        .leftJoin(ExamModel, eq(EvaluationModel.examId, ExamModel.id))
-        .leftJoin(Coach, eq(EvaluationModel.athleteId, Coach.id))
-        .leftJoin(Athlete, eq(EvaluationModel.coachId, Athlete.id))
-        .where(where)
-    );
+    return this.db
+      .select({
+        id: EvaluationModel.id,
+        clubId: EvaluationModel.clubId,
+        examId: EvaluationModel.examId,
+        athleteId: EvaluationModel.athleteId,
+        coachId: EvaluationModel.coachId,
+        evaluations: EvaluationModel.evaluations,
+        createdAt: EvaluationModel.createdAt,
+        updatedAt: EvaluationModel.updatedAt,
+        // club: ClubModel,
+        exam: {
+          id: ExamModel.id,
+          clubId: ExamModel.clubId,
+          mediaId: ExamModel.mediaId,
+          title: ExamModel.title,
+          description: ExamModel.description,
+          dueAt: ExamModel.dueAt,
+        },
+        athlete: {
+          id: Athlete.id,
+          name: Athlete.name,
+          email: Athlete.email,
+          bornDate: Athlete.bornDate,
+        },
+        coach: {
+          id: Coach.id,
+          name: Coach.name,
+          email: Coach.email,
+          bornDate: Coach.bornDate,
+        },
+      })
+      .from(EvaluationModel)
+      .leftJoin(ExamModel, eq(EvaluationModel.examId, ExamModel.id))
+      .leftJoin(Coach, eq(EvaluationModel.athleteId, Coach.id))
+      .leftJoin(Athlete, eq(EvaluationModel.coachId, Athlete.id))
+      .where(where);
   }
 
   async create(data: InsertEvaluation): Promise<Evaluation> {
@@ -128,7 +122,7 @@ export class EvaluationRepoImpl extends EvaluationRepo {
   }: {
     examId: number;
     userId?: number;
-  }): Promise<EvaluationExtended[]> {
+  }): Promise<any[]> {
     const evaluations = await this.select(
       userId
         ? and(
@@ -138,9 +132,37 @@ export class EvaluationRepoImpl extends EvaluationRepo {
         : eq(EvaluationModel.examId, examId)
     );
 
-    if (evaluations.length === 0)
+    if (evaluations.length === 0) {
       throw new NoContentError("No evaluation found");
+    }
 
-    return evaluations;
+    // Collect promises for question fetches
+    const updatedEvaluations = await Promise.all(
+      evaluations.map(async (evaluation) => {
+        if (!evaluation.evaluations) return evaluation;
+
+        const updatedQuestionEvaluations = await Promise.all(
+          evaluation.evaluations.map(async (questionEvaluation) => {
+            if (!questionEvaluation.questionId) return questionEvaluation;
+
+            const [question] = await this.db
+              .select()
+              .from(QuestionModel)
+              .where(eq(QuestionModel.id, questionEvaluation.questionId));
+
+            // Attach question if found
+            if (question) {
+              return { ...questionEvaluation, questionName: question.question };
+            }
+            return questionEvaluation;
+          })
+        );
+
+        return { ...evaluation, evaluations: updatedQuestionEvaluations };
+      })
+    );
+
+    console.log(updatedEvaluations);
+    return updatedEvaluations;
   }
 }

@@ -257,8 +257,6 @@ export const TacticalWebSocketPlugin = new Elysia()
     },
     async message({ data: { verifyJWT }, publish }, message) {
       try {
-        await verifyJWT();
-
         const {
           params: { channel },
         } = message;

@@ -4,12 +4,10 @@ import fs from "fs";
 import path from "path";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
-import { CacheService } from "../../core/services/cache";
 import { AuthService } from "../auth/auth.service";
 import { Dependency } from "./media.dependency";
 import {
   InsertMediaSchema,
-  Media,
   MediaType,
   SelectMediaSchema,
 } from "./media.schema";
@@ -18,20 +16,10 @@ export const MediaPlugin = new Elysia()
   .use(Dependency)
   .use(AuthService)
   .use(BucketService)
-  .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/:dir",
-    async ({ mediaRepo, query: { clubId }, params: { dir }, cache }) => {
-      const cached = cache.get<Media[]>(`medias_${clubId}_${dir}`);
-      if (cached) {
-        return {
-          message: "Media list",
-          data: cached,
-        };
-      }
-
+    async ({ mediaRepo, query: { clubId }, params: { dir } }) => {
       const medias = await mediaRepo.list({ clubId: clubId, parent: dir });
-      cache.set(`medias_${clubId}_${dir}`, medias);
 
       return {
         message: "Media list",
@@ -165,16 +153,6 @@ export const MediaPlugin = new Elysia()
         }),
       }),
       response: APIResponseSchema(SelectMediaSchema),
-      afterHandle: async ({
-        mediaRepo,
-        cache,
-        query: { clubId },
-        params: { dir },
-      }) => {
-        cache.delete(`medias_${clubId}_${dir}`);
-        const medias = await mediaRepo.list({ clubId, parent: dir });
-        cache.set(`medias_${clubId}_${dir}`, medias);
-      },
     }
   )
   .put(
@@ -225,13 +203,5 @@ export const MediaPlugin = new Elysia()
         file: t.File(),
       }),
       response: APIResponseSchema(SelectMediaSchema),
-      afterHandle: async ({ mediaRepo, cache, params: { dir, id } }) => {
-        const { clubId } = await mediaRepo.find(id);
-        if (clubId) {
-          cache.delete(`medias_${clubId}_${dir}`);
-          const medias = await mediaRepo.list({ clubId, parent: dir });
-          cache.set(`medias_${clubId}_${dir}`, medias);
-        }
-      },
     }
   );

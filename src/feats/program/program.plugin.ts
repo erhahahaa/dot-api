@@ -2,7 +2,6 @@ import Elysia, { t } from "elysia";
 import { Message } from "firebase-admin/messaging";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
-import { CacheService } from "../../core/services/cache";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
@@ -18,20 +17,10 @@ export const ProgramPlugin = new Elysia()
   .use(AuthService)
   .use(BucketService)
   .use(MessagingService)
-  .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
-    async ({ programRepo, query: { clubId }, cache }) => {
-      const cached = cache.get<ProgramExtended[]>(`programs_${clubId}`);
-      if (cached) {
-        return {
-          message: "Found programs",
-          data: cached,
-        };
-      }
-
+    async ({ programRepo, query: { clubId } }) => {
       const programs = await programRepo.list({ clubId });
-      cache.set(`programs_${clubId}`, programs);
 
       return {
         message: "Found programs",
@@ -64,11 +53,10 @@ export const ProgramPlugin = new Elysia()
       },
       body: InsertProgramSchema,
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterHandle: async ({ clubRepo, cache, response, messenger }) => {
+      afterHandle: async ({ clubRepo, response, messenger }) => {
         if (!response) return;
         const { id, name, clubId } = (response as any).data as ProgramExtended;
         if (!clubId) return;
-        cache.delete(`programs_${clubId}`);
 
         const { name: clubName } = await clubRepo.find(clubId);
         const topic = `club_${clubId}`;
@@ -107,7 +95,7 @@ export const ProgramPlugin = new Elysia()
   )
   .get(
     "/:id",
-    async ({ programRepo, params: { id }, cache }) => {
+    async ({ programRepo, params: { id } }) => {
       const program = await programRepo.find(id);
 
       return {
@@ -144,12 +132,6 @@ export const ProgramPlugin = new Elysia()
       }),
       body: InsertProgramSchema,
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterHandle: async ({ cache, response }) => {
-        if (!response) return;
-        const { clubId } = (response as any).data as ProgramExtended;
-        if (!clubId) return;
-        cache.delete(`programs_${clubId}`);
-      },
     }
   )
   .delete(
@@ -170,12 +152,6 @@ export const ProgramPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterResponse: async ({ cache, response }) => {
-        if (!response) return;
-        const { clubId } = (response as any).data as ProgramExtended;
-        if (!clubId) return;
-        cache.delete(`programs_${clubId}`);
-      },
     }
   )
   .put(
@@ -238,11 +214,5 @@ export const ProgramPlugin = new Elysia()
         image: t.File(),
       }),
       response: APIResponseSchema(SelectProgramExtendedSchema),
-      afterResponse: async ({ cache, response }) => {
-        if (!response) return;
-        const { clubId } = (response as any).data as ProgramExtended;
-        if (!clubId) return;
-        cache.delete(`programs_${clubId}`);
-      },
     }
   );

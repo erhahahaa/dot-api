@@ -22,11 +22,20 @@ export const WebSocketRouter = new Elysia().group("/live", (app) =>
 
 export const HTTPRouter = new Elysia()
   .use(AuthService)
-  .get("/", ({ redirect }) => redirect("/swagger"), {
-    detail: {
-      tags: ["HEALTH"],
+  .get(
+    "/",
+    ({}) => {
+      return {
+        success: true,
+        message: "Welcome to Elysia API",
+      };
     },
-  })
+    {
+      detail: {
+        tags: ["HEALTH"],
+      },
+    }
+  )
   .group("/auth", (app) => app.use(AuthPlugin))
   .group("/user", (app) => app.use(UserPlugin))
   .group("/club", (app) =>

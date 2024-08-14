@@ -4,7 +4,6 @@ import { app } from "../..";
 import { BadRequestError } from "../../core/errors";
 import { APIResponseSchema, TypeOfNullish } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
-import { CacheService } from "../../core/services/cache";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthJWT } from "../auth/auth.schema";
 import { AuthService } from "../auth/auth.service";
@@ -24,21 +23,12 @@ export const TacticalPlugin = new Elysia()
   .use(AuthService)
   .use(BucketService)
   .use(MessagingService)
-  .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
-    async ({ tacticalRepo, query: { clubId }, verifyJWT, cache }) => {
+    async ({ tacticalRepo, query: { clubId }, verifyJWT }) => {
       const user = await verifyJWT();
 
-      console.log("USER", user);
-
       const tacticals = await tacticalRepo.list({ clubId, userId: user.id });
-      if (clubId) {
-        cache.set(`tacticals_${clubId}`, tacticals);
-      } else {
-        cache.set(`tacticals_${clubId}_${user.id}`, tacticals);
-      }
-
       return {
         message: "Found tacticals",
         data: tacticals,
@@ -77,19 +67,11 @@ export const TacticalPlugin = new Elysia()
       },
       body: InsertTacticalSchema,
       response: APIResponseSchema(SelectTacticalExtendedSchema),
-      afterHandle: async ({
-        clubRepo,
-        cache,
-        verifyJWT,
-        response,
-        messenger,
-      }) => {
+      afterHandle: async ({ clubRepo, verifyJWT, response, messenger }) => {
         if (!response) return;
         const { id, clubId, name } = (response as any).data as TacticalExtended;
         if (!clubId) return;
         const user = await verifyJWT();
-        cache.delete(`tacticals_${clubId}`);
-        cache.delete(`tacticals_${clubId}_${user.id}`);
 
         const { name: clubName } = await clubRepo.find(clubId);
         const topic = `club_${clubId}`;
@@ -168,14 +150,6 @@ export const TacticalPlugin = new Elysia()
       }),
       body: InsertTacticalSchema,
       response: APIResponseSchema(SelectTacticalExtendedSchema),
-      afterHandle: async ({ cache, response, verifyJWT }) => {
-        if (!response) return;
-        const { clubId } = (response as any).data as TacticalExtended;
-        if (!clubId) return;
-        const user = await verifyJWT();
-        cache.delete(`tacticals_${clubId}`);
-        cache.delete(`tacticals_${clubId}_${user.id}`);
-      },
     }
   )
   .delete(
@@ -195,14 +169,6 @@ export const TacticalPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectTacticalExtendedSchema),
-      afterHandle: async ({ cache, response, verifyJWT }) => {
-        if (!response) return;
-        const { clubId } = (response as any).data as TacticalExtended;
-        if (!clubId) return;
-        const user = await verifyJWT();
-        cache.delete(`tacticals_${clubId}`);
-        cache.delete(`tacticals_${clubId}_${user.id}`);
-      },
     }
   );
 

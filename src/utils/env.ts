@@ -29,6 +29,7 @@ const EnvSchema = t.Object({
     error: "FIREBASE_PRIVATE_KEY didn't provided",
     minLength: 10,
   }),
+  NODE_ENV: t.Union([t.Literal("development"), t.Literal("production")]),
 });
 
 const createEnv = (payload: Record<string, string | undefined>) => {
@@ -60,6 +61,7 @@ const env = createEnv({
   FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
   FIREBASAE_CLIENT_EMAIL: process.env.FIREBASAE_CLIENT_EMAIL,
   FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
+  NODE_ENV: process.env.NODE_ENV ?? "development",
 });
 
 export { env };

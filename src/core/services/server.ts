@@ -1,10 +1,7 @@
 import cors from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia, ValidationError } from "elysia";
-import logixlysia from "logixlysia";
 
-import fs from "fs";
-import path from "path";
 import { description, version } from "../../../package.json";
 import {
   AuthenticationError,
@@ -18,10 +15,6 @@ import {
 import { HTTPRouter, WebSocketRouter } from "../router";
 
 export function createApp() {
-  const logFilePath = path.join(__dirname, "..", "../..", "logs", "app.log");
-  if (!fs.existsSync(logFilePath)) {
-    fs.writeFileSync(logFilePath, "");
-  }
   const app = new Elysia({
     name: "DOT Coaching API",
     precompile: true,
@@ -32,16 +25,6 @@ export function createApp() {
       perMessageDeflate: true,
     },
   })
-    .use(
-      logixlysia({
-        config: {
-          ip: true,
-          logFilePath,
-          customLogFormat:
-            "🦊 {now} {level} {duration} {method} {pathname} {status} {message} {ip}",
-        },
-      })
-    )
     .error({
       AUTHENTICATION: AuthenticationError,
       AUTHORIZATION: AuthorizationError,

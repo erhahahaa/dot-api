@@ -2,7 +2,6 @@ import Elysia, { t } from "elysia";
 import { Message } from "firebase-admin/messaging";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
-import { CacheService } from "../../core/services/cache";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
@@ -18,20 +17,10 @@ export const ExamPlugin = new Elysia()
   .use(AuthService)
   .use(BucketService)
   .use(MessagingService)
-  .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
-    async ({ examRepo, query: { clubId }, cache }) => {
-      const cached = cache.get<ExamExtended[]>(`exams_${clubId}`);
-      if (cached) {
-        return {
-          message: "Found exams",
-          data: cached,
-        };
-      }
-
+    async ({ examRepo, query: { clubId } }) => {
       const evaluations = await examRepo.list({ clubId });
-      cache.set(`exams_${clubId}`, evaluations);
 
       return {
         message: "Found evaluations",
@@ -63,11 +52,10 @@ export const ExamPlugin = new Elysia()
       },
       body: InsertExamSchema,
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({ clubRepo, cache, response, messenger }) => {
+      afterHandle: async ({ clubRepo, response, messenger }) => {
         if (!response) return;
         const { id, title, clubId } = (response as any).data as ExamExtended;
         if (!clubId) return;
-        cache.delete(`exams_${clubId}`);
 
         const club = await clubRepo.find(clubId);
         const topic = `clubs_${club.id}`;
@@ -147,12 +135,6 @@ export const ExamPlugin = new Elysia()
       }),
       body: InsertExamSchema,
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({ cache, response }) => {
-        if (!response) return;
-        const { clubId } = (response as any).data as ExamExtended;
-        if (!clubId) return;
-        cache.delete(`exams_${clubId}`);
-      },
     }
   )
   .delete(
@@ -172,12 +154,6 @@ export const ExamPlugin = new Elysia()
         id: t.Number(),
       }),
       response: APIResponseSchema(SelectExamSchema),
-      afterHandle: async ({ cache, response }) => {
-        if (!response) return;
-        const { clubId } = (response as any).data as ExamExtended;
-        if (!clubId) return;
-        cache.delete(`exams_${clubId}`);
-      },
     }
   )
   .put(
@@ -231,11 +207,5 @@ export const ExamPlugin = new Elysia()
         image: t.File(),
       }),
       response: APIResponseSchema(t.Object({})),
-      afterHandle: async ({ cache, response }) => {
-        if (!response) return;
-        const { clubId } = (response as any).data as ExamExtended;
-        if (!clubId) return;
-        cache.delete(`exams_${clubId}`);
-      },
     }
   );

@@ -1,27 +1,16 @@
 import Elysia, { t } from "elysia";
 import { APIResponseSchema } from "../../core/response";
-import { CacheService } from "../../core/services/cache";
 import { AuthService } from "../auth/auth.service";
 import { Dependency } from "./evaluation.dependency";
-import { Evaluation, SelectEvaluationSchema } from "./evaluation.schema";
+import { SelectEvaluationSchema } from "./evaluation.schema";
 
 export const EvaluationPlugin = new Elysia()
   .use(Dependency)
   .use(AuthService)
-  .use(CacheService(100, 60 * 60 * 1000)) // 100 items, 1 hour
   .get(
     "/",
-    async ({ evaluationRepo, query: { examId, userId }, cache }) => {
-      // const cached = cache.get<Evaluation[]>(`evaluations_${examId}`);
-      // if (cached) {
-      //   return {
-      //     message: "Found evaluations",
-      //     data: cached,
-      //   };
-      // }
-
+    async ({ evaluationRepo, query: { examId, userId } }) => {
       const evaluations = await evaluationRepo.list({ examId, userId });
-      // cache.set(`evaluations_${examId}`, evaluations);
 
       return {
         message: "Found evaluations",
@@ -60,12 +49,6 @@ export const EvaluationPlugin = new Elysia()
       },
       // body: InsertEvaluationSchema,
       // response: APIResponseSchema(SelectEvaluationSchema),
-      // afterHandle: async ({ cache, response }) => {
-      //   if (!response) return;
-      //   const { examId } = response as any as Evaluation;
-      //   if (!examId) return;
-      //   cache.delete(`evaluations_${examId}`);
-      // },
     }
   )
   .get(
@@ -111,12 +94,6 @@ export const EvaluationPlugin = new Elysia()
       }),
       // body: InsertEvaluationSchema,
       // response: APIResponseSchema(SelectEvaluationSchema),
-      afterHandle: async ({ cache, response }) => {
-        if (!response) return;
-        const { examId } = response as any as Evaluation;
-        if (!examId) return;
-        cache.delete(`evaluations_${examId}`);
-      },
     }
   )
   .delete(
@@ -137,11 +114,5 @@ export const EvaluationPlugin = new Elysia()
         id: t.Number(),
       }),
       // response: APIResponseSchema(SelectEvaluationSchema),
-      afterHandle: async ({ cache, response }) => {
-        if (!response) return;
-        const { examId } = response as any as Evaluation;
-        if (!examId) return;
-        cache.delete(`evaluations_${examId}`);
-      },
     }
   );

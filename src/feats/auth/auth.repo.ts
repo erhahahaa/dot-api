@@ -77,7 +77,7 @@ export class AuthRepoImpl extends AuthRepo {
       .insert(UserModel)
       .values({
         ...data,
-        bornDate: new Date(data.bornDate ?? new Date()),
+        bornDate: data.bornDate ? new Date(data.bornDate) : null,
         password: hash,
       })
       .returning();

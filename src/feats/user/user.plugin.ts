@@ -1,11 +1,9 @@
 import Elysia, { t } from "elysia";
-import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { generateFromEmail } from "../../utils/user";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
 import { Dependency } from "./user.dependency";
-import { InsertUserSchema, SelectUserSchema } from "./user.schema";
 
 export const UserPlugin = new Elysia()
   .use(Dependency)
@@ -14,7 +12,7 @@ export const UserPlugin = new Elysia()
   .put(
     "/update",
     async ({ userRepo, body }) => {
-      const res = await userRepo.update(body);
+      const res = await userRepo.update(body as any);
 
       return {
         message: "User updated",
@@ -25,10 +23,10 @@ export const UserPlugin = new Elysia()
       detail: {
         tags: ["USER"],
       },
-      body: t.Partial(InsertUserSchema),
-      response: APIResponseSchema(
-        t.Omit(SelectUserSchema, ["password", "fcmToken"])
-      ),
+      // body: t.Partial(InsertUserSchema),
+      // response: APIResponseSchema(
+      //   t.Omit(SelectUserSchema, ["password", "fcmToken"])
+      // ),
     }
   )
   .put(
@@ -41,8 +39,9 @@ export const UserPlugin = new Elysia()
       uploadFile,
       deleteFile,
     }) => {
+      const data = body as any;
       const user = await verifyJWT();
-      const { image } = body;
+      const { image } = data;
 
       const findUser = await userRepo.find(user.id);
 
@@ -57,11 +56,11 @@ export const UserPlugin = new Elysia()
 
       const media = await mediaRepo.create({
         creatorId: user.id,
-        name: body.image.name,
-        fileSize: body.image.size,
+        name: data.image.name,
+        fileSize: data.image.size,
         path: upload.name,
         parent: "user",
-        type: body.image.type as MediaType,
+        type: data.image.type as MediaType,
         url: upload.url,
       });
 
@@ -80,12 +79,12 @@ export const UserPlugin = new Elysia()
       detail: {
         tags: ["USER"],
       },
-      body: t.Object({
-        image: t.File(),
-      }),
-      response: APIResponseSchema(
-        t.Omit(SelectUserSchema, ["password", "fcmToken"])
-      ),
+      // body: t.Object({
+      //   image: t.File(),
+      // }),
+      // response: APIResponseSchema(
+      //   t.Omit(SelectUserSchema, ["password", "fcmToken"])
+      // ),
     }
   )
   .get(
@@ -115,9 +114,9 @@ export const UserPlugin = new Elysia()
       query: t.Object({
         query: t.Optional(t.String()),
       }),
-      response: APIResponseSchema(
-        t.Array(t.Omit(SelectUserSchema, ["password", "fcmToken"]))
-      ),
+      // response: APIResponseSchema(
+      //   t.Array(t.Omit(SelectUserSchema, ["password", "fcmToken"]))
+      // ),
     }
   )
   .get(
@@ -161,14 +160,15 @@ export const UserPlugin = new Elysia()
         username: t.String(),
         email: t.Optional(t.String()),
       }),
-      response: APIResponseSchema(t.Array(t.String())),
+      // response: APIResponseSchema(t.Array(t.String())),
     }
   )
   .put(
     "/update-fcm-token",
     async ({ userRepo, body, verifyJWT }) => {
+      const data = body as any;
       const user = await verifyJWT();
-      const updated = await userRepo.updateFcmToken(user.id, body.fcmToken);
+      const updated = await userRepo.updateFcmToken(user.id, data.fcmToken);
 
       return {
         message: "FCM token updated",
@@ -179,11 +179,11 @@ export const UserPlugin = new Elysia()
       detail: {
         tags: ["USER"],
       },
-      body: t.Object({
-        fcmToken: t.String(),
-      }),
-      response: APIResponseSchema(
-        t.Omit(SelectUserSchema, ["password", "fcmToken"])
-      ),
+      // body: t.Object({
+      //   fcmToken: t.String(),
+      // }),
+      // response: APIResponseSchema(
+      //   t.Omit(SelectUserSchema, ["password", "fcmToken"])
+      // ),
     }
   );

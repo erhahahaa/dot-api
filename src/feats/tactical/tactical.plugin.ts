@@ -2,7 +2,7 @@ import Elysia, { t } from "elysia";
 import { Message } from "firebase-admin/messaging";
 import { app } from "../..";
 import { BadRequestError } from "../../core/errors";
-import { APIResponseSchema, TypeOfNullish } from "../../core/response";
+import { TypeOfNullish } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthJWT } from "../auth/auth.schema";
@@ -10,11 +10,8 @@ import { AuthService } from "../auth/auth.service";
 import { Dependency } from "./tactical.dependency";
 import {
   InsertTacticalSchema,
-  LiveTacticalSchema,
   LiveTacticalSchemaType,
-  SelectTacticalExtendedSchema,
   TacticalExtended,
-  TacticalStrategicSchema,
   WebSocketMessageEvent,
 } from "./tactical.schema";
 
@@ -41,7 +38,7 @@ export const TacticalPlugin = new Elysia()
       query: t.Object({
         clubId: t.Optional(t.Number()),
       }),
-      response: APIResponseSchema(t.Array(SelectTacticalExtendedSchema)),
+      // response: APIResponseSchema(t.Array(SelectTacticalExtendedSchema)),
     }
   )
   .post(
@@ -66,7 +63,7 @@ export const TacticalPlugin = new Elysia()
         tags: ["TACTICAL"],
       },
       body: InsertTacticalSchema,
-      response: APIResponseSchema(SelectTacticalExtendedSchema),
+      // response: APIResponseSchema(SelectTacticalExtendedSchema),
       afterHandle: async ({ clubRepo, verifyJWT, response, messenger }) => {
         if (!response) return;
         const { id, clubId, name } = (response as any).data as TacticalExtended;
@@ -126,7 +123,7 @@ export const TacticalPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectTacticalExtendedSchema),
+      // response: APIResponseSchema(SelectTacticalExtendedSchema),
     }
   )
   .put(
@@ -149,7 +146,7 @@ export const TacticalPlugin = new Elysia()
         id: t.Number(),
       }),
       body: InsertTacticalSchema,
-      response: APIResponseSchema(SelectTacticalExtendedSchema),
+      // response: APIResponseSchema(SelectTacticalExtendedSchema),
     }
   )
   .delete(
@@ -168,7 +165,7 @@ export const TacticalPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectTacticalExtendedSchema),
+      // response: APIResponseSchema(SelectTacticalExtendedSchema),
     }
   );
 
@@ -221,12 +218,12 @@ export const TacticalWebSocketPlugin = new Elysia()
         close();
       }
     },
-    async message({ data: { verifyJWT }, publish }, message) {
+    async message({ publish }, message) {
       try {
         const {
           params: { channel },
-        } = message;
-        publish(channel, message);
+        } = message as any;
+        publish(channel, message as any);
       } catch (error) {
         console.error(error);
       }
@@ -304,9 +301,9 @@ export const TacticalWebSocketPlugin = new Elysia()
         close();
       }
     },
-    body: LiveTacticalSchema(
-      t.Union([t.Null(), t.Undefined(), TacticalStrategicSchema])
-    ),
+    // body: LiveTacticalSchema(
+    //   t.Union([t.Null(), t.Undefined(), TacticalStrategicSchema])
+    // ),
     params: t.Object({
       id: t.Number(),
     }),

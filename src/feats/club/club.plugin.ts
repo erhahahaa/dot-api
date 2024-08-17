@@ -1,19 +1,10 @@
 import Elysia, { t } from "elysia";
 import { AuthorizationError, BadRequestError } from "../../core/errors";
-import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
-import {
-  InsertUserToClubSchema,
-  SelectUserToClubSchema,
-} from "../user/user.schema";
+import { InsertUserToClubSchema } from "../user/user.schema";
 import { Dependency } from "./club.dependency";
-import {
-  ClubMemberSchema,
-  InsertClubSchema,
-  SelectClubExtendedSchema,
-} from "./club.schema";
 
 export const ClubPlugin = new Elysia()
   .use(Dependency)
@@ -21,7 +12,7 @@ export const ClubPlugin = new Elysia()
   .use(BucketService)
   .get(
     "/",
-    async ({ verifyJWT, clubRepo, query: { useCache = false } }) => {
+    async ({ verifyJWT, clubRepo }) => {
       const user = await verifyJWT();
       const clubs = await clubRepo.list({ userId: user.id });
       return {
@@ -33,10 +24,10 @@ export const ClubPlugin = new Elysia()
       detail: {
         tags: ["CLUB"],
       },
-      query: t.Object({
-        useCache: t.Optional(t.Boolean()),
-      }),
-      response: APIResponseSchema(t.Array(SelectClubExtendedSchema)),
+      // query: t.Object({
+      //   useCache: t.Optional(t.Boolean()),
+      // }),
+      // response: APIResponseSchema(t.Array(SelectClubExtendedSchema)),
     }
   )
   .post(
@@ -44,7 +35,7 @@ export const ClubPlugin = new Elysia()
     async ({ clubRepo, mediaRepo, body, verifyJWT, uploadFile }) => {
       const user = await verifyJWT();
 
-      const { image, ...rest } = body;
+      const { image, ...rest } = body as any;
 
       let media = undefined;
       if (image) {
@@ -77,8 +68,8 @@ export const ClubPlugin = new Elysia()
       detail: {
         tags: ["CLUB"],
       },
-      body: InsertClubSchema,
-      response: APIResponseSchema(SelectClubExtendedSchema),
+      // body: InsertClubSchema,
+      // response: APIResponseSchema(SelectClubExtendedSchema),
     }
   )
   .get(
@@ -98,7 +89,7 @@ export const ClubPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectClubExtendedSchema),
+      // response: APIResponseSchema(SelectClubExtendedSchema),
     }
   )
   .put(
@@ -116,7 +107,7 @@ export const ClubPlugin = new Elysia()
 
       const findClub = await clubRepo.find(id);
 
-      const { image, ...rest } = body;
+      const { image, ...rest } = body as any;
 
       let media = undefined;
       if (image) {
@@ -162,8 +153,8 @@ export const ClubPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      body: InsertClubSchema,
-      response: APIResponseSchema(SelectClubExtendedSchema),
+      // body: InsertClubSchema,
+      // response: APIResponseSchema(SelectClubExtendedSchema),
     }
   )
   .delete(
@@ -198,7 +189,7 @@ export const ClubPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectClubExtendedSchema),
+      // response: APIResponseSchema(SelectClubExtendedSchema),
     }
   )
   .get(
@@ -217,7 +208,7 @@ export const ClubPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(t.Array(ClubMemberSchema)),
+      // response: APIResponseSchema(t.Array(ClubMemberSchema)),
     }
   )
   .get(
@@ -245,7 +236,7 @@ export const ClubPlugin = new Elysia()
         userId: t.Number(),
         role: InsertUserToClubSchema.properties.role,
       }),
-      response: APIResponseSchema(ClubMemberSchema),
+      // response: APIResponseSchema(ClubMemberSchema),
     }
   )
   .get(
@@ -269,7 +260,7 @@ export const ClubPlugin = new Elysia()
         id: t.Number(),
         userId: t.Number(),
       }),
-      response: APIResponseSchema(SelectUserToClubSchema),
+      // response: APIResponseSchema(SelectUserToClubSchema),
     }
   )
   .get(
@@ -289,7 +280,7 @@ export const ClubPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(ClubMemberSchema),
+      // response: APIResponseSchema(ClubMemberSchema),
     }
   )
   .get(
@@ -309,7 +300,7 @@ export const ClubPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectUserToClubSchema),
+      // response: APIResponseSchema(SelectUserToClubSchema),
     }
   )
   .get(
@@ -333,7 +324,7 @@ export const ClubPlugin = new Elysia()
         id: t.Number(),
         userId: t.Number(),
       }),
-      response: APIResponseSchema(SelectUserToClubSchema),
+      // response: APIResponseSchema(SelectUserToClubSchema),
     }
   )
   .get(
@@ -357,6 +348,6 @@ export const ClubPlugin = new Elysia()
         id: t.Number(),
         userId: t.Number(),
       }),
-      response: APIResponseSchema(SelectUserToClubSchema),
+      // response: APIResponseSchema(SelectUserToClubSchema),
     }
   );

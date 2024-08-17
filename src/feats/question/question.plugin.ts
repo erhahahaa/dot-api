@@ -1,11 +1,7 @@
 import Elysia, { t } from "elysia";
-import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { Dependency } from "./question.dependency";
-import {
-  InsertQuestionSchema,
-  SelectQuestionExtendedSchema,
-} from "./question.schema";
+import { InsertQuestionSchema } from "./question.schema";
 
 export const QuestionPlugin = new Elysia()
   .use(Dependency)
@@ -27,7 +23,7 @@ export const QuestionPlugin = new Elysia()
       query: t.Object({
         examId: t.Number(),
       }),
-      response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
+      // response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
     }
   )
   .post(
@@ -44,7 +40,7 @@ export const QuestionPlugin = new Elysia()
         tags: ["QUESTION"],
       },
       body: InsertQuestionSchema,
-      response: APIResponseSchema(SelectQuestionExtendedSchema),
+      // response: APIResponseSchema(SelectQuestionExtendedSchema),
     }
   )
   .get(
@@ -64,14 +60,14 @@ export const QuestionPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectQuestionExtendedSchema),
+      // response: APIResponseSchema(SelectQuestionExtendedSchema),
     }
   )
   .put(
     "/:id",
     async ({ questionRepo, body, params: { id } }) => {
       const question = await questionRepo.update({
-        ...body,
+        ...(body as any),
         id,
         updatedAt: new Date(),
       });
@@ -87,8 +83,8 @@ export const QuestionPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      body: InsertQuestionSchema,
-      response: APIResponseSchema(SelectQuestionExtendedSchema),
+      // body: InsertQuestionSchema,
+      // response: APIResponseSchema(SelectQuestionExtendedSchema),
     }
   )
   .delete(
@@ -106,13 +102,13 @@ export const QuestionPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectQuestionExtendedSchema),
+      // response: APIResponseSchema(SelectQuestionExtendedSchema),
     }
   )
   .post(
     "/bulk",
     async ({ questionRepo, body }) => {
-      const questions = await questionRepo.createBulk(body);
+      const questions = await questionRepo.createBulk(body as any);
       return {
         message: "Questions created",
         data: questions,
@@ -122,14 +118,14 @@ export const QuestionPlugin = new Elysia()
       detail: {
         tags: ["QUESTION"],
       },
-      body: t.Array(InsertQuestionSchema),
-      response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
+      // body: t.Array(InsertQuestionSchema),
+      // response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
     }
   )
   .put(
     "/bulk",
     async ({ questionRepo, body }) => {
-      const questions = await questionRepo.updateBulk(body);
+      const questions = await questionRepo.updateBulk(body as any);
       return {
         message: "Questions updated",
         data: questions,
@@ -139,7 +135,7 @@ export const QuestionPlugin = new Elysia()
       detail: {
         tags: ["QUESTION"],
       },
-      body: t.Array(InsertQuestionSchema),
-      response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
+      // body: t.Array(InsertQuestionSchema),
+      // response: APIResponseSchema(t.Array(SelectQuestionExtendedSchema)),
     }
   );

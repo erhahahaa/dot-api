@@ -1,12 +1,8 @@
 import Elysia, { t } from "elysia";
-import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { AuthService } from "../auth/auth.service";
 import { Dependency } from "./exercise.dependency";
-import {
-  InsertExerciseSchema,
-  SelectExerciseExtendedSchema,
-} from "./exercise.schema";
+import { InsertExerciseSchema } from "./exercise.schema";
 
 export const ExercisePlugin = new Elysia()
   .use(Dependency)
@@ -28,13 +24,13 @@ export const ExercisePlugin = new Elysia()
       query: t.Object({
         programId: t.Number(),
       }),
-      response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
+      // response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
     }
   )
   .post(
     "/",
     async ({ exerciseRepo, body }) => {
-      const exercise = await exerciseRepo.create(body);
+      const exercise = await exerciseRepo.create(body as any);
       return {
         message: "Exercise created",
         data: exercise,
@@ -44,8 +40,8 @@ export const ExercisePlugin = new Elysia()
       detail: {
         tags: ["EXERCISE"],
       },
-      body: InsertExerciseSchema,
-      response: APIResponseSchema(SelectExerciseExtendedSchema),
+      // body: InsertExerciseSchema,
+      // response: APIResponseSchema(SelectExerciseExtendedSchema),
     }
   )
   .get(
@@ -65,14 +61,14 @@ export const ExercisePlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectExerciseExtendedSchema),
+      // response: APIResponseSchema(SelectExerciseExtendedSchema),
     }
   )
   .put(
     "/:id",
     async ({ exerciseRepo, body, params: { id } }) => {
       const exercise = await exerciseRepo.update({
-        ...body,
+        ...(body as any),
         id,
       });
       return {
@@ -87,8 +83,8 @@ export const ExercisePlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      body: InsertExerciseSchema,
-      response: APIResponseSchema(SelectExerciseExtendedSchema),
+      // body: InsertExerciseSchema,
+      // response: APIResponseSchema(SelectExerciseExtendedSchema),
     }
   )
   .delete(
@@ -107,7 +103,7 @@ export const ExercisePlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectExerciseExtendedSchema),
+      // response: APIResponseSchema(SelectExerciseExtendedSchema),
     }
   )
   .post(
@@ -124,7 +120,7 @@ export const ExercisePlugin = new Elysia()
         tags: ["EXERCISE"],
       },
       body: t.Array(InsertExerciseSchema),
-      response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
+      // response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
     }
   )
   .put(
@@ -142,6 +138,6 @@ export const ExercisePlugin = new Elysia()
         tags: ["EXERCISE"],
       },
       body: t.Array(InsertExerciseSchema),
-      response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
+      // response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
     }
   );

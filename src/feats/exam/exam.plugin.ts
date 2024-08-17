@@ -1,16 +1,11 @@
 import Elysia, { t } from "elysia";
 import { Message } from "firebase-admin/messaging";
-import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
 import { Dependency } from "./exam.dependency";
-import {
-  ExamExtended,
-  InsertExamSchema,
-  SelectExamSchema,
-} from "./exam.schema";
+import { ExamExtended } from "./exam.schema";
 
 export const ExamPlugin = new Elysia()
   .use(Dependency)
@@ -34,13 +29,13 @@ export const ExamPlugin = new Elysia()
       query: t.Object({
         clubId: t.Number(),
       }),
-      response: APIResponseSchema(t.Array(SelectExamSchema)),
+      // response: APIResponseSchema(t.Array(SelectExamSchema)),
     }
   )
   .post(
     "/",
     async ({ examRepo, body }) => {
-      const evaluation = await examRepo.create(body);
+      const evaluation = await examRepo.create(body as any);
       return {
         message: "Evaluation created",
         data: evaluation,
@@ -50,8 +45,8 @@ export const ExamPlugin = new Elysia()
       detail: {
         tags: ["EXAM"],
       },
-      body: InsertExamSchema,
-      response: APIResponseSchema(SelectExamSchema),
+      // body: InsertExamSchema,
+      // response: APIResponseSchema(SelectExamSchema),
       afterHandle: async ({ clubRepo, response, messenger }) => {
         if (!response) return;
         const { id, title, clubId } = (response as any).data as ExamExtended;
@@ -110,14 +105,14 @@ export const ExamPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectExamSchema),
+      // response: APIResponseSchema(SelectExamSchema),
     }
   )
   .put(
     "/:id",
     async ({ examRepo, params: { id }, body }) => {
       const evaluation = await examRepo.update({
-        ...body,
+        ...(body as any),
         id,
         updatedAt: new Date(),
       });
@@ -133,8 +128,8 @@ export const ExamPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      body: InsertExamSchema,
-      response: APIResponseSchema(SelectExamSchema),
+      // body: InsertExamSchema,
+      // response: APIResponseSchema(SelectExamSchema),
     }
   )
   .delete(
@@ -153,7 +148,7 @@ export const ExamPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      response: APIResponseSchema(SelectExamSchema),
+      // response: APIResponseSchema(SelectExamSchema),
     }
   )
   .put(
@@ -166,16 +161,17 @@ export const ExamPlugin = new Elysia()
       uploadFile,
       deleteFile,
     }) => {
+      const data = body as any;
       const { mediaId, title } = await examRepo.find(id);
 
       const upload = await uploadFile({
         parent: "exam",
-        blob: body.image,
+        blob: data.image,
       });
 
       const updateMedia = await mediaRepo.update({
-        name: body.image.name,
-        type: body.image.type as MediaType,
+        name: data.image.name,
+        type: data.image.type as MediaType,
         parent: "exam",
         url: upload.url,
         path: upload.name,
@@ -203,9 +199,9 @@ export const ExamPlugin = new Elysia()
       params: t.Object({
         id: t.Number(),
       }),
-      body: t.Object({
-        image: t.File(),
-      }),
-      response: APIResponseSchema(t.Object({})),
+      // body: t.Object({
+      //   image: t.File(),
+      // }),
+      // response: APIResponseSchema(t.Object({})),
     }
   );

@@ -34,7 +34,7 @@ export const EvaluationPlugin = new Elysia()
       const user = await verifyJWT();
 
       const evaluation = await evaluationRepo.create({
-        ...body,
+        ...(body as any),
         coachId: user.id,
       });
 
@@ -75,7 +75,7 @@ export const EvaluationPlugin = new Elysia()
     "/:id",
     async ({ evaluationRepo, params: { id }, body }) => {
       const evaluation = await evaluationRepo.update({
-        ...body,
+        ...(body as any),
         id,
         createdAt: new Date(),
       });

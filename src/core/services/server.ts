@@ -62,8 +62,19 @@ export function createApp() {
         documentation: {
           info: { title: "DOT Coaching API", version, description },
         },
+        exclude: ["/"],
       })
     )
+    .onAfterHandle(({ response, set }) => {
+      if (response instanceof Object && !Buffer.isBuffer(response)) {
+        const contentLength = Buffer.byteLength(
+          JSON.stringify(response),
+          "utf8"
+        );
+        set.headers["Content-Length"] = contentLength.toString();
+      }
+    })
+
     .use(WebSocketRouter)
     .use(HTTPRouter)
     .onStart(async () => {

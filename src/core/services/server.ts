@@ -9,6 +9,7 @@ import {
   NoContentError,
   ServerError,
   StorageError,
+  UnsupportedMediaTypeError,
 } from "../errors";
 import { HTTPRouter, WebSocketRouter } from "../router";
 

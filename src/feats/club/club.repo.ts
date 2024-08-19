@@ -2,7 +2,7 @@ import { SQL, and, count, eq, sql } from "drizzle-orm";
 import { BadRequestError, NoContentError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
-import { ExamModel } from "../exam";
+import { ExamModel } from "../exam/exam.model";
 import { MediaModel } from "../media/media.model";
 import { ProgramModel } from "../program/program.model";
 import { TacticalModel } from "../tactical/tactical.model";

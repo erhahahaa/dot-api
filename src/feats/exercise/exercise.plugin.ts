@@ -1,11 +1,11 @@
 import Elysia, { t } from "elysia";
+import { GlobalDependency } from "../../core/di";
 import { BucketService } from "../../core/services/bucket";
 import { AuthService } from "../auth/auth.service";
-import { Dependency } from "./exercise.dependency";
 import { InsertExerciseSchema } from "./exercise.schema";
 
 export const ExercisePlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
   .get(

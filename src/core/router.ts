@@ -3,7 +3,7 @@ import { AuthPlugin } from "../feats/auth/auth.plugin";
 import { AuthService } from "../feats/auth/auth.service";
 import { ClubPlugin } from "../feats/club/club.plugin";
 import { EvaluationPlugin } from "../feats/evaluation/evaluation.plugin";
-import { ExamPlugin } from "../feats/exam";
+import { ExamPlugin } from "../feats/exam/exam.plugin";
 import { ExercisePlugin } from "../feats/exercise/exercise.plugin";
 import { HealthRouter } from "../feats/health";
 import { MediaPlugin } from "../feats/media/media.plugin";

@@ -1,12 +1,12 @@
 import Elysia, { t } from "elysia";
+import { GlobalDependency } from "../../core/di";
 import { BucketService } from "../../core/services/bucket";
 import { generateFromEmail } from "../../utils/user";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
-import { Dependency } from "./user.dependency";
 
 export const UserPlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
   .put(

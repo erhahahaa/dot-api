@@ -1,11 +1,11 @@
 import Elysia, { t } from "elysia";
+import { GlobalDependency } from "../../core/di";
 import { APIResponseSchema } from "../../core/response";
 import { AuthService } from "../auth/auth.service";
-import { Dependency } from "./evaluation.dependency";
 import { SelectEvaluationSchema } from "./evaluation.schema";
 
 export const EvaluationPlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(AuthService)
   .get(
     "/",

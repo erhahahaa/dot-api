@@ -1,10 +1,10 @@
 import Elysia, { t } from "elysia";
+import { GlobalDependency } from "../../core/di";
 import { BucketService } from "../../core/services/bucket";
-import { Dependency } from "./question.dependency";
 import { InsertQuestionSchema } from "./question.schema";
 
 export const QuestionPlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(BucketService)
   .get(
     "/",

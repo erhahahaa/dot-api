@@ -1,13 +1,13 @@
 import Elysia, { t } from "elysia";
+import { GlobalDependency } from "../../core/di";
 import { AuthorizationError, BadRequestError } from "../../core/errors";
 import { BucketService } from "../../core/services/bucket";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
 import { InsertUserToClubSchema } from "../user/user.schema";
-import { Dependency } from "./club.dependency";
 
 export const ClubPlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
   .get(

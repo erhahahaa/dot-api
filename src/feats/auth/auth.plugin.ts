@@ -1,10 +1,10 @@
 import Elysia from "elysia";
+import { GlobalDependency } from "../../core/di";
 import { AuthenticationError, BadRequestError } from "../../core/errors";
-import { Dependency } from "./auth.dependency";
 import { AuthService } from "./auth.service";
 
 export const AuthPlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(AuthService)
   .post(
     "/sign-in",

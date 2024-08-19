@@ -1,15 +1,15 @@
 import Elysia, { t } from "elysia";
 import { Message } from "firebase-admin/messaging";
+import { GlobalDependency } from "../../core/di";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
-import { Dependency } from "./program.dependency";
 import { ProgramExtended, SelectProgramExtendedSchema } from "./program.schema";
 
 export const ProgramPlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
   .use(MessagingService)

@@ -6,7 +6,7 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 import { ClubModel } from "../club/club.model";
-import { ExamModel } from "../exam";
+import { ExamModel } from "../exam/exam.model";
 import { UserModel } from "../user/user.model";
 import { QuestionEvaluation } from "./evaluation.schema";
 

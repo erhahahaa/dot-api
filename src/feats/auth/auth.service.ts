@@ -1,4 +1,3 @@
-import bearer from "@elysiajs/bearer";
 import jwt from "@elysiajs/jwt";
 import Elysia from "elysia";
 import { AuthenticationError } from "../../core/errors";
@@ -14,7 +13,11 @@ export const AuthService = new Elysia()
       exp: "7d",
     })
   )
-  .use(bearer())
+  .derive(({ headers }) => {
+    return {
+      bearer: headers.authorization?.split(" ")[1],
+    };
+  })
   .derive({ as: "global" }, ({ dotJWT, bearer, cookie: { auth } }) => ({
     async verifyJWT() {
       console.log("BEARER", bearer);

@@ -2,12 +2,10 @@ import cors from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia, ValidationError } from "elysia";
 
-import { description, version } from "../../../package.json";
 import {
   AuthenticationError,
   AuthorizationError,
   BadRequestError,
-  ERROR_CODE_STATUS_MAP,
   NoContentError,
   ServerError,
   StorageError,
@@ -34,6 +32,7 @@ export function createApp() {
       SERVER_ERROR: ServerError,
       UNKNOWN: ServerError,
       NO_CONTENT: NoContentError,
+      UNSUPPORTED_MEDIA_TYPE: NoContentError,
     })
     .onError(({ error, code, set, route, path }) => {
       try {
@@ -45,36 +44,63 @@ export function createApp() {
         console.log("[MESSAGE] : ", error.message);
         console.log("[STACK] : ", error.stack);
         console.error("<=============== ERROR ===============>");
+
+        let httpCode;
+        switch (code) {
+          case "NO_CONTENT":
+            httpCode = 200;
+            break;
+          case "PARSE":
+          case "BAD_REQUEST":
+            httpCode = 400;
+            break;
+          case "UNSUPPORTED_MEDIA_TYPE":
+            httpCode = 415;
+            break;
+          case "VALIDATION":
+            httpCode = 422;
+            break;
+          case "NOT_FOUND":
+            httpCode = 404;
+            break;
+          case "INVALID_COOKIE_SIGNATURE":
+          case "AUTHENTICATION":
+          case "AUTHORIZATION":
+            httpCode = 401;
+            break;
+          case "INTERNAL_SERVER_ERROR":
+          case "UNKNOWN":
+            httpCode = 500;
+            break;
+
+          default:
+            httpCode = 500;
+            break;
+        }
+        set.status = httpCode;
+        const errorType = "type" in error ? error.type : "internal";
         if (code == "VALIDATION") {
           return { errors: error.all };
         }
-        set.status = ERROR_CODE_STATUS_MAP.get(code);
-        const errorType = "type" in error ? error.type : "internal";
-        return { errors: error.message, type: errorType };
+        return Response.json(
+          {
+            errors: error.message,
+            type: errorType,
+          },
+          { status: httpCode }
+        );
       } catch (error) {
         console.log(error);
+
         return { errors: "Internal server error", type: "internal" };
       }
     })
     .use(cors())
     .use(
       swagger({
-        documentation: {
-          info: { title: "DOT Coaching API", version, description },
-        },
         exclude: ["/"],
       })
     )
-    .onAfterHandle(({ response, set }) => {
-      if (response instanceof Object && !Buffer.isBuffer(response)) {
-        const contentLength = Buffer.byteLength(
-          JSON.stringify(response),
-          "utf8"
-        );
-        set.headers["Content-Length"] = contentLength.toString();
-      }
-    })
-
     .use(WebSocketRouter)
     .use(HTTPRouter)
     .onStart(async () => {

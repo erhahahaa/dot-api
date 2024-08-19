@@ -6,7 +6,7 @@ import {
 } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
-import { ExamModel } from "../exam";
+import { ExamModel } from "../exam/exam.model";
 import { MediaModel } from "../media/media.model";
 import { QuestionModel } from "./question.model";
 import { InsertQuestion, Question, QuestionExtended } from "./question.schema";

@@ -1,13 +1,13 @@
 import Elysia, { t } from "elysia";
 import { Message } from "firebase-admin/messaging";
 import { app } from "../..";
+import { GlobalDependency } from "../../core/di";
 import { BadRequestError } from "../../core/errors";
 import { TypeOfNullish } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { AuthJWT } from "../auth/auth.schema";
 import { AuthService } from "../auth/auth.service";
-import { Dependency } from "./tactical.dependency";
 import {
   InsertTacticalSchema,
   LiveTacticalSchemaType,
@@ -16,7 +16,7 @@ import {
 } from "./tactical.schema";
 
 export const TacticalPlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
   .use(MessagingService)
@@ -172,7 +172,7 @@ export const TacticalPlugin = new Elysia()
 const channel: Record<string, { user: AuthJWT; isHost: boolean }[]> = {};
 
 export const TacticalWebSocketPlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(AuthService)
   .ws("/tactical/:id", {
     async open({

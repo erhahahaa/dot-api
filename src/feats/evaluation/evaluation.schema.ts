@@ -1,7 +1,7 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { Static, t } from "elysia";
 import { SelectClubSchema } from "../club/club.schema";
-import { SelectExamSchema } from "../exam";
+import { SelectExamSchema } from "../exam/exam.schema";
 import { SelectUserSchema } from "../user/user.schema";
 import { EvaluationModel } from "./evaluation.model";
 

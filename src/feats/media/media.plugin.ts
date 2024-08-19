@@ -2,13 +2,13 @@ import Elysia, { t } from "elysia";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import path from "path";
+import { GlobalDependency } from "../../core/di";
 import { BucketService } from "../../core/services/bucket";
 import { AuthService } from "../auth/auth.service";
-import { Dependency } from "./media.dependency";
 import { InsertMediaSchema, MediaType } from "./media.schema";
 
 export const MediaPlugin = new Elysia()
-  .use(Dependency)
+  .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
   .get(

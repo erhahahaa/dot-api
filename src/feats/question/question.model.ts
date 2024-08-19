@@ -7,7 +7,7 @@ import {
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
-import { ExamModel } from "../exam";
+import { ExamModel } from "../exam/exam.model";
 import { MediaModel } from "../media/media.model";
 import { QuestionOption } from "./question.schema";
 

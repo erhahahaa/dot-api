@@ -7,7 +7,7 @@ import {
 } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
-import { ExamModel } from "../exam";
+import { ExamModel } from "../exam/exam.model";
 import { QuestionModel } from "../question/question.model";
 import { UserModel } from "../user/user.model";
 import { EvaluationModel } from "./evaluation.model";

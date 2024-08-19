@@ -32,7 +32,7 @@ export function createApp() {
       SERVER_ERROR: ServerError,
       UNKNOWN: ServerError,
       NO_CONTENT: NoContentError,
-      UNSUPPORTED_MEDIA_TYPE: NoContentError,
+      UNSUPPORTED_MEDIA_TYPE: UnsupportedMediaTypeError,
     })
     .onError(({ error, code, set, route, path }) => {
       try {

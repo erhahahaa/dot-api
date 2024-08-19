@@ -13,7 +13,7 @@ export const AuthService = new Elysia()
       exp: "7d",
     })
   )
-  .derive(({ headers }) => {
+  .derive({ as: "global" }, ({ headers }) => {
     return {
       bearer: headers.authorization?.split(" ")[1],
     };

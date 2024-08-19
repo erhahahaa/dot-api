@@ -20,6 +20,7 @@ export const AuthService = new Elysia()
   })
   .derive({ as: "global" }, ({ dotJWT, bearer, cookie: { auth } }) => ({
     async verifyJWT() {
+      if (!bearer) throw new AuthenticationError("Unauthorized");
       const verify = await dotJWT.verify(bearer);
       if (!verify) throw new AuthenticationError("Invalid token");
       return verify as AuthJWT;

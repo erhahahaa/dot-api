@@ -6,7 +6,6 @@ import {
   AuthenticationError,
   AuthorizationError,
   BadRequestError,
-  NoContentError,
   ServerError,
   StorageError,
   UnsupportedMediaTypeError,
@@ -32,7 +31,6 @@ export function createApp() {
       STORAGE_ERROR: StorageError,
       SERVER_ERROR: ServerError,
       UNKNOWN: ServerError,
-      NO_CONTENT: NoContentError,
       UNSUPPORTED_MEDIA_TYPE: UnsupportedMediaTypeError,
     })
     .onError(({ error, code, set, route, path }) => {
@@ -48,9 +46,6 @@ export function createApp() {
 
         let httpCode;
         switch (code) {
-          case "NO_CONTENT":
-            httpCode = 200;
-            break;
           case "PARSE":
           case "BAD_REQUEST":
             httpCode = 400;

@@ -1,9 +1,5 @@
 import { SQL, eq, inArray } from "drizzle-orm";
-import {
-  BadRequestError,
-  NoContentError,
-  ServerError,
-} from "../../core/errors";
+import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { MediaModel } from "../media/media.model";
@@ -116,7 +112,7 @@ export class ExerciseRepoImpl extends ExerciseRepo {
 
     exerciseIds.forEach((id) => {
       const find = finds.find((f) => f.id === id);
-      if (!find) throw new NoContentError(`Exercise with id ${id} not found`);
+      if (!find) throw new BadRequestError(`Exercise with id ${id} not found`);
     });
 
     let updatePromises: Promise<any>[] = [];
@@ -153,8 +149,6 @@ export class ExerciseRepoImpl extends ExerciseRepo {
   async find(id: number): Promise<ExerciseExtended> {
     const exercises = await this.select(eq(ExerciseModel.id, id));
 
-    if (exercises.length === 0) throw new NoContentError("Exercise not found");
-
     return exercises[0];
   }
 
@@ -164,8 +158,6 @@ export class ExerciseRepoImpl extends ExerciseRepo {
     programId: number;
   }): Promise<ExerciseExtended[]> {
     const exercises = await this.select(eq(ExerciseModel.programId, programId));
-
-    if (exercises.length === 0) throw new NoContentError("No exercise found");
 
     return exercises;
   }

@@ -40,14 +40,6 @@ export class ServerError extends Error {
   }
 }
 
-export class NoContentError extends Error {
-  public status = 204;
-  public type = "no_content";
-  constructor(public message: string) {
-    super(message);
-  }
-}
-
 export class UnsupportedMediaTypeError extends Error {
   public status = 415;
   public type = "unsupported_media_type";
@@ -57,7 +49,6 @@ export class UnsupportedMediaTypeError extends Error {
 }
 
 export const ERROR_CODE_STATUS_MAP = new MapWithDefault<string, number>([
-  ["NO_CONTENT", 204],
   ["PARSE", 400],
   ["BAD_REQUEST", 400],
   ["UNSUPPORTED_MEDIA_TYPE", 415],

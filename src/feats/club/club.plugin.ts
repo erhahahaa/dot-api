@@ -24,10 +24,6 @@ export const ClubPlugin = new Elysia()
       detail: {
         tags: ["CLUB"],
       },
-      // query: t.Object({
-      //   useCache: t.Optional(t.Boolean()),
-      // }),
-      // response: APIResponseSchema(t.Array(SelectClubExtendedSchema)),
     }
   )
   .post(

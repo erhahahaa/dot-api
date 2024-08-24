@@ -1,9 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import {
-  BadRequestError,
-  NoContentError,
-  ServerError,
-} from "../../core/errors";
+import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { MediaModel } from "./media.model";
@@ -60,8 +56,6 @@ export class MediaRepoImpl extends MediaRepo {
       .from(MediaModel)
       .where(eq(MediaModel.id, id));
 
-    if (medias.length === 0) throw new NoContentError("Media not found");
-
     return medias[0];
   }
 
@@ -77,8 +71,6 @@ export class MediaRepoImpl extends MediaRepo {
       .from(MediaModel)
       .where(and(eq(MediaModel.clubId, clubId), eq(MediaModel.parent, parent)));
 
-    if (medias.length === 0) throw new NoContentError("No media found");
-
     return medias;
   }
 
@@ -87,8 +79,6 @@ export class MediaRepoImpl extends MediaRepo {
       .select()
       .from(MediaModel)
       .where(eq(MediaModel.url, url));
-
-    if (medias.length === 0) throw new NoContentError("Media not found");
 
     return medias[0];
   }

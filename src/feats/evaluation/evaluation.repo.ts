@@ -1,10 +1,6 @@
 import { and, eq, SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
-import {
-  BadRequestError,
-  NoContentError,
-  ServerError,
-} from "../../core/errors";
+import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { ExamModel } from "../exam/exam.model";
@@ -110,9 +106,6 @@ export class EvaluationRepoImpl extends EvaluationRepo {
       .from(EvaluationModel)
       .where(eq(EvaluationModel.id, id));
 
-    if (evaluations.length === 0)
-      throw new NoContentError("Evaluation not found");
-
     return evaluations[0];
   }
 
@@ -132,11 +125,6 @@ export class EvaluationRepoImpl extends EvaluationRepo {
         : eq(EvaluationModel.examId, examId)
     );
 
-    if (evaluations.length === 0) {
-      throw new NoContentError("No evaluation found");
-    }
-
-    // Collect promises for question fetches
     const updatedEvaluations = await Promise.all(
       evaluations.map(async (evaluation) => {
         if (!evaluation.evaluations) return evaluation;
@@ -150,7 +138,6 @@ export class EvaluationRepoImpl extends EvaluationRepo {
               .from(QuestionModel)
               .where(eq(QuestionModel.id, questionEvaluation.questionId));
 
-            // Attach question if found
             if (question) {
               return { ...questionEvaluation, questionName: question.question };
             }

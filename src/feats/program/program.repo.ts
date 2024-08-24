@@ -1,9 +1,5 @@
 import { SQL, eq } from "drizzle-orm";
-import {
-  BadRequestError,
-  NoContentError,
-  ServerError,
-} from "../../core/errors";
+import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { MediaModel } from "../media/media.model";
@@ -91,15 +87,11 @@ export class ProgramRepoImpl extends ProgramRepo {
   async find(id: number): Promise<ProgramExtended> {
     const programs = await this.select(eq(ProgramModel.id, id));
 
-    if (programs.length === 0) throw new NoContentError("Program not found");
-
     return programs[0];
   }
 
   async list({ clubId }: { clubId: number }): Promise<ProgramExtended[]> {
     const programs = await this.select(eq(ProgramModel.clubId, clubId));
-
-    if (programs.length === 0) throw new NoContentError("No program found");
 
     return programs;
   }

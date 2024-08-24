@@ -1,9 +1,5 @@
 import { SQL, eq, inArray } from "drizzle-orm";
-import {
-  BadRequestError,
-  NoContentError,
-  ServerError,
-} from "../../core/errors";
+import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { ExamModel } from "../exam/exam.model";
@@ -153,15 +149,11 @@ export class QuestionRepoImpl extends QuestionRepo {
   async find(id: number): Promise<QuestionExtended> {
     const questions = await this.select(eq(QuestionModel.id, id));
 
-    if (questions.length === 0) throw new NoContentError("Question not found");
-
     return questions[0];
   }
 
   async list({ examId }: { examId: number }): Promise<Question[]> {
     const questions = await this.select(eq(QuestionModel.examId, examId));
-
-    if (questions.length === 0) throw new NoContentError("No question found");
 
     return questions;
   }

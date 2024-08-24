@@ -1,5 +1,5 @@
 import { SQL, and, count, eq, sql } from "drizzle-orm";
-import { BadRequestError, NoContentError } from "../../core/errors";
+import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { ExamModel } from "../exam/exam.model";
@@ -80,8 +80,6 @@ export class ClubRepoImpl extends ClubRepo {
         async (rows) => await this.select(eq(ClubModel.id, rows[0].clubId))
       );
 
-    if (clubs.length === 0) throw new NoContentError("Failed to create club");
-
     return clubs[0];
   }
 
@@ -96,8 +94,7 @@ export class ClubRepoImpl extends ClubRepo {
       .where(eq(ClubModel.id, data.id))
       .returning();
 
-    if (updateClub.length === 0)
-      throw new NoContentError("Failed to update club");
+    if (updateClub.length === 0) throw new ServerError("Failed to update club");
 
     const clubs = await this.select(eq(ClubModel.id, data.id));
 
@@ -110,23 +107,17 @@ export class ClubRepoImpl extends ClubRepo {
       .where(eq(ClubModel.id, id))
       .returning();
 
-    if (clubs.length === 0) throw new NoContentError("Failed to delete club");
-
     return clubs[0];
   }
 
   async find(id: number): Promise<ClubExtended> {
     const clubs = await this.select(eq(ClubModel.id, id));
 
-    if (clubs.length === 0) throw new NoContentError("Club not found");
-
     return clubs[0];
   }
 
   async list({ userId }: { userId: number }): Promise<ClubExtended[]> {
     const clubs = await this.select(eq(UserToClubModel.userId, userId));
-
-    if (clubs.length === 0) throw new NoContentError("No club found");
 
     return clubs as unknown as ClubExtended[];
   }
@@ -148,8 +139,6 @@ export class ClubRepoImpl extends ClubRepo {
 
   async getMembers(id: number): Promise<ClubMember[]> {
     const clubs = await this.selectMember(eq(UserToClubModel.clubId, id));
-
-    if (clubs.length === 0) throw new NoContentError("Club not found");
 
     return clubs as ClubMember[];
   }
@@ -177,8 +166,6 @@ export class ClubRepoImpl extends ClubRepo {
           )
       );
 
-    if (clubs.length === 0) throw new NoContentError("Failed to add member");
-
     return clubs[0] as ClubMember;
   }
 
@@ -192,8 +179,6 @@ export class ClubRepoImpl extends ClubRepo {
           eq(UserToClubModel.userId, userId)
         )
       );
-
-    if (clubs.length === 0) throw new NoContentError("Member not found");
 
     return clubs[0] as UserToClub;
   }
@@ -209,8 +194,6 @@ export class ClubRepoImpl extends ClubRepo {
       )
       .returning();
 
-    if (clubs.length === 0) throw new NoContentError("Failed to kick member");
-
     return clubs[0] as UserToClub;
   }
 
@@ -224,7 +207,6 @@ export class ClubRepoImpl extends ClubRepo {
         )
       )
       .returning();
-    if (clubs.length === 0) throw new NoContentError("Failed to leave club");
 
     const members = await this.selectMember(eq(UserToClubModel.clubId, clubId));
     if (members.length === 0) {
@@ -249,8 +231,7 @@ export class ClubRepoImpl extends ClubRepo {
       )
       .returning();
 
-    if (clubs.length === 0)
-      throw new NoContentError("Failed to promote member");
+    if (clubs.length === 0) throw new ServerError("Failed to promote member");
 
     return clubs[0] as UserToClub;
   }
@@ -266,8 +247,6 @@ export class ClubRepoImpl extends ClubRepo {
         )
       )
       .returning();
-
-    if (clubs.length === 0) throw new NoContentError("Failed to demote member");
 
     return clubs[0] as UserToClub;
   }

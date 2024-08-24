@@ -1,9 +1,5 @@
 import { eq, ilike, inArray, or } from "drizzle-orm";
-import {
-  BadRequestError,
-  NoContentError,
-  ServerError,
-} from "../../core/errors";
+import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { sanitize } from "../../utils";
@@ -109,7 +105,7 @@ export class UserRepoImpl extends UserRepo {
       .where(eq(UserModel.id, id));
 
     if (users.length === 0) {
-      throw new NoContentError("User not found");
+      throw new ServerError("User not found");
     }
 
     return sanitize(users[0], ["password", "fcmToken"]);
@@ -119,7 +115,7 @@ export class UserRepoImpl extends UserRepo {
     const users = await this.db.select().from(UserModel);
 
     if (users.length === 0) {
-      throw new NoContentError("No user found");
+      throw new ServerError("No user found");
     }
 
     return users.map((user) => sanitize(user, ["password", "fcmToken"]));
@@ -137,7 +133,7 @@ export class UserRepoImpl extends UserRepo {
       );
 
     if (users.length === 0) {
-      throw new NoContentError("No user found");
+      throw new ServerError("No user found");
     }
 
     return users.map((user) => sanitize(user, ["password", "fcmToken"]));
@@ -181,11 +177,11 @@ export class UserRepoImpl extends UserRepo {
       .where(eq(UserModel.email, email));
 
     if (users.length === 0) {
-      throw new NoContentError("User not found");
+      throw new ServerError("User not found");
     }
 
     if (!users[0].fcmToken) {
-      throw new NoContentError("FCM token not found");
+      throw new ServerError("FCM token not found");
     }
 
     return users[0].fcmToken;

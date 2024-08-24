@@ -1,9 +1,5 @@
 import { SQL, and, eq } from "drizzle-orm";
-import {
-  BadRequestError,
-  NoContentError,
-  ServerError,
-} from "../../core/errors";
+import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { MediaModel } from "../media/media.model";
@@ -96,8 +92,6 @@ export class TacticalRepoImpl extends TacticalRepo {
   async find(id: number): Promise<TacticalExtended> {
     const tacticals = await this.select(eq(TacticalModel.id, id));
 
-    if (tacticals.length === 0) throw new NoContentError("Tactical not found");
-
     return tacticals[0];
   }
 
@@ -123,8 +117,6 @@ export class TacticalRepoImpl extends TacticalRepo {
     } else {
       throw new BadRequestError("Club id or user id is required");
     }
-
-    if (tacticals.length === 0) throw new NoContentError("No tactical found");
 
     return tacticals;
   }

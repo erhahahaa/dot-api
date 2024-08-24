@@ -1,9 +1,5 @@
 import { eq } from "drizzle-orm";
-import {
-  BadRequestError,
-  NoContentError,
-  ServerError,
-} from "../../core/errors";
+import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { MediaModel } from "../media/media.model";
@@ -86,15 +82,11 @@ export class ExamRepoImpl extends ExamRepo {
   async find(id: number): Promise<ExamExtended> {
     const exams = await this.select(eq(ExamModel.id, id));
 
-    if (exams.length === 0) throw new NoContentError("Exam not found");
-
     return exams[0];
   }
 
   async list({ clubId }: { clubId: number }): Promise<ExamExtended[]> {
     const exams = await this.select(eq(ExamModel.clubId, clubId));
-
-    if (exams.length === 0) throw new NoContentError("No exam found");
 
     return exams;
   }

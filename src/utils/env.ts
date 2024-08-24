@@ -29,6 +29,8 @@ const EnvSchema = t.Object({
     error: "FIREBASE_PRIVATE_KEY didn't provided",
     minLength: 10,
   }),
+  DEV_MIDTRANS_SERVER_KEY: t.String({ minLength: 10 }),
+  DEV_MIDTRANS_CLIENT_KEY: t.String({ minLength: 10 }),
   NODE_ENV: t.Union([t.Literal("development"), t.Literal("production")]),
 });
 
@@ -61,6 +63,8 @@ const env = createEnv({
   FIREBASE_PROJECT_ID: Bun.env.FIREBASE_PROJECT_ID,
   FIREBASAE_CLIENT_EMAIL: Bun.env.FIREBASAE_CLIENT_EMAIL,
   FIREBASE_PRIVATE_KEY: Bun.env.FIREBASE_PRIVATE_KEY,
+  DEV_MIDTRANS_SERVER_KEY: Bun.env.DEV_MIDTRANS_SERVER_KEY,
+  DEV_MIDTRANS_CLIENT_KEY: Bun.env.DEV_MIDTRANS_CLIENT_KEY,
   NODE_ENV: Bun.env.NODE_ENV ?? "development",
 });
 

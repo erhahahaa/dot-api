@@ -10,6 +10,7 @@ import { QuestionRepoImpl } from "../feats/question/question.repo";
 import { TacticalRepoImpl } from "../feats/tactical/tactical.repo";
 import { UserRepoImpl } from "../feats/user/user.repo";
 import { db } from "./services/db";
+import { PaymentRepoImpl } from "../feats/payment/payment.repo";
 
 const createGlobalDepedency = () => {
   const authRepo = new AuthRepoImpl(db);
@@ -22,6 +23,7 @@ const createGlobalDepedency = () => {
   const programRepo = new ProgramRepoImpl(db);
   const questionRepo = new QuestionRepoImpl(db);
   const tacticalRepo = new TacticalRepoImpl(db);
+  const paymentRepo = new PaymentRepoImpl(db);
 
   return new Elysia().derive({ as: "global" }, () => {
     return {
@@ -35,6 +37,7 @@ const createGlobalDepedency = () => {
       programRepo,
       questionRepo,
       tacticalRepo,
+      paymentRepo,
     };
   });
 };

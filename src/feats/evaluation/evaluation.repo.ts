@@ -1,4 +1,4 @@
-import { and, eq, SQL } from "drizzle-orm";
+import { and, eq, or, SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
@@ -112,18 +112,29 @@ export class EvaluationRepoImpl extends EvaluationRepo {
   async list({
     examId,
     userId,
+    clubId,
   }: {
-    examId: number;
+    examId?: number;
     userId?: number;
+    clubId?: number;
   }): Promise<any[]> {
-    const evaluations = await this.select(
-      userId
-        ? and(
+    let evaluations;
+
+    if (userId && clubId) {
+      evaluations = await this.select(
+        and(
+          or(
             eq(EvaluationModel.athleteId, userId),
-            eq(EvaluationModel.examId, examId)
-          )
-        : eq(EvaluationModel.examId, examId)
-    );
+            eq(EvaluationModel.coachId, userId)
+          ),
+          eq(EvaluationModel.clubId, clubId)
+        )
+      );
+    } else if (examId) {
+      evaluations = await this.select(eq(EvaluationModel.examId, examId));
+    } else {
+      evaluations = await this.select(undefined);
+    }
 
     const updatedEvaluations = await Promise.all(
       evaluations.map(async (evaluation) => {

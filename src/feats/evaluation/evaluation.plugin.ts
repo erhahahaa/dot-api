@@ -9,8 +9,14 @@ export const EvaluationPlugin = new Elysia()
   .use(AuthService)
   .get(
     "/",
-    async ({ evaluationRepo, query: { examId, userId } }) => {
-      const evaluations = await evaluationRepo.list({ examId, userId });
+    async ({ evaluationRepo, query: { examId, clubId }, verifyJWT }) => {
+      const user = await verifyJWT();
+      let evaluations;
+      if (!examId) {
+        evaluations = await evaluationRepo.list({ clubId, userId: user.id });
+      } else {
+        evaluations = await evaluationRepo.list({ examId });
+      }
 
       return {
         message: "Found evaluations",
@@ -21,10 +27,11 @@ export const EvaluationPlugin = new Elysia()
       detail: {
         tags: ["EVALUATION"],
       },
-      query: t.Object({
-        userId: t.Optional(t.Number()),
-        examId: t.Number(),
-      }),
+      // query: t.Any({}),
+      // query: t.Object({
+      //   userId: t.Optional(t.Number()),
+      //   examId: t.Optional(t.Number()),
+      // }),
       // response: APIResponseSchema(t.Array(SelectEvaluationSchema)),
     }
   )

@@ -114,6 +114,7 @@ export const MediaPlugin = new Elysia()
                   path: media.path,
                   aspectRatio: width / height,
                   width: width,
+                  height: height,
                 });
 
                 fs.unlinkSync(thumbPath);

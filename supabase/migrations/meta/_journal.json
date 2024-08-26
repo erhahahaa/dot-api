@@ -8,6 +8,20 @@
       "when": 1724504241667,
       "tag": "0000_famous_titania",
       "breakpoints": false
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1724694790975,
+      "tag": "0001_quiet_firebird",
+      "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1724695040978,
+      "tag": "0002_perpetual_wildside",
+      "breakpoints": false
     }
   ]
 }

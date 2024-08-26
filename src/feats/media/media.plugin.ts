@@ -68,8 +68,6 @@ export const MediaPlugin = new Elysia()
         url: upload.url,
       });
 
-      console.log(data.file.type);
-
       if (data.file.type === "video/mp4") {
         media = await new Promise((resolve, reject) => {
           ffmpeg.ffprobe(upload.url, (err, metadata) => {
@@ -114,6 +112,8 @@ export const MediaPlugin = new Elysia()
                   parent: media.parent,
                   url: media.url,
                   path: media.path,
+                  aspectRatio: width / height,
+                  width: width,
                 });
 
                 fs.unlinkSync(thumbPath);
@@ -128,7 +128,10 @@ export const MediaPlugin = new Elysia()
         });
       }
       if (data.file.type.includes("image")) {
-        const thumb = await sharp(data.file.buffer).resize(200, 200).toBuffer();
+        const metadata = await sharp(await data.file.arrayBuffer()).metadata();
+        const thumb = await sharp(await data.file.arrayBuffer())
+          .resize(200, 200)
+          .toBuffer();
 
         const file = new File([thumb], `thumb_${upload.name}`, {
           type: "image/png",
@@ -148,6 +151,9 @@ export const MediaPlugin = new Elysia()
           type: media.type,
           parent: media.parent,
           url: media.url,
+          aspectRatio: (metadata.width ?? 0) / (metadata.height ?? 0),
+          width: metadata.width,
+          height: metadata.height,
         });
       }
 
@@ -166,11 +172,11 @@ export const MediaPlugin = new Elysia()
       params: t.Object({
         dir: InsertMediaSchema.properties.parent,
       }),
-      // body: t.Object({
-      //   file: t.File({
-      //     maxSize: 1024 * 1024 * 1000, // 1GB
-      //   }),
-      // }),
+      body: t.Object({
+        file: t.File({
+          maxSize: 1024 * 1024 * 1000, // 1GB
+        }),
+      }),
       // response: APIResponseSchema(SelectMediaSchema),
     }
   )

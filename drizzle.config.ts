@@ -15,6 +15,7 @@ export default defineConfig({
     "./src/feats/user/user.model.ts",
     "./src/feats/evaluation/evaluation.model.ts",
     "./src/feats/question/question.model.ts",
+    "./src/feats/payment/payment.model.ts",
   ],
   out: "./supabase/migrations",
   dialect: "postgresql",

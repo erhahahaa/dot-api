@@ -2,6 +2,7 @@ import Elysia, { t } from "elysia";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 import { GlobalDependency } from "../../core/di";
 import { BucketService } from "../../core/services/bucket";
 import { AuthService } from "../auth/auth.service";
@@ -124,6 +125,29 @@ export const MediaPlugin = new Elysia()
                 reject(err);
               });
           });
+        });
+      }
+      if (data.file.type.includes("image")) {
+        const thumb = await sharp(data.file.buffer).resize(200, 200).toBuffer();
+
+        const file = new File([thumb], `thumb_${upload.name}`, {
+          type: "image/png",
+        });
+
+        const thumbUpload = await uploadFile({
+          parent: dir,
+          blob: file,
+          withUniqueName: false,
+        });
+
+        media = await mediaRepo.update({
+          id: media.id,
+          thumbPath: thumbUpload.name,
+          thumbUrl: thumbUpload.url,
+          name: media.name,
+          type: media.type,
+          parent: media.parent,
+          url: media.url,
         });
       }
 

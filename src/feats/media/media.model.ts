@@ -1,8 +1,8 @@
 import {
+  doublePrecision,
   integer,
   pgEnum,
   pgTable,
-  real,
   serial,
   text,
   timestamp,
@@ -66,7 +66,7 @@ export const MediaModel = pgTable("medias", {
   url: text("url").notNull(),
   thumbPath: text("thumb_path"),
   thumbUrl: text("thumb_url"),
-  aspectRatio: real("aspect_ratio"),
+  aspectRatio: doublePrecision("aspect_ratio"),
   width: integer("width"),
   height: integer("height"),
   createdAt: timestamp("created_at").defaultNow(),

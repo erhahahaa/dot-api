@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS "payments" (
 	"updated_at" timestamp DEFAULT now()
 );
 
+ALTER TABLE "medias" ADD COLUMN "aspect_ratio" double precision;
 ALTER TABLE "medias" ADD COLUMN "width" integer;
 ALTER TABLE "medias" ADD COLUMN "height" integer;
 DO $$ BEGIN

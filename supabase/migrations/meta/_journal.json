@@ -12,15 +12,8 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1724694790975,
-      "tag": "0001_quiet_firebird",
-      "breakpoints": false
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1724695040978,
-      "tag": "0002_perpetual_wildside",
+      "when": 1724695671879,
+      "tag": "0001_funny_champions",
       "breakpoints": false
     }
   ]

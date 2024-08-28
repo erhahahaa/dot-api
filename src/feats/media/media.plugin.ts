@@ -13,8 +13,8 @@ export const MediaPlugin = new Elysia()
   .use(AuthService)
   .use(BucketService)
   .get(
-    "/:dir/:type",
-    async ({ mediaRepo, query: { clubId }, params: { dir, type } }) => {
+    "/:dir",
+    async ({ mediaRepo, query: { clubId, type }, params: { dir } }) => {
       const medias = await mediaRepo.list({
         clubId: clubId,
         parent: dir,
@@ -32,10 +32,10 @@ export const MediaPlugin = new Elysia()
       },
       query: t.Object({
         clubId: t.Number(),
+        type: t.Optional(InsertMediaSchema.properties.type),
       }),
       params: t.Object({
         dir: InsertMediaSchema.properties.parent,
-        type: t.Optional(InsertMediaSchema.properties.type),
       }),
 
       // response: APIResponseSchema(t.Array(SelectMediaSchema)),

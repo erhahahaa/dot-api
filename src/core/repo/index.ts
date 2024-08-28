@@ -1,5 +1,5 @@
 type ParamsRecord = {
-  [key: string]: string | number | undefined;
+  [key: string]: string | string[] | number | undefined;
 };
 
 export abstract class BaseRepo<T> {

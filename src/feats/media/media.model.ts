@@ -15,29 +15,29 @@ export const MediaTypeEnumModel = pgEnum("media_type", [
   "image/png",
   "image/jpeg",
   "image/jpg",
-  "image/gif",
+  // "image/gif",
   "image/svg+xml",
   // DOCUMENT
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-word", // shortened DOCX
-  "application/vnd.ms-excel",
-  "application/vnd.openxmlformats-excel", // shortened XLSX
-  "text/plain",
+  // "application/pdf",
+  // "application/msword",
+  // "application/vnd.openxmlformats-word", // shortened DOCX
+  // "application/vnd.ms-excel",
+  // "application/vnd.openxmlformats-excel", // shortened XLSX
+  // "text/plain",
   // VIDEO
   "video/mp4",
-  "video/avi",
-  "video/mpeg",
-  "video/quicktime",
+  // "video/avi",
+  // "video/mpeg",
+  // "video/quicktime",
   // AUDIO
-  "audio/mpeg",
-  "audio/wav",
-  "audio/ogg",
+  // "audio/mpeg",
+  // "audio/wav",
+  // "audio/ogg",
   // ARCHIVE
-  "application/zip",
-  "application/x-rar-compressed",
+  // "application/zip",
+  // "application/x-rar-compressed",
   // GENERIC BINARY
-  "application/octet-stream",
+  // "application/octet-stream",
 ]);
 
 export const MediaParentEnumModel = pgEnum("media_parent", [

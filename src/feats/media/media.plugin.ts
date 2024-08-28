@@ -15,10 +15,15 @@ export const MediaPlugin = new Elysia()
   .get(
     "/:dir",
     async ({ mediaRepo, query: { clubId, type }, params: { dir } }) => {
+      let types: MediaType[] | undefined = undefined;
+      if (type?.includes("image")) {
+        types = ["image/png", "image/jpg", "image/jpeg", "image/svg+xml"];
+      }
+
       const medias = await mediaRepo.list({
         clubId: clubId,
         parent: dir,
-        type,
+        types,
       });
 
       return {
@@ -32,7 +37,7 @@ export const MediaPlugin = new Elysia()
       },
       query: t.Object({
         clubId: t.Number(),
-        type: t.Optional(InsertMediaSchema.properties.type),
+        type: t.Optional(t.String()),
       }),
       params: t.Object({
         dir: InsertMediaSchema.properties.parent,

@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
@@ -62,21 +62,21 @@ export class MediaRepoImpl extends MediaRepo {
   async list({
     clubId,
     parent,
-    type,
+    types,
   }: {
     clubId: number;
     parent: MediaParent;
-    type?: MediaType;
+    types?: MediaType[];
   }): Promise<Media[]> {
     const medias = await this.db
       .select()
       .from(MediaModel)
       .where(
         and(
-          eq(MediaModel.clubId, clubId), 
+          eq(MediaModel.clubId, clubId),
           eq(MediaModel.parent, parent),
-          type ? eq(MediaModel.type, type) : undefined
-      )
+          types ? inArray(MediaModel.type, types) : undefined
+        )
       );
 
     return medias;

@@ -13,8 +13,8 @@ export const MediaPlugin = new Elysia()
   .use(AuthService)
   .use(BucketService)
   .get(
-    "/:dir",
-    async ({ mediaRepo, query: { clubId }, params: { dir } }) => {
+    "/:dir/:type",
+    async ({ mediaRepo, query: { clubId }, params: { dir, type } }) => {
       const medias = await mediaRepo.list({ clubId: clubId, parent: dir });
 
       return {
@@ -31,6 +31,7 @@ export const MediaPlugin = new Elysia()
       }),
       params: t.Object({
         dir: InsertMediaSchema.properties.parent,
+        type: InsertMediaSchema.properties.type,
       }),
 
       // response: APIResponseSchema(t.Array(SelectMediaSchema)),
@@ -175,7 +176,7 @@ export const MediaPlugin = new Elysia()
       }),
       body: t.Object({
         file: t.File({
-          maxSize: 1024 * 1024 * 1000, // 1GB
+          maxSize: "1024m", // 1GBkkkc
         }),
       }),
       // response: APIResponseSchema(SelectMediaSchema),

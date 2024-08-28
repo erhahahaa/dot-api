@@ -3,7 +3,7 @@ import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
 import { MediaModel } from "./media.model";
-import { InsertMedia, Media, MediaParent } from "./media.schema";
+import { InsertMedia, Media, MediaParent, MediaType } from "./media.schema";
 
 abstract class MediaRepo extends BaseRepo<Media> {
   abstract findByURL(url: string): Promise<Media>;
@@ -62,14 +62,22 @@ export class MediaRepoImpl extends MediaRepo {
   async list({
     clubId,
     parent,
+    type,
   }: {
     clubId: number;
     parent: MediaParent;
+    type?: MediaType;
   }): Promise<Media[]> {
     const medias = await this.db
       .select()
       .from(MediaModel)
-      .where(and(eq(MediaModel.clubId, clubId), eq(MediaModel.parent, parent)));
+      .where(
+        and(
+          eq(MediaModel.clubId, clubId), 
+          eq(MediaModel.parent, parent),
+          type ? eq(MediaModel.type, type) : undefined
+      )
+      );
 
     return medias;
   }

@@ -15,7 +15,11 @@ export const MediaPlugin = new Elysia()
   .get(
     "/:dir/:type",
     async ({ mediaRepo, query: { clubId }, params: { dir, type } }) => {
-      const medias = await mediaRepo.list({ clubId: clubId, parent: dir });
+      const medias = await mediaRepo.list({
+        clubId: clubId,
+        parent: dir,
+        type,
+      });
 
       return {
         message: "Media list",
@@ -31,7 +35,7 @@ export const MediaPlugin = new Elysia()
       }),
       params: t.Object({
         dir: InsertMediaSchema.properties.parent,
-        type: InsertMediaSchema.properties.type,
+        type: t.Optional(InsertMediaSchema.properties.type),
       }),
 
       // response: APIResponseSchema(t.Array(SelectMediaSchema)),

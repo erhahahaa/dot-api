@@ -90,7 +90,7 @@ export const QuestionPlugin = new Elysia()
   .delete(
     "/:id",
     async ({ questionRepo, params: { id } }) => {
-      const quesiton = questionRepo.find(id);
+      const quesiton = await questionRepo.find(id);
       await questionRepo.delete(id);
       return {
         message: "Question deleted",

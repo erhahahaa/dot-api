@@ -110,7 +110,10 @@ export const QuestionPlugin = new Elysia()
   .post(
     "/bulk",
     async ({ questionRepo, body }) => {
-      const questions = await questionRepo.createBulk(body as any);
+      let questions: any[] = [];
+      if ((body as any).length > 0) {
+        questions = await questionRepo.createBulk(body as any);
+      }
       return {
         message: "Questions created",
         data: questions,
@@ -127,7 +130,11 @@ export const QuestionPlugin = new Elysia()
   .put(
     "/bulk",
     async ({ questionRepo, body }) => {
-      const questions = await questionRepo.updateBulk(body as any);
+      let questions: any[] = [];
+      if ((body as any).length > 0) {
+        questions = await questionRepo.updateBulk(body as any);
+      }
+
       return {
         message: "Questions updated",
         data: questions,

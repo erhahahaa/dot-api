@@ -9,6 +9,7 @@ export const QuestionEvaluationSchema = t.Object({
   questionId: t.Optional(t.Number()),
   answer: t.Optional(t.String()),
   score: t.Optional(t.Number()),
+  questionName: t.Optional(t.String()),
 });
 
 export type QuestionEvaluation = Static<typeof QuestionEvaluationSchema>;

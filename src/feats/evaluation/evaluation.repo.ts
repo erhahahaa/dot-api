@@ -56,8 +56,8 @@ export class EvaluationRepoImpl extends EvaluationRepo {
       })
       .from(EvaluationModel)
       .leftJoin(ExamModel, eq(EvaluationModel.examId, ExamModel.id))
-      .leftJoin(Coach, eq(EvaluationModel.athleteId, Coach.id))
-      .leftJoin(Athlete, eq(EvaluationModel.coachId, Athlete.id))
+      .leftJoin(Coach, eq(EvaluationModel.coachId, Coach.id))
+      .leftJoin(Athlete, eq(EvaluationModel.athleteId, Athlete.id))
       .where(where);
   }
 

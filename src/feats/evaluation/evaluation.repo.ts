@@ -70,7 +70,7 @@ export class EvaluationRepoImpl extends EvaluationRepo {
     if (evaluations.length === 0)
       throw new ServerError("Failed to create evaluation");
 
-    return evaluations[0];
+    return this.find(evaluations[0].id);
   }
 
   async update(data: InsertEvaluation): Promise<Evaluation> {
@@ -85,7 +85,7 @@ export class EvaluationRepoImpl extends EvaluationRepo {
     if (evaluations.length === 0)
       throw new ServerError("Failed to update evaluation");
 
-    return evaluations[0];
+    return this.find(evaluations[0].id);
   }
 
   async delete(id: number): Promise<Evaluation> {
@@ -160,7 +160,6 @@ export class EvaluationRepoImpl extends EvaluationRepo {
       })
     );
 
-    console.log(updatedEvaluations);
     return updatedEvaluations;
   }
 }

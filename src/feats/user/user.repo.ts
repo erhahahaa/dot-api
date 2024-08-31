@@ -132,10 +132,6 @@ export class UserRepoImpl extends UserRepo {
         )
       );
 
-    if (users.length === 0) {
-      throw new ServerError("No user found");
-    }
-
     return users.map((user) => sanitize(user, ["password", "fcmToken"]));
   }
   async findByUsername(username: string): Promise<User[]> {

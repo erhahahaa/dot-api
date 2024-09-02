@@ -78,7 +78,6 @@ export const MediaPlugin = new Elysia()
         url: upload.url,
       });
 
-      // create tmp folder if not exist
       if (!fs.existsSync("tmp")) {
         fs.mkdirSync("tmp");
       }

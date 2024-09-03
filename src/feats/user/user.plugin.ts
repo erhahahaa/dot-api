@@ -29,6 +29,23 @@ export const UserPlugin = new Elysia()
       // ),
     }
   )
+  .delete(
+    "/delete",
+    async ({ userRepo, verifyJWT }) => {
+      const user = await verifyJWT();
+      await userRepo.delete(user.id);
+
+      return {
+        message: "User deleted",
+      };
+    },
+    {
+      detail: {
+        tags: ["USER"],
+      },
+      // response: APIResponseSchema(t.Undefined),
+    }
+  )
   .put(
     "/update-photo",
     async ({

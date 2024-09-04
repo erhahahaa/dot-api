@@ -4,14 +4,27 @@ import fs from "fs";
 import path from "path";
 import sharp from "sharp";
 import { GlobalDependency } from "../../core/di";
+import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { AuthService } from "../auth/auth.service";
-import { InsertMediaSchema, MediaType } from "./media.schema";
+import {
+  InsertMediaSchema,
+  MediaType,
+  SelectMediaSchema,
+} from "./media.schema";
 
-export const MediaPlugin = new Elysia()
+export const MediaPlugin = new Elysia({
+  name: "Day of Training Media API",
+  tags: ["MEDIA"],
+})
   .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
+  .model("media.response", APIResponseSchema(SelectMediaSchema))
+  .model(
+    "media.dir.param",
+    t.Object({ dir: InsertMediaSchema.properties.parent })
+  )
   .get(
     "/:dir",
     async ({ mediaRepo, query: { clubId, type }, params: { dir } }) => {
@@ -32,18 +45,12 @@ export const MediaPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["MEDIA"],
-      },
       query: t.Object({
         clubId: t.Number(),
         type: t.Optional(t.String()),
       }),
-      params: t.Object({
-        dir: InsertMediaSchema.properties.parent,
-      }),
-
-      // response: APIResponseSchema(t.Array(SelectMediaSchema)),
+      params: "media.dir.param",
+      response: { 200: APIResponseSchema(t.Array(SelectMediaSchema)) },
     }
   )
   .post(
@@ -57,23 +64,22 @@ export const MediaPlugin = new Elysia()
       query: { clubId },
       uploadFile,
     }) => {
-      const data = body as any;
       const user = await verifyJWT();
 
       const findClub = await clubRepo.find(clubId);
 
       const upload = await uploadFile({
         parent: dir,
-        blob: data.file,
+        blob: body.file,
       });
 
       let media = await mediaRepo.create({
         creatorId: user.id,
         clubId: findClub.id,
-        name: data.file.name,
-        fileSize: data.file.size,
+        name: body.file.name,
+        fileSize: body.file.size,
         path: upload.name,
-        type: data.file.type as MediaType,
+        type: body.file.type as MediaType,
         parent: dir,
         url: upload.url,
       });
@@ -82,7 +88,7 @@ export const MediaPlugin = new Elysia()
         fs.mkdirSync("tmp");
       }
 
-      if (data.file.type === "video/mp4") {
+      if (body.file.type === "video/mp4") {
         media = await new Promise((resolve, reject) => {
           ffmpeg.ffprobe(upload.url, (err, metadata) => {
             if (err) {
@@ -142,9 +148,9 @@ export const MediaPlugin = new Elysia()
           });
         });
       }
-      if (data.file.type.includes("image")) {
-        const metadata = await sharp(await data.file.arrayBuffer()).metadata();
-        const thumb = await sharp(await data.file.arrayBuffer())
+      if (body.file.type.includes("image")) {
+        const metadata = await sharp(await body.file.arrayBuffer()).metadata();
+        const thumb = await sharp(await body.file.arrayBuffer())
           .resize(200, 200)
           .toBuffer();
 
@@ -178,21 +184,16 @@ export const MediaPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["MEDIA"],
-      },
       query: t.Object({
         clubId: t.Number(),
       }),
-      params: t.Object({
-        dir: InsertMediaSchema.properties.parent,
-      }),
+      params: "media.dir.param",
       body: t.Object({
         file: t.File({
           maxSize: "1024m", // 1GBkkkc
         }),
       }),
-      // response: APIResponseSchema(SelectMediaSchema),
+      response: { 200: "media.response" },
     }
   )
   .put(
@@ -204,7 +205,6 @@ export const MediaPlugin = new Elysia()
       uploadFile,
       deleteFile,
     }) => {
-      const data = body as any;
       const { path } = await mediaRepo.find(id);
 
       if (path) {
@@ -214,16 +214,16 @@ export const MediaPlugin = new Elysia()
 
       const upload = await uploadFile({
         parent: dir,
-        blob: data.file,
+        blob: body.file,
       });
 
       const media = await mediaRepo.update({
-        ...data,
+        ...body,
         id: id,
         parent: dir,
         path: upload.name,
-        name: data.file.name,
-        type: data.file.type as MediaType,
+        name: body.file.name,
+        type: body.file.type as MediaType,
         url: upload.url,
       });
 
@@ -233,16 +233,13 @@ export const MediaPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["MEDIA"],
-      },
       params: t.Object({
         id: t.Number(),
         dir: InsertMediaSchema.properties.parent,
       }),
-      // body: t.Object({
-      //   file: t.File(),
-      // }),
-      // response: APIResponseSchema(SelectMediaSchema),
+      body: t.Object({
+        file: t.File(),
+      }),
+      response: { 200: "media.response" },
     }
   );

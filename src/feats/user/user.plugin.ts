@@ -1,14 +1,23 @@
 import Elysia, { t } from "elysia";
 import { GlobalDependency } from "../../core/di";
+import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { generateFromEmail } from "../../utils/user";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
+import { InsertUserSchema, SelectUserSchema } from "./user.schema";
 
-export const UserPlugin = new Elysia()
+export const UserPlugin = new Elysia({
+  name: "Day of Training User API",
+  tags: ["USER"],
+})
   .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
+  .model(
+    "user.response",
+    APIResponseSchema(t.Omit(SelectUserSchema, ["password", "fcmToken"]))
+  )
   .put(
     "/update",
     async ({ userRepo, body }) => {
@@ -20,13 +29,8 @@ export const UserPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["USER"],
-      },
-      // body: t.Partial(InsertUserSchema),
-      // response: APIResponseSchema(
-      //   t.Omit(SelectUserSchema, ["password", "fcmToken"])
-      // ),
+      body: t.Partial(InsertUserSchema),
+      response: { 200: "user.response" },
     }
   )
   .delete(
@@ -40,10 +44,7 @@ export const UserPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["USER"],
-      },
-      // response: APIResponseSchema(t.Undefined),
+      response: APIResponseSchema(t.Undefined()),
     }
   )
   .put(
@@ -93,15 +94,10 @@ export const UserPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["USER"],
-      },
-      // body: t.Object({
-      //   image: t.File(),
-      // }),
-      // response: APIResponseSchema(
-      //   t.Omit(SelectUserSchema, ["password", "fcmToken"])
-      // ),
+      body: t.Object({
+        image: t.File(),
+      }),
+      response: { 200: "user.response" },
     }
   )
   .get(
@@ -125,15 +121,12 @@ export const UserPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["USER"],
-      },
       query: t.Object({
         query: t.Optional(t.String()),
       }),
-      // response: APIResponseSchema(
-      //   t.Array(t.Omit(SelectUserSchema, ["password", "fcmToken"]))
-      // ),
+      response: APIResponseSchema(
+        t.Array(t.Omit(SelectUserSchema, ["password", "fcmToken"]))
+      ),
     }
   )
   .get(
@@ -170,14 +163,11 @@ export const UserPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["USER"],
-      },
       query: t.Object({
         username: t.String(),
         email: t.Optional(t.String()),
       }),
-      // response: APIResponseSchema(t.Array(t.String())),
+      response: APIResponseSchema(t.Array(t.String())),
     }
   )
   .put(
@@ -193,14 +183,7 @@ export const UserPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["USER"],
-      },
-      // body: t.Object({
-      //   fcmToken: t.String(),
-      // }),
-      // response: APIResponseSchema(
-      //   t.Omit(SelectUserSchema, ["password", "fcmToken"])
-      // ),
+      body: t.Object({ fcmToken: t.String() }),
+      response: { 200: "user.response" },
     }
   );

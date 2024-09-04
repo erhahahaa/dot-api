@@ -1,17 +1,25 @@
 import Elysia, { t } from "elysia";
 import { Message } from "firebase-admin/messaging";
 import { GlobalDependency } from "../../core/di";
+import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
+import { IdParam } from "../../utils/param";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
-import { ExamExtended } from "./exam.schema";
+import { ExamExtendedSchema, InsertExamSchema } from "./exam.schema";
 
-export const ExamPlugin = new Elysia()
+export const ExamPlugin = new Elysia({
+  name: "Day of Training Exam API",
+  tags: ["EXAM"],
+})
   .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
   .use(MessagingService)
+  .model("exam.insert", InsertExamSchema)
+  .model("exam.response", APIResponseSchema(ExamExtendedSchema))
+  .use(IdParam)
   .get(
     "/",
     async ({ examRepo, query: { clubId } }) => {
@@ -23,33 +31,28 @@ export const ExamPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EXAM"],
-      },
       query: t.Object({
         clubId: t.Number(),
       }),
-      // response: APIResponseSchema(t.Array(SelectExamSchema)),
+      response: APIResponseSchema(t.Array(ExamExtendedSchema)),
     }
   )
   .post(
     "/",
     async ({ examRepo, body }) => {
-      const evaluation = await examRepo.create(body as any);
+      const evaluation = await examRepo.create(body);
       return {
         message: "Evaluation created",
         data: evaluation,
       };
     },
     {
-      detail: {
-        tags: ["EXAM"],
-      },
-      // body: InsertExamSchema,
-      // response: APIResponseSchema(SelectExamSchema),
+      body: "exam.insert",
+      response: { 200: "exam.response" },
       afterHandle: async ({ clubRepo, response, messenger }) => {
-        if (!response) return;
-        const { id, title, clubId } = (response as any).data as ExamExtended;
+        const res = response[200].data;
+        if (!response || !res) return;
+        const { id, title, clubId } = res;
         if (!clubId) return;
 
         const club = await clubRepo.find(clubId);
@@ -99,20 +102,15 @@ export const ExamPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EXAM"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // response: APIResponseSchema(SelectExamSchema),
+      params: "id.param",
+      response: { 200: "exam.response" },
     }
   )
   .put(
     "/:id",
     async ({ examRepo, params: { id }, body }) => {
       const evaluation = await examRepo.update({
-        ...(body as any),
+        ...body,
         id,
         updatedAt: new Date(),
       });
@@ -122,14 +120,9 @@ export const ExamPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EXAM"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // body: InsertExamSchema,
-      // response: APIResponseSchema(SelectExamSchema),
+      params: "id.param",
+      body: "exam.insert",
+      response: { 200: "exam.response" },
     }
   )
   .delete(
@@ -142,13 +135,8 @@ export const ExamPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EXAM"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // response: APIResponseSchema(SelectExamSchema),
+      params: "id.param",
+      response: { 200: "exam.response" },
     }
   )
   .put(
@@ -161,17 +149,16 @@ export const ExamPlugin = new Elysia()
       uploadFile,
       deleteFile,
     }) => {
-      const data = body as any;
       const { mediaId, title } = await examRepo.find(id);
 
       const upload = await uploadFile({
         parent: "exam",
-        blob: data.image,
+        blob: body.image,
       });
 
       const updateMedia = await mediaRepo.update({
-        name: data.image.name,
-        type: data.image.type as MediaType,
+        name: body.image.name,
+        type: body.image.type as MediaType,
         parent: "exam",
         url: upload.url,
         path: upload.name,
@@ -193,15 +180,10 @@ export const ExamPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EXAM"],
-      },
-      params: t.Object({
-        id: t.Number(),
+      params: "id.param",
+      body: t.Object({
+        image: t.File(),
       }),
-      // body: t.Object({
-      //   image: t.File(),
-      // }),
-      // response: APIResponseSchema(t.Object({})),
+      response: { 200: "exam.response" },
     }
   );

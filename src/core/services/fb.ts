@@ -3,7 +3,7 @@ import admin, { ServiceAccount } from "firebase-admin";
 import { App } from "firebase-admin/app";
 import { getMessaging } from "firebase-admin/messaging";
 import { env } from "../../utils/env";
- 
+
 export const DEFAULT_IMAGE = "https://i.imgur.com/KDza0Bz.png";
 
 export function initFB(): App {
@@ -18,7 +18,9 @@ export function initFB(): App {
 }
 
 const app = initFB();
-export const MessagingService = new Elysia().derive({ as: "global" }, () => {
+export const MessagingService = new Elysia({
+  name: "Firebase Messaging Service",
+}).derive({ as: "global" }, () => {
   const messenger = getMessaging(app);
 
   return {

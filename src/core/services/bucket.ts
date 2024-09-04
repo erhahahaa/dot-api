@@ -3,7 +3,9 @@ import { InsertMediaSchema, MediaParent } from "../../feats/media/media.schema";
 import { BadRequestError, UnsupportedMediaTypeError } from "../errors";
 import { sb } from "./sb";
 
-const BucketService = new Elysia().derive({ as: "global" }, () => ({
+const BucketService = new Elysia({
+  name: "Bucket Service",
+}).derive({ as: "global" }, () => ({
   async uploadFile({
     parent,
     blob,

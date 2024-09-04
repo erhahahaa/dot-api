@@ -1,27 +1,41 @@
-import Elysia from "elysia";
+import Elysia, { t } from "elysia";
 import { GlobalDependency } from "../../core/di";
 import { AuthenticationError, BadRequestError } from "../../core/errors";
+import { APIResponseSchema } from "../../core/response";
+import { InsertUserSchema, SelectUserSchema } from "../user/user.schema";
+import { AuthSignInSchema } from "./auth.schema";
 import { AuthService } from "./auth.service";
 
-export const AuthPlugin = new Elysia()
+export const AuthPlugin = new Elysia({
+  name: "Day of Training Auth API",
+  tags: ["AUTH"],
+})
   .use(GlobalDependency)
   .use(AuthService)
+  .model(
+    "auth.authenticated",
+    APIResponseSchema(
+      t.Composite([
+        t.Omit(SelectUserSchema, ["password", "fcmToken"]),
+        t.Object({ token: t.String() }),
+      ])
+    )
+  )
   .post(
     "/sign-in",
     async ({ rotateJWT, body, authRepo }) => {
-      const data = body as any;
-      const identifier = data.identifier;
+      const identifier = body.identifier;
       if (identifier?.startsWith("0")) {
-        data.identifier = `62${identifier}`;
+        body.identifier = `62${identifier}`;
       }
       if (identifier?.startsWith("8")) {
-        data.identifier = `62${identifier}`;
+        body.identifier = `62${identifier}`;
       }
       if (identifier?.startsWith("+62")) {
-        data.identifier = identifier.replace("+", "");
+        body.identifier = identifier.replace("+", "");
       }
 
-      const user = await authRepo.signIn(data);
+      const user = await authRepo.signIn(body);
       const token = await rotateJWT(user);
       return {
         message: "Sign in success, welcome back!",
@@ -32,33 +46,22 @@ export const AuthPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["AUTH"],
-      },
-      // body: AuthSignInSchema,
-      // response: APIResponseSchema(
-      //   t.Composite([
-      //     t.Omit(SelectUserSchema, ["password", "fcmToken"]),
-      //     t.Object({
-      //       token: t.String(),
-      //     }),
-      //   ])
-      // ),
+      body: AuthSignInSchema,
+      response: { 200: "auth.authenticated" },
     }
   )
   .post(
     "/sign-up",
     async ({ body, authRepo }) => {
-      const data = body as any;
-      const strPhone = data.phone.toString();
+      const strPhone = body.phone.toString();
 
       if (strPhone.startsWith("8")) {
-        data.phone = parseInt(`62${strPhone}`);
+        body.phone = parseInt(`62${strPhone}`);
       } else {
         throw new BadRequestError("Invalid phone number");
       }
 
-      const user = await authRepo.signUp(data);
+      const user = await authRepo.signUp(body);
 
       return {
         message: "Sign up success, welcome!",
@@ -66,13 +69,12 @@ export const AuthPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["AUTH"],
+      body: InsertUserSchema,
+      response: {
+        200: APIResponseSchema(
+          t.Omit(SelectUserSchema, ["password", "fcmToken"])
+        ),
       },
-      // body: InsertUserSchema,
-      // response: APIResponseSchema(
-      //   t.Omit(SelectUserSchema, ["password", "fcmToken"])
-      // ),
     }
   )
   .get(
@@ -90,17 +92,7 @@ export const AuthPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["AUTH"],
-      },
-      // response: APIResponseSchema(
-      //   t.Composite([
-      //     t.Omit(SelectUserSchema, ["password", "fcmToken"]),
-      //     t.Object({
-      //       token: t.String(),
-      //     }),
-      //   ])
-      // ),
+      response: { 200: "auth.authenticated" },
     }
   )
   .get(
@@ -111,9 +103,6 @@ export const AuthPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["AUTH"],
-      },
-      // response: APIResponseSchema(t.Null()),
+      response: { 200: APIResponseSchema(t.Null()) },
     }
   );

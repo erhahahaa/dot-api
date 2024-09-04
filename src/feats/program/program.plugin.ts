@@ -4,15 +4,25 @@ import { GlobalDependency } from "../../core/di";
 import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
+import { IdParam } from "../../utils/param";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
-import { ProgramExtended, SelectProgramExtendedSchema } from "./program.schema";
+import {
+  InsertProgramSchema,
+  SelectProgramExtendedSchema,
+} from "./program.schema";
 
-export const ProgramPlugin = new Elysia()
+export const ProgramPlugin = new Elysia({
+  name: "Day of Training Program API",
+  tags: ["PROGRAM"],
+})
   .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
   .use(MessagingService)
+  .model("program.insert", InsertProgramSchema)
+  .model("program.response", APIResponseSchema(SelectProgramExtendedSchema))
+  .use(IdParam)
   .get(
     "/",
     async ({ programRepo, query: { clubId } }) => {
@@ -24,19 +34,14 @@ export const ProgramPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["PROGRAM"],
-      },
-      query: t.Object({
-        clubId: t.Number(),
-      }),
+      query: t.Object({ clubId: t.Number() }),
       response: APIResponseSchema(t.Array(SelectProgramExtendedSchema)),
     }
   )
   .post(
     "/",
     async ({ programRepo, body }) => {
-      const program = await programRepo.create(body as any);
+      const program = await programRepo.create(body);
 
       return {
         message: "Program created",
@@ -44,14 +49,12 @@ export const ProgramPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["PROGRAM"],
-      },
-      // body: InsertProgramSchema,
-      // response: APIResponseSchema(SelectProgramExtendedSchema),
+      body: "program.insert",
+      response: { 200: "program.response" },
       afterHandle: async ({ clubRepo, response, messenger }) => {
-        if (!response) return;
-        const { id, name, clubId } = (response as any).data as ProgramExtended;
+        const res = response[200].data;
+        if (!response || !res) return;
+        const { id, name, clubId } = res;
         if (!clubId) return;
 
         const { name: clubName } = await clubRepo.find(clubId);
@@ -100,19 +103,14 @@ export const ProgramPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["PROGRAM"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // response: APIResponseSchema(SelectProgramExtendedSchema),
+      params: "id.param",
+      response: { 200: "program.response" },
     }
   )
   .put(
     "/:id",
     async ({ programRepo, body, params: { id } }) => {
-      const program = await programRepo.update({ id, ...(body as any) });
+      const program = await programRepo.update({ id, ...body });
 
       return {
         message: "Program updated",
@@ -120,14 +118,9 @@ export const ProgramPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["PROGRAM"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // body: InsertProgramSchema,
-      // response: APIResponseSchema(SelectProgramExtendedSchema),
+      params: "id.param",
+      body: "program.insert",
+      response: { 200: "program.response" },
     }
   )
   .delete(
@@ -141,13 +134,8 @@ export const ProgramPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["PROGRAM"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // response: APIResponseSchema(SelectProgramExtendedSchema),
+      params: "id.param",
+      response: { 200: "program.response" },
     }
   )
   .put(
@@ -161,22 +149,21 @@ export const ProgramPlugin = new Elysia()
       uploadFile,
       deleteFile,
     }) => {
-      const data = body as any;
       const user = await verifyJWT();
 
       const findProgram = await programRepo.find(id);
 
       const upload = await uploadFile({
         parent: "program",
-        blob: data.image,
+        blob: body.image,
       });
 
       const media = await mediaRepo.create({
         creatorId: user.id,
         clubId: findProgram.clubId,
-        name: data.image.name,
-        fileSize: data.image.size,
-        type: data.image.type as MediaType,
+        name: body.image.name,
+        fileSize: body.image.size,
+        type: body.image.type as MediaType,
         parent: "program",
         url: upload.url,
       });
@@ -201,15 +188,10 @@ export const ProgramPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["PROGRAM"],
-      },
-      params: t.Object({
-        id: t.Number(),
+      params: "id.param",
+      body: t.Object({
+        image: t.File(),
       }),
-      // body: t.Object({
-      //   image: t.File(),
-      // }),
-      // response: APIResponseSchema(SelectProgramExtendedSchema),
+      response: { 200: "program.response" },
     }
   );

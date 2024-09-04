@@ -3,23 +3,32 @@ import { Message } from "firebase-admin/messaging";
 import { app } from "../..";
 import { GlobalDependency } from "../../core/di";
 import { BadRequestError } from "../../core/errors";
-import { TypeOfNullish } from "../../core/response";
+import { APIResponseSchema, TypeOfNullish } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
 import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
+import { IdParam } from "../../utils/param";
 import { AuthJWT } from "../auth/auth.schema";
 import { AuthService } from "../auth/auth.service";
 import {
   InsertTacticalSchema,
+  LiveTacticalSchema,
   LiveTacticalSchemaType,
-  TacticalExtended,
+  SelectTacticalExtendedSchema,
+  TacticalStrategicSchema,
   WebSocketMessageEvent,
 } from "./tactical.schema";
 
-export const TacticalPlugin = new Elysia()
+export const TacticalPlugin = new Elysia({
+  name: "Day of Training Tactical API",
+  tags: ["TACTICAL"],
+})
   .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
   .use(MessagingService)
+  .model("tactical.insert", InsertTacticalSchema)
+  .model("tactical.response", APIResponseSchema(SelectTacticalExtendedSchema))
+  .use(IdParam)
   .get(
     "/",
     async ({ tacticalRepo, query: { clubId }, verifyJWT }) => {
@@ -32,13 +41,10 @@ export const TacticalPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["TACTICAL"],
+      query: t.Object({ clubId: t.Optional(t.Number()) }),
+      response: {
+        200: APIResponseSchema(t.Array(SelectTacticalExtendedSchema)),
       },
-      query: t.Object({
-        clubId: t.Optional(t.Number()),
-      }),
-      // response: APIResponseSchema(t.Array(SelectTacticalExtendedSchema)),
     }
   )
   .post(
@@ -59,17 +65,13 @@ export const TacticalPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["TACTICAL"],
-      },
-      body: InsertTacticalSchema,
-      // response: APIResponseSchema(SelectTacticalExtendedSchema),
+      body: "tactical.insert",
+      response: { 200: "tactical.response" },
       afterHandle: async ({ clubRepo, verifyJWT, response, messenger }) => {
-        if (!response) return;
-        const { id, clubId, name } = (response as any).data as TacticalExtended;
+        const res = response[200].data;
+        if (!response || !res) return;
+        const { id, clubId, name } = res;
         if (!clubId) return;
-        const user = await verifyJWT();
-
         const { name: clubName } = await clubRepo.find(clubId);
         const topic = `club_${clubId}`;
 
@@ -117,13 +119,8 @@ export const TacticalPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["TACTICAL"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // response: APIResponseSchema(SelectTacticalExtendedSchema),
+      params: "id.param",
+      response: { 200: "tactical.response" },
     }
   )
   .put(
@@ -139,14 +136,9 @@ export const TacticalPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["TACTICAL"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      body: InsertTacticalSchema,
-      // response: APIResponseSchema(SelectTacticalExtendedSchema),
+      params: "id.param",
+      body: "tactical.insert",
+      response: { 200: "tactical.response" },
     }
   )
   .delete(
@@ -159,13 +151,8 @@ export const TacticalPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["TACTICAL"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // response: APIResponseSchema(SelectTacticalExtendedSchema),
+      params: "id.param",
+      response: { 200: "tactical.response" },
     }
   );
 
@@ -174,6 +161,7 @@ const channel: Record<string, { user: AuthJWT; isHost: boolean }[]> = {};
 export const TacticalWebSocketPlugin = new Elysia()
   .use(GlobalDependency)
   .use(AuthService)
+  .model("id.param", t.Object({ id: t.Number() }))
   .ws("/tactical/:id", {
     async open({
       data: {
@@ -301,10 +289,8 @@ export const TacticalWebSocketPlugin = new Elysia()
         close();
       }
     },
-    // body: LiveTacticalSchema(
-    //   t.Union([t.Null(), t.Undefined(), TacticalStrategicSchema])
-    // ),
-    params: t.Object({
-      id: t.Number(),
-    }),
+    body: LiveTacticalSchema(
+      t.Union([t.Null(), t.Undefined(), TacticalStrategicSchema])
+    ),
+    params: "id.param",
   });

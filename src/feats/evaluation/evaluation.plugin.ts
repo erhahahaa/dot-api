@@ -1,12 +1,22 @@
 import Elysia, { t } from "elysia";
 import { GlobalDependency } from "../../core/di";
 import { APIResponseSchema } from "../../core/response";
+import { IdParam } from "../../utils/param";
 import { AuthService } from "../auth/auth.service";
-import { SelectEvaluationSchema } from "./evaluation.schema";
+import {
+  InsertEvaluationSchema,
+  SelectEvaluationSchema,
+} from "./evaluation.schema";
 
-export const EvaluationPlugin = new Elysia()
+export const EvaluationPlugin = new Elysia({
+  name: "Day of Training Evaluation API",
+  tags: ["EVALUATION"],
+})
   .use(GlobalDependency)
   .use(AuthService)
+  .model("evaluation.insert", InsertEvaluationSchema)
+  .model("evaluation.response", APIResponseSchema(SelectEvaluationSchema))
+  .use(IdParam)
   .get(
     "/",
     async ({ evaluationRepo, query: { examId, clubId }, verifyJWT }) => {
@@ -24,15 +34,11 @@ export const EvaluationPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EVALUATION"],
-      },
-      // query: t.Any({}),
-      // query: t.Object({
-      //   userId: t.Optional(t.Number()),
-      //   examId: t.Optional(t.Number()),
-      // }),
-      // response: APIResponseSchema(t.Array(SelectEvaluationSchema)),
+      query: t.Object({
+        clubId: t.Optional(t.Number()),
+        examId: t.Optional(t.Number()),
+      }),
+      response: { 200: APIResponseSchema(t.Array(SelectEvaluationSchema)) },
     }
   )
   .post(
@@ -41,7 +47,7 @@ export const EvaluationPlugin = new Elysia()
       const user = await verifyJWT();
 
       const evaluation = await evaluationRepo.create({
-        ...(body as any),
+        ...body,
         coachId: user.id,
       });
 
@@ -51,11 +57,8 @@ export const EvaluationPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EVALUATION"],
-      },
-      // body: InsertEvaluationSchema,
-      // response: APIResponseSchema(SelectEvaluationSchema),
+      body: "evaluation.insert",
+      response: { 200: "evaluation.response" },
     }
   )
   .get(
@@ -69,20 +72,15 @@ export const EvaluationPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EVALUATION"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      response: APIResponseSchema(SelectEvaluationSchema),
+      params: "id.param",
+      response: { 200: "evaluation.response" },
     }
   )
   .put(
     "/:id",
     async ({ evaluationRepo, params: { id }, body }) => {
       const evaluation = await evaluationRepo.update({
-        ...(body as any),
+        ...body,
         id,
         createdAt: new Date(),
       });
@@ -93,14 +91,9 @@ export const EvaluationPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EVALUATION"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // body: InsertEvaluationSchema,
-      // response: APIResponseSchema(SelectEvaluationSchema),
+      params: "id.param",
+      body: "evaluation.insert",
+      response: { 200: "evaluation.response" },
     }
   )
   .delete(
@@ -114,12 +107,7 @@ export const EvaluationPlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EVALUATION"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // response: APIResponseSchema(SelectEvaluationSchema),
+      params: "id.param",
+      response: { 200: "evaluation.response" },
     }
   );

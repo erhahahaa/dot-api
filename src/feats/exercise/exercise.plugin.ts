@@ -1,13 +1,29 @@
 import Elysia, { t } from "elysia";
 import { GlobalDependency } from "../../core/di";
+import { APIResponseSchema } from "../../core/response";
 import { BucketService } from "../../core/services/bucket";
+import { IdParam } from "../../utils/param";
 import { AuthService } from "../auth/auth.service";
-import { InsertExerciseSchema } from "./exercise.schema";
+import {
+  ExerciseExtended,
+  InsertExerciseSchema,
+  SelectExerciseExtendedSchema,
+} from "./exercise.schema";
 
-export const ExercisePlugin = new Elysia()
+export const ExercisePlugin = new Elysia({
+  name: "Day of Training Exercise API",
+  tags: ["EXERCISE"],
+})
   .use(GlobalDependency)
   .use(AuthService)
   .use(BucketService)
+  .model("exercise.insert", InsertExerciseSchema)
+  .model("exercise.response", APIResponseSchema(SelectExerciseExtendedSchema))
+  .model(
+    "exercise.bulk",
+    APIResponseSchema(t.Array(SelectExerciseExtendedSchema))
+  )
+  .use(IdParam)
   .get(
     "/",
     async ({ exerciseRepo, query: { programId } }) => {
@@ -18,30 +34,24 @@ export const ExercisePlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EXERCISE"],
-      },
       query: t.Object({
         programId: t.Number(),
       }),
-      // response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
+      response: { 200: "exercise.bulk" },
     }
   )
   .post(
     "/",
     async ({ exerciseRepo, body }) => {
-      const exercise = await exerciseRepo.create(body as any);
+      const exercise = await exerciseRepo.create(body);
       return {
         message: "Exercise created",
         data: exercise,
       };
     },
     {
-      detail: {
-        tags: ["EXERCISE"],
-      },
-      // body: InsertExerciseSchema,
-      // response: APIResponseSchema(SelectExerciseExtendedSchema),
+      body: "exercise.insert",
+      response: { 200: "exercise.response" },
     }
   )
   .get(
@@ -55,20 +65,15 @@ export const ExercisePlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EXERCISE"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // response: APIResponseSchema(SelectExerciseExtendedSchema),
+      params: "id.param",
+      response: { 200: "exercise.response" },
     }
   )
   .put(
     "/:id",
     async ({ exerciseRepo, body, params: { id } }) => {
       const exercise = await exerciseRepo.update({
-        ...(body as any),
+        ...body,
         id,
       });
       return {
@@ -77,14 +82,9 @@ export const ExercisePlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EXERCISE"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // body: InsertExerciseSchema,
-      // response: APIResponseSchema(SelectExerciseExtendedSchema),
+      params: "id.param",
+      body: "exercise.insert",
+      response: { 200: "exercise.response" },
     }
   )
   .delete(
@@ -97,47 +97,43 @@ export const ExercisePlugin = new Elysia()
       };
     },
     {
-      detail: {
-        tags: ["EXERCISE"],
-      },
-      params: t.Object({
-        id: t.Number(),
-      }),
-      // response: APIResponseSchema(SelectExerciseExtendedSchema),
+      params: "id.param",
+      response: { 200: "exercise.response" },
     }
   )
   .post(
     "/bulk",
     async ({ exerciseRepo, body }) => {
-      const exercises = await exerciseRepo.createBulk(body);
+      const exercises: ExerciseExtended[] = [];
+      if (body.length > 0) {
+        const res = await exerciseRepo.createBulk(body);
+        exercises.push(...res);
+      }
       return {
         message: "Exercises created",
         data: exercises,
       };
     },
     {
-      detail: {
-        tags: ["EXERCISE"],
-      },
       body: t.Array(InsertExerciseSchema),
-      // response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
+      response: { 200: "exercise.bulk" },
     }
   )
   .put(
     "/bulk",
     async ({ exerciseRepo, body }) => {
-      console.log(body);
-      const exercises = await exerciseRepo.updateBulk(body);
+      const exercises: ExerciseExtended[] = [];
+      if (body.length > 0) {
+        const res = await exerciseRepo.createBulk(body);
+        exercises.push(...res);
+      }
       return {
         message: "Exercises updated",
         data: exercises,
       };
     },
     {
-      detail: {
-        tags: ["EXERCISE"],
-      },
       body: t.Array(InsertExerciseSchema),
-      // response: APIResponseSchema(t.Array(SelectExerciseExtendedSchema)),
+      response: { 200: "exercise.bulk" },
     }
   );

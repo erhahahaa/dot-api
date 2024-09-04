@@ -5,7 +5,9 @@ import { env } from "../../utils/env";
 import { User } from "../user/user.schema";
 import { AuthJWT } from "./auth.schema";
 
-export const AuthService = new Elysia()
+export const AuthService = new Elysia({
+  name: "Day of Training Auth Service",
+})
   .use(
     jwt({
       name: "dotJWT",

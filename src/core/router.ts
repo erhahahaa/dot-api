@@ -22,20 +22,7 @@ export const WebSocketRouter = new Elysia().group("/live", (app) =>
 
 export const HTTPRouter = new Elysia()
   .use(AuthService)
-  .get(
-    "/",
-    ({}) => {
-      return {
-        success: true,
-        message: "Welcome to Elysia API",
-      };
-    },
-    {
-      detail: {
-        tags: ["HEALTH"],
-      },
-    }
-  )
+  .get("/", ({ redirect }) => redirect("/swagger"))
   .group("/auth", (app) => app.use(AuthPlugin))
   .group("/user", (app) => app.use(UserPlugin))
   .group("/club", (app) =>
@@ -66,15 +53,4 @@ export const HTTPRouter = new Elysia()
       })
       .use(MediaPlugin)
   )
-  .group("/health", (app) => app.use(HealthRouter))
-  .group("/playground", (app) => {
-    app.get("/", async ({}) => {
-      try {
-        return {};
-      } catch (error) {
-        console.log("PLAYGROUND ERROR", error);
-        return error;
-      }
-    });
-    return app;
-  });
+  .group("/health", (app) => app.use(HealthRouter));

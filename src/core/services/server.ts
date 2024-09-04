@@ -2,6 +2,7 @@ import cors from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia, ValidationError } from "elysia";
 
+import { OPEN_API_TAGS } from "../constants/open-api";
 import {
   AuthenticationError,
   AuthorizationError,
@@ -14,7 +15,7 @@ import { HTTPRouter, WebSocketRouter } from "../router";
 
 export function createApp() {
   const app = new Elysia({
-    name: "DOT Coaching API",
+    name: "Day of Training API",
     precompile: true,
     serve: {
       maxRequestBodySize: Number.MAX_SAFE_INTEGER,
@@ -22,6 +23,7 @@ export function createApp() {
     websocket: {
       perMessageDeflate: true,
     },
+    normalize: true,
   })
     .error({
       AUTHENTICATION: AuthenticationError,
@@ -95,6 +97,28 @@ export function createApp() {
     .use(
       swagger({
         exclude: ["/"],
+        documentation: {
+          info: {
+            title: "Day of Training API",
+            version: "1.0.0",
+            description: "API for Day of Training",
+          },
+          tags: OPEN_API_TAGS,
+          security: [{ JwtAuth: [] }],
+          components: {
+            securitySchemes: {
+              JwtAuth: {
+                type: "http",
+                scheme: "bearer",
+                bearerFormat: "JWT",
+                description: "Enter JWT Bearer token **_only_**",
+              },
+            },
+          },
+        },
+        swaggerOptions: {
+          persistAuthorization: true,
+        },
       })
     )
     .use(WebSocketRouter)

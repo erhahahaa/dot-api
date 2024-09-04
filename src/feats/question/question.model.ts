@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   integer,
   jsonb,
@@ -31,3 +32,15 @@ export const QuestionModel = pgTable("questions", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+/// Relation
+export const QuestionRelation = relations(QuestionModel, ({ one }) => ({
+  exam: one(ExamModel, {
+    fields: [QuestionModel.examId],
+    references: [ExamModel.id],
+  }),
+  media: one(MediaModel, {
+    fields: [QuestionModel.mediaId],
+    references: [MediaModel.id],
+  }),
+}));

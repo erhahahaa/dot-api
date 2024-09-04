@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   bigint,
   integer,
@@ -35,7 +36,7 @@ export const UserModel = pgTable(
     fcmToken: text("fcm_token"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
-},
+  },
   (model) => {
     return {
       emailIdx: uniqueIndex("email_idx").on(model.email),
@@ -43,6 +44,11 @@ export const UserModel = pgTable(
     };
   }
 );
+
+/// Relation
+export const UserRelation = relations(UserModel, ({ many }) => ({
+  clubs: many(ClubModel),
+}));
 
 export const UserToClubModel = pgTable("users_to_clubs", {
   id: serial("id").primaryKey(),
@@ -59,3 +65,15 @@ export const UserToClubModel = pgTable("users_to_clubs", {
   role: UserRoleEnumModel("role").default("athlete").notNull(),
   created_at: timestamp("created_at").defaultNow(),
 });
+
+/// Relation
+export const UserToClubRelation = relations(UserToClubModel, ({ one }) => ({
+  user: one(UserModel, {
+    fields: [UserToClubModel.userId],
+    references: [UserModel.id],
+  }),
+  club: one(ClubModel, {
+    fields: [UserToClubModel.clubId],
+    references: [ClubModel.id],
+  }),
+}));

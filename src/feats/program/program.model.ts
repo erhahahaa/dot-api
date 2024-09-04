@@ -1,5 +1,7 @@
+import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { ClubModel } from "../club/club.model";
+import { ExerciseModel } from "../exercise/exercise.model";
 import { MediaModel } from "../media/media.model";
 
 export const ProgramModel = pgTable("programs", {
@@ -16,3 +18,16 @@ export const ProgramModel = pgTable("programs", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+/// Relation
+export const ProgramRelation = relations(ProgramModel, ({ one, many }) => ({
+  club: one(ClubModel, {
+    fields: [ProgramModel.clubId],
+    references: [ClubModel.id],
+  }),
+  media: one(MediaModel, {
+    fields: [ProgramModel.mediaId],
+    references: [MediaModel.id],
+  }),
+  exercises: many(ExerciseModel),
+}));

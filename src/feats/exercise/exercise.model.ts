@@ -7,6 +7,7 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 // import { ProgramUnitValue } from "~/core/types/exercise";
+import { relations } from "drizzle-orm";
 import { MediaModel } from "../media/media.model";
 import { ProgramModel } from "../program/program.model";
 import { ExerciseUnitValue } from "./exercise.schema";
@@ -30,3 +31,15 @@ export const ExerciseModel = pgTable("exercises", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+/// Relation
+export const ExerciseRelation = relations(ExerciseModel, ({ one }) => ({
+  program: one(ProgramModel, {
+    fields: [ExerciseModel.programId],
+    references: [ProgramModel.id],
+  }),
+  media: one(MediaModel, {
+    fields: [ExerciseModel.mediaId],
+    references: [MediaModel.id],
+  }),
+}));

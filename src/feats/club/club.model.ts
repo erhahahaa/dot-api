@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   AnyPgColumn,
   integer,
@@ -7,7 +8,10 @@ import {
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import { ExamModel } from "../exam/exam.model";
 import { MediaModel } from "../media/media.model";
+import { ProgramModel } from "../program/program.model";
+import { TacticalModel } from "../tactical/tactical.model";
 import { UserModel } from "../user/user.model";
 
 export const SportTypeEnumModel = pgEnum("sport_type", [
@@ -30,3 +34,19 @@ export const ClubModel = pgTable("clubs", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+/// Relation
+export const ClubRelation = relations(ClubModel, ({ one, many }) => ({
+  creator: one(UserModel, {
+    fields: [ClubModel.creatorId],
+    references: [UserModel.id],
+  }),
+  media: one(MediaModel, {
+    fields: [ClubModel.mediaId],
+    references: [MediaModel.id],
+  }),
+  members: many(UserModel),
+  programs: many(ProgramModel),
+  exams: many(ExamModel),
+  tacticals: many(TacticalModel),
+}));

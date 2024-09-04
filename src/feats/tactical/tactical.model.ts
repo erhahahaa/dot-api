@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   integer,
@@ -28,3 +29,15 @@ export const TacticalModel = pgTable("tacticals", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+/// Relation
+export const TacticalRelation = relations(TacticalModel, ({ one }) => ({
+  club: one(ClubModel, {
+    fields: [TacticalModel.clubId],
+    references: [ClubModel.id],
+  }),
+  media: one(MediaModel, {
+    fields: [TacticalModel.mediaId],
+    references: [MediaModel.id],
+  }),
+}));

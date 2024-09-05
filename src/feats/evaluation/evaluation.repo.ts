@@ -23,14 +23,14 @@ export class EvaluationRepoImpl extends EvaluationRepo {
     const Coach = alias(UserModel, "coach");
     const Athlete = alias(UserModel, "athlete");
 
-    return this.db.query.EvaluationModel.findMany({
-      with: {
-        exam: true,
-        athlete: true,
-        coach: true,
-      },
-      where,
-    });
+    // return this.db.query.EvaluationModel.findMany({
+    //   with: {
+    //     exam: true,
+    //     athlete: true,
+    //     coach: true,
+    //   },
+    //   where,
+    // });
 
     return this.db
       .select({

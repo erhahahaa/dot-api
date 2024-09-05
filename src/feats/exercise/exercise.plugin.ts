@@ -124,7 +124,7 @@ export const ExercisePlugin = new Elysia({
     async ({ exerciseRepo, body }) => {
       const exercises: ExerciseExtended[] = [];
       if (body.length > 0) {
-        const res = await exerciseRepo.createBulk(body);
+        const res = await exerciseRepo.updateBulk(body);
         exercises.push(...res);
       }
       return {

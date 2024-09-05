@@ -10,6 +10,7 @@ import { UserModel, UserToClubModel } from "../user/user.model";
 import { UserToClub } from "../user/user.schema";
 import { ClubModel } from "./club.model";
 import { Club, ClubExtended, ClubMember, InsertClub } from "./club.schema";
+import { sanitize } from "../../utils";
 
 abstract class ClubRepo extends BaseRepo<ClubExtended> {
   abstract getMembers(id: number): Promise<ClubMember[]>;
@@ -30,30 +31,57 @@ export class ClubRepoImpl extends ClubRepo {
     this.db = db;
   }
   private select(where: SQL<unknown>): Promise<ClubExtended[]> {
-    return this.db
-      .select({
-        id: ClubModel.id,
-        creatorId: ClubModel.creatorId,
-        mediaId: ClubModel.mediaId,
-        name: ClubModel.name,
-        description: ClubModel.description,
-        type: ClubModel.type,
-        createdAt: ClubModel.createdAt,
-        updatedAt: ClubModel.updatedAt,
-        media: MediaModel,
-        memberCount: count(UserToClubModel.userId),
-        programCount: count(ProgramModel.id),
-        examCount: count(ExamModel.id),
-        tacticalCount: count(TacticalModel.id),
+    const q = this.db.query.UserToClubModel.findMany({
+      with: {
+        club: {
+          with: {
+            media: true,
+            members: { columns: { id: true } },
+            programs: { columns: { id: true } },
+            exams: { columns: { id: true } },
+            tacticals: { columns: { id: true } },
+          },
+        },
+      },
+      where: where,
+    }).prepare("find_club_from_relation");
+
+    return q.execute().then((res) =>
+      res.map(({ club }) => {
+        return {
+          ...sanitize(club, ["programs", "exams", "tacticals"]),
+          memberCount: club.members.length,
+          programCount: club.programs.length,
+          examCount: club.exams.length,
+          tacticalCount: club.tacticals.length,
+        };
       })
-      .from(UserToClubModel)
-      .innerJoin(ClubModel, eq(ClubModel.id, UserToClubModel.clubId))
-      .leftJoin(MediaModel, eq(MediaModel.id, ClubModel.mediaId))
-      .leftJoin(ProgramModel, eq(ProgramModel.clubId, ClubModel.id))
-      .leftJoin(ExamModel, eq(ExamModel.clubId, ClubModel.id))
-      .leftJoin(TacticalModel, eq(TacticalModel.clubId, ClubModel.id))
-      .where(where)
-      .groupBy(ClubModel.id, MediaModel.id, UserToClubModel.clubId);
+    );
+
+    // return this.db
+    //   .select({
+    //     id: ClubModel.id,
+    //     creatorId: ClubModel.creatorId,
+    //     mediaId: ClubModel.mediaId,
+    //     name: ClubModel.name,
+    //     description: ClubModel.description,
+    //     type: ClubModel.type,
+    //     createdAt: ClubModel.createdAt,
+    //     updatedAt: ClubModel.updatedAt,
+    //     media: MediaModel,
+    //     memberCount: count(UserToClubModel.userId),
+    //     programCount: count(ProgramModel.id),
+    //     examCount: count(ExamModel.id),
+    //     tacticalCount: count(TacticalModel.id),
+    //   })
+    //   .from(UserToClubModel)
+    //   .innerJoin(ClubModel, eq(ClubModel.id, UserToClubModel.clubId))
+    //   .leftJoin(MediaModel, eq(MediaModel.id, ClubModel.mediaId))
+    //   .leftJoin(ProgramModel, eq(ProgramModel.clubId, UserToClubModel.clubId))
+    //   .leftJoin(ExamModel, eq(ExamModel.clubId, UserToClubModel.clubId))
+    //   .leftJoin(TacticalModel, eq(TacticalModel.clubId, UserToClubModel.clubId))
+    //   .where(where)
+    //   .groupBy(ClubModel.id, MediaModel.id, UserToClubModel.clubId);
   }
 
   async create(data: InsertClub): Promise<Club> {
@@ -76,9 +104,7 @@ export class ClubRepoImpl extends ClubRepo {
           })
           .returning()
       )
-      .then(
-        async (rows) => await this.select(eq(ClubModel.id, rows[0].clubId))
-      );
+      .then((rows) => this.select(eq(UserToClubModel.clubId, rows[0].clubId)));
 
     return clubs[0];
   }
@@ -96,7 +122,7 @@ export class ClubRepoImpl extends ClubRepo {
 
     if (updateClub.length === 0) throw new ServerError("Failed to update club");
 
-    const clubs = await this.select(eq(ClubModel.id, data.id));
+    const clubs = await this.select(eq(UserToClubModel.clubId, data.id));
 
     return clubs[0];
   }
@@ -104,14 +130,14 @@ export class ClubRepoImpl extends ClubRepo {
   async delete(id: number): Promise<Club> {
     const clubs = await this.db
       .delete(ClubModel)
-      .where(eq(ClubModel.id, id))
+      .where(eq(UserToClubModel.clubId, id))
       .returning();
 
     return clubs[0];
   }
 
   async find(id: number): Promise<ClubExtended> {
-    const clubs = await this.select(eq(ClubModel.id, id));
+    const clubs = await this.select(eq(UserToClubModel.clubId, id));
 
     return clubs[0];
   }

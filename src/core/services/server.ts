@@ -23,7 +23,6 @@ export function createApp() {
     websocket: {
       perMessageDeflate: true,
     },
-    normalize: true,
   })
     .error({
       AUTHENTICATION: AuthenticationError,

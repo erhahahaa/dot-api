@@ -128,8 +128,8 @@ export class UserRepoImpl extends UserRepo {
       .where(
         or(
           ilike(UserModel.name, `%${query}%`),
-          ilike(UserModel.username, `%${query}%`)
-        )
+          ilike(UserModel.username, `%${query}%`),
+        ),
       );
 
     return users.map((user) => sanitize(user, ["password", "fcmToken"]));

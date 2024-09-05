@@ -17,6 +17,12 @@ export class ProgramRepoImpl extends ProgramRepo {
   }
 
   private select(where: SQL<unknown>): Promise<ProgramExtended[]> {
+    return this.db.query.ProgramModel.findMany({
+      with: {
+        media: true,
+      },
+      where,
+    });
     return this.db
       .select({
         id: ProgramModel.id,

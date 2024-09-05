@@ -20,6 +20,13 @@ export class ExerciseRepoImpl extends ExerciseRepo {
   }
 
   private select(where: SQL<unknown>) {
+    return this.db.query.ExerciseModel.findMany({
+      with: {
+        media: true,
+      },
+      where,
+    });
+
     return this.db
       .select({
         id: ExerciseModel.id,

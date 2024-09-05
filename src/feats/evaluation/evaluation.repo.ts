@@ -22,6 +22,16 @@ export class EvaluationRepoImpl extends EvaluationRepo {
   private select(where: SQL<unknown> | undefined) {
     const Coach = alias(UserModel, "coach");
     const Athlete = alias(UserModel, "athlete");
+
+    return this.db.query.EvaluationModel.findMany({
+      with: {
+        exam: true,
+        athlete: true,
+        coach: true,
+      },
+      where,
+    });
+
     return this.db
       .select({
         id: EvaluationModel.id,
@@ -127,10 +137,10 @@ export class EvaluationRepoImpl extends EvaluationRepo {
         and(
           or(
             eq(EvaluationModel.athleteId, userId),
-            eq(EvaluationModel.coachId, userId)
+            eq(EvaluationModel.coachId, userId),
           ),
-          eq(EvaluationModel.clubId, clubId)
-        )
+          eq(EvaluationModel.clubId, clubId),
+        ),
       );
     } else if (examId) {
       evaluations = await this.select(eq(EvaluationModel.examId, examId));
@@ -155,11 +165,11 @@ export class EvaluationRepoImpl extends EvaluationRepo {
               return { ...questionEvaluation, questionName: question.question };
             }
             return questionEvaluation;
-          })
+          }),
         );
 
         return { ...evaluation, evaluations: updatedQuestionEvaluations };
-      })
+      }),
     );
 
     return updatedEvaluations;

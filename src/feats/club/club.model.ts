@@ -12,7 +12,7 @@ import { ExamModel } from "../exam/exam.model";
 import { MediaModel } from "../media/media.model";
 import { ProgramModel } from "../program/program.model";
 import { TacticalModel } from "../tactical/tactical.model";
-import { UserModel } from "../user/user.model";
+import { UserModel, UserToClubModel } from "../user/user.model";
 
 export const SportTypeEnumModel = pgEnum("sport_type", [
   "volleyBall",
@@ -45,7 +45,7 @@ export const ClubRelation = relations(ClubModel, ({ one, many }) => ({
     fields: [ClubModel.mediaId],
     references: [MediaModel.id],
   }),
-  members: many(UserModel),
+  members: many(UserToClubModel),
   programs: many(ProgramModel),
   exams: many(ExamModel),
   tacticals: many(TacticalModel),

@@ -21,6 +21,13 @@ export class QuestionRepoImpl extends QuestionRepo {
   }
 
   private select(where: SQL<unknown>): Promise<QuestionExtended[]> {
+    return this.db.query.QuestionModel.findMany({
+      with: {
+        media: true,
+      },
+      where,
+    });
+
     return this.db
       .select({
         id: QuestionModel.id,

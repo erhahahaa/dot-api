@@ -32,9 +32,10 @@ export const ClubPlugin = new Elysia({
     "/",
     async ({ verifyJWT, clubRepo }) => {
       const user = await verifyJWT();
+
       const clubs = await clubRepo.list({ userId: user.id });
       return {
-        message: "Found clubs",
+        as: "Found clubs",
         data: clubs,
       };
     },

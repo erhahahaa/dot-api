@@ -17,6 +17,12 @@ export class ExamRepoImpl extends ExamRepo {
   }
 
   private select(where: any): Promise<ExamExtended[]> {
+    return this.db.query.ExamModel.findMany({
+      with: {
+        media: true,
+      },
+      where,
+    });
     return this.db
       .select({
         id: ExamModel.id,

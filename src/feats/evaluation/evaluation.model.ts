@@ -43,9 +43,11 @@ export const EvaluationRelation = relations(EvaluationModel, ({ one }) => ({
   athlete: one(UserModel, {
     fields: [EvaluationModel.athleteId],
     references: [UserModel.id],
+    relationName: "evaluation_athlete",
   }),
   coach: one(UserModel, {
     fields: [EvaluationModel.coachId],
     references: [UserModel.id],
+    relationName: "evaluation_coach",
   }),
 }));

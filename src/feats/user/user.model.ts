@@ -47,7 +47,7 @@ export const UserModel = pgTable(
 
 /// Relation
 export const UserRelation = relations(UserModel, ({ many }) => ({
-  clubs: many(ClubModel),
+  clubs: many(UserToClubModel),
 }));
 
 export const UserToClubModel = pgTable("users_to_clubs", {
@@ -67,13 +67,17 @@ export const UserToClubModel = pgTable("users_to_clubs", {
 });
 
 /// Relation
-export const UserToClubRelation = relations(UserToClubModel, ({ one }) => ({
-  user: one(UserModel, {
-    fields: [UserToClubModel.userId],
-    references: [UserModel.id],
-  }),
-  club: one(ClubModel, {
-    fields: [UserToClubModel.clubId],
-    references: [ClubModel.id],
-  }),
-}));
+export const UserToClubRelation = relations(
+  UserToClubModel,
+  ({ one, many }) => ({
+    user: one(UserModel, {
+      fields: [UserToClubModel.userId],
+      references: [UserModel.id],
+    }),
+    club: one(ClubModel, {
+      fields: [UserToClubModel.clubId],
+      references: [ClubModel.id],
+    }),
+    clubMember: many(UserModel),
+  })
+);

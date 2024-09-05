@@ -105,7 +105,7 @@ export const QuestionPlugin = new Elysia({
     async ({ questionRepo, body }) => {
       const questions: QuestionExtended[] = [];
       if (body.length > 0) {
-        const res = await questionRepo.updateBulk(body);
+        const res = await questionRepo.createBulk(body);
         questions.push(...res);
       }
       return {

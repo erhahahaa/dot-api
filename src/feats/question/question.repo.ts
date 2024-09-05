@@ -128,6 +128,8 @@ export class QuestionRepoImpl extends QuestionRepo {
         })
         .where(eq(QuestionModel.id, question.id ?? 0))
         .returning()
+        .prepare("sd")
+        .execute()
         .then((rows) => this.select(eq(QuestionModel.id, rows[0].id)));
 
       updatePromises.push(updatePromise);

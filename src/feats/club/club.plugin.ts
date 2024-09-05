@@ -35,13 +35,13 @@ export const ClubPlugin = new Elysia({
 
       const clubs = await clubRepo.list({ userId: user.id });
       return {
-        as: "Found clubs",
+        message: "Found clubs",
         data: clubs,
       };
     },
     {
       response: { 200: APIResponseSchema(t.Array(SelectClubExtendedSchema)) },
-    }
+    },
   )
   .post(
     "/",
@@ -80,7 +80,7 @@ export const ClubPlugin = new Elysia({
     {
       body: "club.insert",
       response: { 200: "club.response" },
-    }
+    },
   )
   .get(
     "/:id",
@@ -95,7 +95,7 @@ export const ClubPlugin = new Elysia({
     {
       params: "id.param",
       response: { 200: "club.response" },
-    }
+    },
   )
   .put(
     "/:id",
@@ -157,7 +157,7 @@ export const ClubPlugin = new Elysia({
       params: "id.param",
       body: "club.insert",
       response: { 200: "club.response" },
-    }
+    },
   )
   .delete(
     "/:id",
@@ -187,7 +187,7 @@ export const ClubPlugin = new Elysia({
     {
       params: "id.param",
       response: { 200: "club.response" },
-    }
+    },
   )
   .get(
     "/:id/members",
@@ -201,7 +201,7 @@ export const ClubPlugin = new Elysia({
     {
       params: "id.param",
       response: { 200: APIResponseSchema(t.Array(ClubMemberSchema)) },
-    }
+    },
   )
   .get(
     "/:id/add/:userId/:role",
@@ -226,7 +226,7 @@ export const ClubPlugin = new Elysia({
         role: InsertUserToClubSchema.properties.role,
       }),
       response: { 200: "club.members" },
-    }
+    },
   )
   .get(
     "/:id/kick/:userId",
@@ -247,7 +247,7 @@ export const ClubPlugin = new Elysia({
         userId: t.Number(),
       }),
       response: { 200: "club.member.relation" },
-    }
+    },
   )
   .get(
     "/:id/join",
@@ -262,7 +262,7 @@ export const ClubPlugin = new Elysia({
     {
       params: "id.param",
       response: { 200: "club.members" },
-    }
+    },
   )
   .get(
     "/:id/leave",
@@ -277,7 +277,7 @@ export const ClubPlugin = new Elysia({
     {
       params: "id.param",
       response: { 200: "club.member.relation" },
-    }
+    },
   )
   .get(
     "/:id/promote/:userId",
@@ -298,7 +298,7 @@ export const ClubPlugin = new Elysia({
         userId: t.Number(),
       }),
       response: { 200: "club.member.relation" },
-    }
+    },
   )
   .get(
     "/:id/demote/:userId",
@@ -319,5 +319,5 @@ export const ClubPlugin = new Elysia({
         userId: t.Number(),
       }),
       response: { 200: "club.member.relation" },
-    }
+    },
   );

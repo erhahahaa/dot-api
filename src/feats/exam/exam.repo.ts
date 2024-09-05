@@ -63,6 +63,7 @@ export class ExamRepoImpl extends ExamRepo {
       .set({
         ...data,
         dueAt: new Date(data.dueAt || new Date()),
+        updatedAt: new Date(),
       })
       .where(eq(ExamModel.id, data.id))
       .returning();

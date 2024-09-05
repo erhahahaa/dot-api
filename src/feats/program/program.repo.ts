@@ -66,6 +66,7 @@ export class ProgramRepoImpl extends ProgramRepo {
         ...data,
         startDate: new Date(data.startDate || new Date()),
         endDate: new Date(data.endDate || new Date()),
+        updatedAt: new Date(),
       })
       .where(eq(ProgramModel.id, data.id))
       .returning();

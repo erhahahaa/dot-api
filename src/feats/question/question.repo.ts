@@ -87,7 +87,7 @@ export class QuestionRepoImpl extends QuestionRepo {
 
     const updateQuestion = await this.db
       .update(QuestionModel)
-      .set(data)
+      .set({ ...data, updatedAt: new Date() })
       .where(eq(QuestionModel.id, data.id))
       .returning();
 

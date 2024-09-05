@@ -89,7 +89,7 @@ export class EvaluationRepoImpl extends EvaluationRepo {
 
     const evaluations = await this.db
       .update(EvaluationModel)
-      .set(data)
+      .set({ ...data, updatedAt: new Date() })
       .where(eq(EvaluationModel.id, data.id))
       .returning();
 
@@ -137,10 +137,10 @@ export class EvaluationRepoImpl extends EvaluationRepo {
         and(
           or(
             eq(EvaluationModel.athleteId, userId),
-            eq(EvaluationModel.coachId, userId),
+            eq(EvaluationModel.coachId, userId)
           ),
-          eq(EvaluationModel.clubId, clubId),
-        ),
+          eq(EvaluationModel.clubId, clubId)
+        )
       );
     } else if (examId) {
       evaluations = await this.select(eq(EvaluationModel.examId, examId));
@@ -165,11 +165,11 @@ export class EvaluationRepoImpl extends EvaluationRepo {
               return { ...questionEvaluation, questionName: question.question };
             }
             return questionEvaluation;
-          }),
+          })
         );
 
         return { ...evaluation, evaluations: updatedQuestionEvaluations };
-      }),
+      })
     );
 
     return updatedEvaluations;

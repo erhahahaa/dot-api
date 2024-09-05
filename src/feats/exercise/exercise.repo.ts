@@ -92,7 +92,7 @@ export class ExerciseRepoImpl extends ExerciseRepo {
 
     const updateExercise = await this.db
       .update(ExerciseModel)
-      .set(data)
+      .set({ ...data, updatedAt: new Date() })
       .where(eq(ExerciseModel.id, data.id))
       .returning();
 

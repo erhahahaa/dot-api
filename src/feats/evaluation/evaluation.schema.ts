@@ -8,7 +8,7 @@ import { EvaluationModel } from "./evaluation.model";
 export const QuestionEvaluationSchema = t.Object({
   questionId: t.Optional(t.Number()),
   answer: t.Optional(t.String()),
-  score: t.Optional(t.Number()),
+  score: t.Null(t.Number()),
   questionName: t.Optional(t.String()),
 });
 

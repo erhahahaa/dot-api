@@ -22,16 +22,6 @@ export class EvaluationRepoImpl extends EvaluationRepo {
   private select(where: SQL<unknown> | undefined) {
     const Coach = alias(UserModel, "coach");
     const Athlete = alias(UserModel, "athlete");
-
-    // return this.db.query.EvaluationModel.findMany({
-    //   with: {
-    //     exam: true,
-    //     athlete: true,
-    //     coach: true,
-    //   },
-    //   where,
-    // });
-
     return this.db
       .select({
         id: EvaluationModel.id,
@@ -89,7 +79,7 @@ export class EvaluationRepoImpl extends EvaluationRepo {
 
     const evaluations = await this.db
       .update(EvaluationModel)
-      .set({ ...data, updatedAt: new Date() })
+      .set(data)
       .where(eq(EvaluationModel.id, data.id))
       .returning();
 

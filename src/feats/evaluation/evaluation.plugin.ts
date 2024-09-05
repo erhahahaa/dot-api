@@ -38,7 +38,7 @@ export const EvaluationPlugin = new Elysia({
         clubId: t.Optional(t.Number()),
         examId: t.Optional(t.Number()),
       }),
-      response: { 200: APIResponseSchema(t.Array(SelectEvaluationSchema)) },
+      // response: { 200: APIResponseSchema(t.Array(SelectEvaluationSchema)) },
     }
   )
   .post(

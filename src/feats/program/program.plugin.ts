@@ -9,6 +9,7 @@ import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
 import {
   InsertProgramSchema,
+  ProgramExtended,
   SelectProgramExtendedSchema,
 } from "./program.schema";
 
@@ -52,8 +53,8 @@ export const ProgramPlugin = new Elysia({
       body: "program.insert",
       response: { 200: "program.response" },
       afterHandle: async ({ clubRepo, response, messenger }) => {
-        const res = response[200].data;
-        if (!response || !res) return;
+        if (!response) return;
+        const res = (response as any).data as ProgramExtended;
         const { id, name, clubId } = res;
         if (!clubId) return;
 

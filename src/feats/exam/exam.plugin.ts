@@ -7,7 +7,11 @@ import { DEFAULT_IMAGE, MessagingService } from "../../core/services/fb";
 import { IdParam } from "../../utils/param";
 import { AuthService } from "../auth/auth.service";
 import { MediaType } from "../media/media.schema";
-import { ExamExtendedSchema, InsertExamSchema } from "./exam.schema";
+import {
+  ExamExtended,
+  ExamExtendedSchema,
+  InsertExamSchema,
+} from "./exam.schema";
 
 export const ExamPlugin = new Elysia({
   name: "Day of Training Exam API",
@@ -50,8 +54,8 @@ export const ExamPlugin = new Elysia({
       body: "exam.insert",
       response: { 200: "exam.response" },
       afterHandle: async ({ clubRepo, response, messenger }) => {
-        const res = response[200].data;
-        if (!response || !res) return;
+        if (!response) return;
+        const res = (response as any).data as ExamExtended;
         const { id, title, clubId } = res;
         if (!clubId) return;
 

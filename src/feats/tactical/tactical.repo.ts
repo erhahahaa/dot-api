@@ -18,12 +18,12 @@ export class TacticalRepoImpl extends TacticalRepo {
   }
 
   private select(where: SQL<unknown> | undefined): Promise<TacticalExtended[]> {
-    return this.db.query.TacticalModel.findMany({
-      with: {
-        media: true,
-      },
-      where,
-    });
+    // return this.db.query.TacticalModel.findMany({
+    //   with: {
+    //     media: true,
+    //   },
+    //   where,
+    // });
     return this.db
       .select({
         id: TacticalModel.id,
@@ -44,7 +44,7 @@ export class TacticalRepoImpl extends TacticalRepo {
       .from(TacticalModel)
       .leftJoin(
         UserToClubModel,
-        eq(UserToClubModel.clubId, TacticalModel.clubId),
+        eq(UserToClubModel.clubId, TacticalModel.clubId)
       )
       .leftJoin(MediaModel, eq(TacticalModel.mediaId, MediaModel.id))
       .where(where);
@@ -117,8 +117,8 @@ export class TacticalRepoImpl extends TacticalRepo {
       tacticals = await this.select(
         and(
           eq(UserToClubModel.userId, userId),
-          eq(TacticalModel.clubId, clubId),
-        ),
+          eq(TacticalModel.clubId, clubId)
+        )
       );
     } else {
       throw new BadRequestError("Club id or user id is required");

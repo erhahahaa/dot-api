@@ -14,6 +14,7 @@ import {
   LiveTacticalSchema,
   LiveTacticalSchemaType,
   SelectTacticalExtendedSchema,
+  TacticalExtended,
   TacticalStrategicSchema,
   WebSocketMessageEvent,
 } from "./tactical.schema";
@@ -67,9 +68,9 @@ export const TacticalPlugin = new Elysia({
     {
       body: "tactical.insert",
       response: { 200: "tactical.response" },
-      afterHandle: async ({ clubRepo, verifyJWT, response, messenger }) => {
-        const res = response[200].data;
-        if (!response || !res) return;
+      afterHandle: async ({ clubRepo, response, messenger }) => {
+        if (!response) return;
+        const res = (response as any).data as TacticalExtended;
         const { id, clubId, name } = res;
         if (!clubId) return;
         const { name: clubName } = await clubRepo.find(clubId);

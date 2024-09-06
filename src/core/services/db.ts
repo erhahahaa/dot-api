@@ -1,6 +1,10 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { ClubModel, ClubRelation } from "../../feats/club/club.model";
+import {
+  ClubModel,
+  ClubRelation,
+  SportTypeModel,
+} from "../../feats/club/club.model";
 import {
   EvaluationModel,
   EvaluationRelation,
@@ -35,6 +39,7 @@ const pgClient = postgres(env.DATABASE_URL);
 const db = drizzle(pgClient, {
   logger: env.NODE_ENV === "development",
   schema: {
+    SportTypeModel,
     ClubModel,
     ClubRelation,
     EvaluationModel,

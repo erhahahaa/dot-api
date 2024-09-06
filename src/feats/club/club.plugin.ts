@@ -15,6 +15,8 @@ import {
   InsertClubSchema,
   SelectClubExtendedSchema,
 } from "./club.schema";
+import { db } from "../../core/services/db";
+import { SportTypeModel } from "./club.model";
 
 export const ClubPlugin = new Elysia({
   name: "Day of Training Club API",
@@ -49,6 +51,19 @@ export const ClubPlugin = new Elysia({
       const user = await verifyJWT();
 
       const { image, ...rest } = body;
+
+      const sportType = rest.type.toLowerCase();
+
+      const isContainWhiteSpaces = sportType.includes(" ");
+
+      if (isContainWhiteSpaces) {
+        const sportTypeArray = sportType.split(" ");
+        rest.type = sportTypeArray
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      } else {
+        rest.type = sportType.charAt(0).toUpperCase() + sportType.slice(1);
+      }
 
       let media = undefined;
       if (image) {
@@ -113,6 +128,19 @@ export const ClubPlugin = new Elysia({
       const findClub = await clubRepo.find(id);
 
       const { image, ...rest } = body;
+
+      const sportType = rest.type.toLowerCase();
+
+      const isContainWhiteSpaces = sportType.includes(" ");
+
+      if (isContainWhiteSpaces) {
+        const sportTypeArray = sportType.split(" ");
+        rest.type = sportTypeArray
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      } else {
+        rest.type = sportType.charAt(0).toUpperCase() + sportType.slice(1);
+      }
 
       let media = undefined;
       if (image) {

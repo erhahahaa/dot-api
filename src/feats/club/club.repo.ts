@@ -1,11 +1,7 @@
-import { SQL, and, count, eq, sql } from "drizzle-orm";
+import { SQL, and, eq, sql } from "drizzle-orm";
 import { BadRequestError, ServerError } from "../../core/errors";
 import { BaseRepo } from "../../core/repo";
 import { DrizzlePostgres } from "../../core/services/db";
-import { ExamModel } from "../exam/exam.model";
-import { MediaModel } from "../media/media.model";
-import { ProgramModel } from "../program/program.model";
-import { TacticalModel } from "../tactical/tactical.model";
 import { UserModel, UserToClubModel } from "../user/user.model";
 import { UserToClub } from "../user/user.schema";
 import { ClubModel } from "./club.model";

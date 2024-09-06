@@ -14,11 +14,15 @@ import { ProgramModel } from "../program/program.model";
 import { TacticalModel } from "../tactical/tactical.model";
 import { UserModel, UserToClubModel } from "../user/user.model";
 
-export const SportTypeEnumModel = pgEnum("sport_type", [
-  "volleyBall",
-  "basketBall",
-  "soccer",
-]);
+// export const SportTypeEnumModel = pgEnum("sport_type", [
+//   "volleyBall",
+//   "basketBall",
+//   "soccer",
+// ]);
+export const SportTypeModel = pgTable("sport_types", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+});
 
 export const ClubModel = pgTable("clubs", {
   id: serial("id").primaryKey(),
@@ -30,7 +34,7 @@ export const ClubModel = pgTable("clubs", {
   }),
   name: text("name").notNull(),
   description: text("description").notNull(),
-  type: SportTypeEnumModel("type").notNull(),
+  type: text("type").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

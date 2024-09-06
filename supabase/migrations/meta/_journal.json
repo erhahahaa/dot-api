@@ -15,6 +15,13 @@
       "when": 1724695671879,
       "tag": "0001_funny_champions",
       "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1725597063401,
+      "tag": "0002_green_scarlet_spider",
+      "breakpoints": false
     }
   ]
 }

@@ -36,7 +36,7 @@ export const MediaPlugin = new Elysia({
       let medias = [];
 
       if (dir === 'exercise'){
-        medias = await Promise.all([
+        const all = await Promise.all([
           mediaRepo.list({
             clubId: clubId,
             parent: dir,
@@ -48,6 +48,8 @@ export const MediaPlugin = new Elysia({
             types,
           }),
         ])
+
+        medias = all[0].concat(all[1])
       } else {
         medias = await mediaRepo.list({
           clubId: clubId,

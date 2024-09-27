@@ -33,11 +33,28 @@ export const MediaPlugin = new Elysia({
         types = ["image/png", "image/jpg", "image/jpeg", "image/svg+xml"];
       }
 
-      const medias = await mediaRepo.list({
-        clubId: clubId,
-        parent: dir,
-        types,
-      });
+      let medias = [];
+
+      if (dir === 'exercise'){
+        medias = await Promise.all([
+          mediaRepo.list({
+            clubId: clubId,
+            parent: dir,
+            types,
+          }),
+          mediaRepo.list({
+            clubId: 79,
+            parent: dir,
+            types,
+          }),
+        ])
+      } else {
+        medias = await mediaRepo.list({
+          clubId: clubId,
+          parent: dir,
+          types,
+        });
+      }
 
       return {
         message: "Media list",
@@ -45,12 +62,12 @@ export const MediaPlugin = new Elysia({
       };
     },
     {
-      query: t.Object({
-        clubId: t.Number(),
-        type: t.Optional(t.String()),
-      }),
-      params: "media.dir.param",
-      response: { 200: APIResponseSchema(t.Array(SelectMediaSchema)) },
+      // query: t.Object({
+      //   clubId: t.Number(),
+      //   type: t.Optional(t.String()),
+      // }),
+      // params: "media.dir.param",
+      // response: { 200: APIResponseSchema(t.Array(SelectMediaSchema)) },
     }
   )
   .post(
@@ -64,6 +81,7 @@ export const MediaPlugin = new Elysia({
       query: { clubId },
       uploadFile,
     }) => {
+      console.log("Inserting media", body.file.name);
       const user = await verifyJWT();
 
       const findClub = await clubRepo.find(clubId);
@@ -91,6 +109,7 @@ export const MediaPlugin = new Elysia({
       if (body.file.type === "video/mp4") {
         media = await new Promise((resolve, reject) => {
           ffmpeg.ffprobe(upload.url, (err, metadata) => {
+            console.log("Processing metadata");
             if (err) {
               console.log("Error in getting metadata", err);
               return;
@@ -99,9 +118,11 @@ export const MediaPlugin = new Elysia({
             const width = metadata.streams[0].width ?? 0;
             const height = metadata.streams[0].height ?? 0;
             let size = "640x360";
+
             if (width > 640) {
-              const ratio = width / height;
-              size = `640x${Math.floor(640 / ratio)}`;
+              const scaleFactor = 640 / width;
+              const newHeight = Math.floor(height * scaleFactor);
+              size = `640x${newHeight}`;
             }
             ffmpeg(upload.url)
               .screenshots({
@@ -113,7 +134,10 @@ export const MediaPlugin = new Elysia({
               })
               .on("end", async () => {
                 const thumbPath = path.join("tmp", `${upload.name}.png`);
+                console.log("Thumbnail path", thumbPath);
+
                 const thumbBlob = fs.readFileSync(thumbPath);
+
                 const file = new File([thumbBlob], `thumb_${upload.name}.png`, {
                   type: "image/png",
                 });
@@ -178,6 +202,8 @@ export const MediaPlugin = new Elysia({
         });
       }
 
+      console.log("Media inserted", media.name );
+
       return {
         message: "Media uploaded",
         data: media,
@@ -187,13 +213,13 @@ export const MediaPlugin = new Elysia({
       query: t.Object({
         clubId: t.Number(),
       }),
-      params: "media.dir.param",
-      body: t.Object({
-        file: t.File({
-          maxSize: "1024m", // 1GBkkkc
-        }),
-      }),
-      response: { 200: "media.response" },
+      // params: "media.dir.param",
+      // body: t.Object({
+      //   file: t.File({
+      //     maxSize: "1024m", // 1GBkkkc
+      //   }),
+      // }),
+      // response: { 200: "media.response" },
     }
   )
   .put(
@@ -240,6 +266,6 @@ export const MediaPlugin = new Elysia({
       body: t.Object({
         file: t.File(),
       }),
-      response: { 200: "media.response" },
+      // response: { 200: "media.response" },
     }
   );

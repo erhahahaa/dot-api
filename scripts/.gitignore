@@ -1,0 +1,4 @@
+assets
+assets/*
+# all file .mp4
+*.mp4
